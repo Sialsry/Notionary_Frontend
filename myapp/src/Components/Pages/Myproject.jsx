@@ -2,15 +2,18 @@ import React from 'react'
 import styled from 'styled-components'
 import ProjectBody from '../Templates/ProjectBody'
 import Input from '../Atoms/ProjectInput'
+import Sidebar from '../Templates/Sidebar'
 
 
 
 
 const Myproject = () => {
-  return (
-    <div>
-        <ProjectBody />
-    </div>
+  return (<>
+      <Sidebar />
+      <div>
+          <ProjectBody />
+      </div>
+  </>
   )
 }
 

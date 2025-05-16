@@ -4,7 +4,7 @@ import SidebarItem from '../Molecules/SidearItem';
 
 
 const SidebarWrap = styled.div`
-  width: 230px;
+  width: 240px;
   background: rgb(248, 248, 247);
   height: 100vh;
   padding-top: 20px;

@@ -6,6 +6,7 @@ import styled from 'styled-components';
 const Projectwrap = styled.div`
     textarea {
         width: 709.99px;
+        height: 28px;
         min-height: 29.99px;
         padding: 3px 2px;
         box-sizing: border-box;
@@ -15,33 +16,17 @@ const Projectwrap = styled.div`
         white-space: pre-wrap;
         overflow : hidden;
         resize: none;
+        display: block;
     }
 `
-const ProjectInput = () => {
-  const textareaRef = useRef(null);
-  const [value, setValue] = useState('');
-  console.log(textareaRef,'aaa')
-  const handleInput =(e) => {
-    setValue(e.target.value)
-  }
-  const resizearea = () => {
-    const textarea = textareaRef.current;
-    if(textarea) {
-      // textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`
-    }
-  }
-
-  
-  useEffect(() => {
-    resizearea()
-  }, [value])
-  
-
+const ProjectInput = ({inputValue}) => {
+    const Block = inputValue.textareavalue;
+    const {textareaRef} = inputValue;
+    console.log(Block,'asdff')
     return (
       <Projectwrap >
-      <textarea type="text" ref={textareaRef} onChange={handleInput} value={value} />
-    </Projectwrap>
+      {Block.map((el,index) => <textarea {...inputValue} ref={(el) => textareaRef.current[index] = el} data-index={index} type="text" key={index} />)}
+      </Projectwrap>
   )
 
 }

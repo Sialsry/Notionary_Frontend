@@ -4,7 +4,8 @@ import Myproject from "./Components/Pages/Myproject";
 function App() {
   return (
     <div className="App">
-      <Main />
+      {/* <Main /> */}
+      
       <Myproject />
     </div>
   );

@@ -2,6 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import ProjectContent from '../Molecules/ProjectContent'
 import TitleInput from '../Atoms/TitleInput'
+import useProjectinput from '../../Hooks/useProjectinput'
+import useKeydownTitleHandler from '../../Hooks/useTitleinput'
+
 
 
 const WorkspaceBody = styled.div`
@@ -11,11 +14,12 @@ const WorkspaceBody = styled.div`
         background-color: #bdbdbd;
         position: fixed;
     } */
-    margin-top: 112px;
+    width: 1665px;
+    padding-top: 112px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    float: right;
     .bodyContent {
         padding-top: 5px;
     }
@@ -25,15 +29,16 @@ const WorkspaceBody = styled.div`
 
 
 const ProjectBody = () => {
-  return (
-    <WorkspaceBody>
-        <TitleInput />
-        <div className='bodyContent'>
-            <ProjectContent />
-            <ProjectContent />
-        </div>
-    </WorkspaceBody>
-  )
+    const ProjectinputValue = useProjectinput();
+    const TitleHandler = useKeydownTitleHandler();
+    return (
+        <WorkspaceBody>
+            <TitleInput titleHandler={ProjectinputValue}/>
+            <div className='bodyContent'>
+                <ProjectContent inputValue={ProjectinputValue}/>
+            </div>
+        </WorkspaceBody>
+    )
 }
 
 export default ProjectBody

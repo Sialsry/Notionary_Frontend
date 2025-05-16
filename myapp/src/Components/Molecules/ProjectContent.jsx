@@ -7,10 +7,10 @@ const Contentwrap = styled.div`
     
 `
 
-const ProjectContent = () => {
+const ProjectContent = ({inputValue}) => {
   return (
     <div>
-       <ProjectInput />
+       <ProjectInput inputValue={inputValue}/>
     </div>
   )
 }
