@@ -17,10 +17,10 @@ const Titlewrap = styled.div`
     }
 `
 const TitleInput = ({titleHandler}) => {
-  const {textareaRef} = titleHandler;
+  const {titleRef, setistitleFocused} = titleHandler;
   return (
     <Titlewrap>
-      <textarea type="text" {...titleHandler} ref={(el) => textareaRef.current[0] = el} data-index={0}/>
+      <textarea type="text" {...titleHandler} ref={(el) => titleRef.current[0] = el} onFocus={(el) => setistitleFocused(true)} data-index={0}/>
     </Titlewrap>
   )
 }

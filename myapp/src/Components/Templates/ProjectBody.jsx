@@ -16,6 +16,7 @@ const WorkspaceBody = styled.div`
     } */
     width: 1665px;
     padding-top: 112px;
+    padding-bottom: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
