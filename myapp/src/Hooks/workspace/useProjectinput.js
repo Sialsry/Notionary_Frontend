@@ -8,11 +8,14 @@ const useProjectinput = () => {
     const [index, setIndex] = useState(0);
     const [istitleFocused, setistitleFocused] = useState(false)
     const [titlevalue, settitleValue] = useState([''])
+    const [clickHandler, setClickHandler] = useState()
+    
+
     
     console.log(istitleFocused,titlevalue,'istitleFocused', textareavalue,'dkkkf')
     const valueHandler = (e) => {
         if(istitleFocused) {
-            const newBlock = [...titletextareavalue]
+            const newBlock = [...titlevalue]
             newBlock[index] = e.target.value;
             return settitleValue(newBlock)
         }
@@ -40,15 +43,15 @@ const useProjectinput = () => {
     //     const newBlock = [...textareavalue]
     //     newBlock[index] = e.target.value;
     //     setTextareaValue(newBlock)
-    // }
+    }
  
-    // const resizeArea = () => {
-    //     console.log(index,'re')
-    //     const textarea = textareaRef.current[index];
-    //     if(textarea) {
-    //     textarea.style.height = '29.99px';
-    //     textarea.style.height = `${textarea.scrollHeight}px`
-    //     }
+    const resizeArea = () => {
+        console.log(index,'re')
+        const textarea = textareaRef.current[index];
+        if(textarea) {
+        textarea.style.height = '29.99px';
+        textarea.style.height = `${textarea.scrollHeight}px`
+        }
     }
     const resizeTitle = () => {
         const textarea = titleRef.current[index];
@@ -60,13 +63,13 @@ const useProjectinput = () => {
     
     const KeydownHandler = (e) => {
         const index = parseInt(e.target.dataset.index);
-        console.log(index,'index')
+        console.log(index,'index1')
 
         
         if (e.key === 'Enter'){
             e.preventDefault();
             if(istitleFocused) { textareaRef.current[index]?.focus()
-                const newBlock = [...titletextareavalue]
+                const newBlock = [...titlevalue]
                 newBlock[index] = e.target.value;
                 return setTimeout(() => {     
                     console.log(textareaRef.current,titleRef.current, 'asdf11')
@@ -79,17 +82,16 @@ const useProjectinput = () => {
             //     const newBlock = [...titletextareavalue]
             //     newBlock[index] = e.target.value;
             //     setTitletextareavalue(newBlock)
-            // }
-            // setTextareaValue(prev => [...prev.slice(0, index + 1),
-            //     '',
-            //     ...prev.slice(index + 1)
-            // ])
-            // setTimeout(() => {
-             
-            //     textareaRef.current[index + 1]?.focus();
-            // }, 0);
-           
-        }}
+            }
+            
+            setTextareaValue(prev => [...prev.slice(0, index + 1),
+                '',
+                ...prev.slice(index + 1)
+            ])
+            setTimeout(() => {
+                textareaRef.current[index + 1]?.focus();
+            }, 0);
+        }
         else if (e.key === 'ArrowUp'){
             if(index > 0){
                 setTimeout(() => {
@@ -159,6 +161,7 @@ const useProjectinput = () => {
         
         
     return { textareavalue, 
+        titlevalue,
         onChange: valueHandler, 
         textareaRef,titleRef, 
         setistitleFocused, 

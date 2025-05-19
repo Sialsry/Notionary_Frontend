@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import ProjectInput from '../../Atoms/workspace/ProjectInput'
-
+import { header, bulletlist, numberlist, todolist, togglelist } from '../../../images'
 
 const Contentwrap = styled.div`
     /* display: flex; */

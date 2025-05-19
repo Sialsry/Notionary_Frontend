@@ -12,12 +12,6 @@ import useModal from '../../Hooks/useModal'
 
 
 const WorkspaceBody = styled.div`
-    /* div{
-        width: 224px;
-        height: 100vh;
-        background-color: #bdbdbd;
-        position: fixed;
-    } */
     width: 1665px;
     padding-top: 112px;
     padding-bottom: 250px;
@@ -31,26 +25,7 @@ const WorkspaceBody = styled.div`
     .bodyContent {
         padding-top: 5px;
     }
-    .Linecontent {
 
-    }
-    /* .addbtn {
-        width: 30x;
-        position:absolute;
-        left: 400px;
-    }
-    .dotbtn {
-        width: 27px;
-        position:absolute;
-        left: 430px;
-    } */
-    .itemwrap.active {
-    }
-    .itemwrap {
-        width: 709.99px;
-        display: flex;
-        justify-content: flex-start
-    }
 `
 
 

@@ -2,6 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import { addicon, doticon } from '../../../images'
 import useModal from '../../../Hooks/useModal';
+import Item from './Item';
 
 
 
@@ -39,11 +40,32 @@ const Projectwrap = styled.div`
       /* position: absolute; */
       /* left:  */
     }
+    .itemwrap {
+      width: 280px;
+      height: 335.5px;
+      border: 1px solid #D3D1CB;
+      border-radius: 10px;
+      box-shadow: 0 0 15px -12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .suggesttitle { 
+      font-size: 14px;
+      font-weight: 400;
+      color: #7c7c7c;
+      margin: 5px;
+      display: inline-block;
+      
+    }
+    
 `
 const ProjectInput = ({inputValue, icon, title}) => {
     const {OpenModal, ClosedModal, isOpen} = useModal();
     const Block = inputValue.textareavalue;
-    const {textareaRef, setIstitlefocused} = inputValue;
+    const {textareaRef, setistitleFocused} = inputValue;
     console.log(Block,'asdff')
     return (<>
         {Block.map((el,index) => 
@@ -53,17 +75,22 @@ const ProjectInput = ({inputValue, icon, title}) => {
               <img src={doticon} alt="" className='dotbtn'/> 
             </div>
               <textarea {...inputValue} 
-              onFocus={() => setIstitlefocused(false)} 
+              value={Block[index]}
+              onFocus={() => setistitleFocused(false)} 
               ref={(el) => textareaRef.current[index] = el} 
               data-index={index} type="text" 
               key={index} />
+              {isOpen ? <div className='itemwrap'>
+                <div className='suggesttitle'>suggestions</div>
+                 <Item icon={icon} title={title} Close={ClosedModal}/> 
+              </div> : null }
             </Projectwrap>
-            icon.map((el, index) =>
-              <div onClick={Close} >
-                <img src={el ? el : ""} alt="" />
-                <div className='itemtitle' >{title[index]}</div>
-              </div>
-              )
+            // icon.map((el, index) =>
+            //   <div onClick={Close} >
+            //     <img src={el ? el : ""} alt="" />
+            //     <div className='itemtitle' >{title[index]}</div>
+            //   </div>
+            //   )
             )
           }
           </>
