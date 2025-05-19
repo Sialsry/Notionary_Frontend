@@ -12,6 +12,9 @@ const StyledButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   width: ${(props) => (props.fullWidth ? "100%" : "auto")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: ${(props) => (props.secondary ? "#f5f0ff" : "#5E35B1")};

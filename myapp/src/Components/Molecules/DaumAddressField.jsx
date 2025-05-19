@@ -4,9 +4,7 @@ import FormField from "./FormField";
 import Button from "../Atoms/SignupButton";
 import { Text } from "../Atoms/Typography";
 
-const AddressContainer = styled.div`
-  margin-bottom: 20px;
-`;
+// const AddressContainer = styled.div``;
 
 const AddressButtonWrapper = styled.div`
   display: flex;
@@ -28,7 +26,7 @@ const DaumAddressField = ({ address, setAddress, error }) => {
   };
 
   return (
-    <AddressContainer>
+    <div>
       <AddressButtonWrapper>
         <FormField
           label="주소"
@@ -43,7 +41,14 @@ const DaumAddressField = ({ address, setAddress, error }) => {
         <Button
           type="button"
           onClick={openAddressModal}
-          style={{ marginTop: "32px", height: "44px" }}
+          style={{
+            marginTop: "37px",
+            height: "44px",
+            width: "130px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           주소 검색
         </Button>
@@ -53,7 +58,7 @@ const DaumAddressField = ({ address, setAddress, error }) => {
           ※ '주소 검색' 버튼을 클릭하여 정확한 주소를 입력해주세요
         </Text>
       )}
-    </AddressContainer>
+    </div>
   );
 };
 

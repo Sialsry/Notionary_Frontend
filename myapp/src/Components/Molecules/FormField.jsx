@@ -4,7 +4,6 @@ import Input from "../Atoms/SignupInput";
 import { Label } from "../Atoms/Typography";
 
 const FieldContainer = styled.div`
-  margin-bottom: 20px;
   width: 100%;
 `;
 

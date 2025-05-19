@@ -8,12 +8,12 @@ import { validateForm, validateField } from "../utils/validation";
 import { registerUser, checkIdDuplicate } from "../api/authApi";
 
 const FormContainer = styled.div`
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px;
+  width: 500px;
+  padding: 30px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  height: fit-content;
 `;
 
 const Form = styled.form`
@@ -37,13 +37,19 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
 `;
 
-const InfoBox = styled.div`
-  grid-column: 1 / -1;
-  background-color: #f8f4ff;
-  border-left: 4px solid #7e57c2;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 4px;
+const IdCheckSuccess = styled.div`
+  color: #4caf50;
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+
+  &:before {
+    content: "✓";
+    margin-right: 5px;
+    font-weight: bold;
+  }
 `;
 
 const SignupForm = () => {
@@ -63,6 +69,7 @@ const SignupForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingId, setIsCheckingId] = useState(false);
   const [isIdValid, setIsIdValid] = useState(false);
+  const [showIdSuccess, setShowIdSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,6 +81,7 @@ const SignupForm = () => {
     // Clear ID validation if UID changes
     if (name === "uid") {
       setIsIdValid(false);
+      setShowIdSuccess(false);
     }
 
     // Validate field on change for immediate feedback
@@ -99,6 +107,7 @@ const SignupForm = () => {
         ...formErrors,
         uid: error,
       });
+      setShowIdSuccess(false);
       return;
     }
 
@@ -107,12 +116,14 @@ const SignupForm = () => {
       const response = await checkIdDuplicate(formData.uid);
       if (response.isAvailable) {
         setIsIdValid(true);
+        setShowIdSuccess(true);
         setFormErrors({
           ...formErrors,
           uid: null,
         });
       } else {
         setIsIdValid(false);
+        setShowIdSuccess(false);
         setFormErrors({
           ...formErrors,
           uid: "이미 사용중인 아이디입니다.",
@@ -120,6 +131,7 @@ const SignupForm = () => {
       }
     } catch (error) {
       console.error("ID check error:", error);
+      setShowIdSuccess(false);
       setFormErrors({
         ...formErrors,
         uid: "아이디 중복확인 중 오류가 발생했습니다.",
@@ -192,18 +204,7 @@ const SignupForm = () => {
 
   return (
     <FormContainer>
-      <Title>Notionary 회원가입</Title>
-      <Subtitle>
-        워크스페이스와 소통의 공간, Notionary에 오신 것을 환영합니다.
-      </Subtitle>
-
-      <InfoBox>
-        <Text>
-          <strong>Notionary</strong>는 개인 및 공동 워크스페이스를 제공하고,
-          사용자 간 게시판으로 소통할 수 있는 서비스입니다. 회원가입을 통해
-          다양한 기능을 이용해보세요.
-        </Text>
-      </InfoBox>
+      <Title style={{ fontSize: "2rem" }}>회원가입</Title>
 
       <Form onSubmit={handleSubmit}>
         <FullWidthField>
@@ -223,11 +224,21 @@ const SignupForm = () => {
               type="button"
               onClick={handleIdCheck}
               disabled={isCheckingId || !formData.uid}
-              style={{ marginTop: "32px", height: "44px" }}
+              style={{
+                marginTop: "37px",
+                height: "44px",
+                width: "120px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               {isCheckingId ? "확인중..." : "중복확인"}
             </Button>
           </div>
+          {showIdSuccess && (
+            <IdCheckSuccess>사용 가능한 아이디입니다</IdCheckSuccess>
+          )}
         </FullWidthField>
 
         <FormField
@@ -343,7 +354,15 @@ const SignupForm = () => {
             disabled={
               isSubmitting ||
               Object.keys(formErrors).some((key) => formErrors[key]) ||
-              !isIdValid
+              !isIdValid ||
+              !formData.uid ||
+              !formData.upw ||
+              !formData.confirmPw ||
+              !formData.nick ||
+              !formData.gender ||
+              !formData.phone ||
+              !formData.dob ||
+              !formData.addr
             }
           >
             {isSubmitting ? "처리중..." : "회원가입"}
