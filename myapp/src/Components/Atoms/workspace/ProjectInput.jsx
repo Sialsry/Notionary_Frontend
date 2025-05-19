@@ -21,11 +21,15 @@ const Projectwrap = styled.div`
 `
 const ProjectInput = ({inputValue}) => {
     const Block = inputValue.textareavalue;
-    const {textareaRef} = inputValue;
+    const {textareaRef, setIstitlefocused} = inputValue;
     console.log(Block,'asdff')
     return (
       <Projectwrap >
-      {Block.map((el,index) => <textarea {...inputValue} ref={(el) => textareaRef.current[index] = el} data-index={index} type="text" key={index} />)}
+        {Block.map((el,index) => <textarea {...inputValue} 
+        onFocus={() => setIstitlefocused(false)} 
+        ref={(el) => textareaRef.current[index] = el} 
+        data-index={index} type="text" 
+        key={index} />)}
       </Projectwrap>
   )
 

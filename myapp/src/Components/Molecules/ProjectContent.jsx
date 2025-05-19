@@ -1,17 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
-import ProjectInput from '../Atoms/ProjectInput'
+import ProjectInput from '../Atoms/workspace/ProjectInput'
 
 
 const Contentwrap = styled.div`
-    
+    /* display: flex; */
+    /* width: 510px; */
+    /* height: 49.99px; */
+    position:relative;
+    span {
+      position: absolute;
+      /* right: ; */
+    }
 `
 
 const ProjectContent = ({inputValue}) => {
   return (
-    <div>
+    <Contentwrap>
        <ProjectInput inputValue={inputValue}/>
-    </div>
+    </Contentwrap>
   )
 }
 

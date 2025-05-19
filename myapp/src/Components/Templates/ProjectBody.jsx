@@ -1,11 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 import ProjectContent from '../Molecules/ProjectContent'
-import TitleInput from '../Atoms/TitleInput'
-import useProjectinput from '../../Hooks/useProjectinput'
-import useKeydownTitleHandler from '../../Hooks/useTitleinput'
-
-
+import TitleInput from '../Atoms/workspace/TitleInput'
+import useProjectinput from '../../Hooks/workspace/useProjectinput'
+import useKeydownTitleHandler from '../../Hooks/workspace/useTitleinput'
+import addbtn from '../../images/icons/addicon.png'
+import dotbtn from '../../images/icons/doticon.png'
+import Selectitem from '../Molecules/Selectitem'
+import { addicon, doticon } from '../../images'
 
 const WorkspaceBody = styled.div`
     /* div{
@@ -20,8 +22,31 @@ const WorkspaceBody = styled.div`
     flex-direction: column;
     align-items: center;
     float: right;
+    position: relative;
+    align-items: center;
+
     .bodyContent {
         padding-top: 5px;
+    }
+    .Linecontent {
+
+    }
+    .addbtn {
+        width: 30x;
+        position:absolute;
+        left: 400px;
+    }
+    .dotbtn {
+        width: 27px;
+        position:absolute;
+        left: 430px;
+    }
+    .itemwrap.active {
+    }
+    .itemwrap {
+        width: 709.99px;
+        display: none;
+        justify-content: flex-start
     }
 `
 
@@ -35,7 +60,14 @@ const ProjectBody = () => {
         <WorkspaceBody>
             <TitleInput titleHandler={ProjectinputValue}/>
             <div className='bodyContent'>
-                <ProjectContent inputValue={ProjectinputValue}/>
+                <div className='Linecontent'>
+                    <img src={addicon} alt="" className='addbtn' onClick={isactive} />
+                    <img src={doticon} alt="" className='dotbtn'/>
+                    <ProjectContent inputValue={ProjectinputValue}/>
+                </div>
+            </div>
+            <div className='itemwrap'>
+                <Selectitem/>
             </div>
         </WorkspaceBody>
     )
