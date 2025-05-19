@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import Item from '../Atoms/workspace/Item'
+import Item from '../../Atoms/workspace/Item'
 import { addicon, bulletlist, calendar, databasetable, doticon, header,
-    numberlist, table,todolist, toggle, togglelist } from '../../images'
+    numberlist, table,todolist, toggle, togglelist } from '../../../images'
 
 
 const Itemwrap = styled.div`
@@ -22,16 +22,14 @@ const Itemwrap = styled.div`
     }
 `
 
-const Selectitem = () => {
+const Selectitem = ({Close}) => {
+  const icon = [header, bulletlist, numberlist, todolist, togglelist]
+  const icontitle = ['header', 'bullet list', 'numbered list', 'todo list', 'toggle list']
   return (
     <Itemwrap>
       <span>suggested</span>
       <div>
-        <Item icon={header}>Heading1</Item>
-        <Item icon={bulletlist}>Bullet list</Item>
-        <Item icon={numberlist}>Numbered list</Item>
-        <Item icon={todolist}>To-do checklist</Item>
-        <Item icon={togglelist}>Toggle list</Item>
+        <Item icon={icon} title={icontitle} Close={Close}/>
       </div>
     </Itemwrap>
   )

@@ -1,13 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
-import ProjectContent from '../Molecules/ProjectContent'
+import ProjectContent from '../Molecules/workspace/ProjectContent'
 import TitleInput from '../Atoms/workspace/TitleInput'
 import useProjectinput from '../../Hooks/workspace/useProjectinput'
 import useKeydownTitleHandler from '../../Hooks/workspace/useTitleinput'
 import addbtn from '../../images/icons/addicon.png'
 import dotbtn from '../../images/icons/doticon.png'
-import Selectitem from '../Molecules/Selectitem'
+import Selectitem from '../Molecules/workspace/Selectitem'
 import { addicon, doticon } from '../../images'
+import useModal from '../../Hooks/useModal'
+
 
 const WorkspaceBody = styled.div`
     /* div{
@@ -31,7 +33,7 @@ const WorkspaceBody = styled.div`
     .Linecontent {
 
     }
-    .addbtn {
+    /* .addbtn {
         width: 30x;
         position:absolute;
         left: 400px;
@@ -40,12 +42,12 @@ const WorkspaceBody = styled.div`
         width: 27px;
         position:absolute;
         left: 430px;
-    }
+    } */
     .itemwrap.active {
     }
     .itemwrap {
         width: 709.99px;
-        display: none;
+        display: flex;
         justify-content: flex-start
     }
 `
@@ -54,6 +56,7 @@ const WorkspaceBody = styled.div`
 
 
 const ProjectBody = () => {
+    const {isOpen, isVisible, OpenModal, ClosedModal} = useModal();
     const ProjectinputValue = useProjectinput();
     const TitleHandler = useKeydownTitleHandler();
     return (
@@ -61,13 +64,16 @@ const ProjectBody = () => {
             <TitleInput titleHandler={ProjectinputValue}/>
             <div className='bodyContent'>
                 <div className='Linecontent'>
-                    <img src={addicon} alt="" className='addbtn' onClick={isactive} />
-                    <img src={doticon} alt="" className='dotbtn'/>
+                    {/* {!isOpen ?
+                    <img src={addicon} alt="" className='addbtn' onClick={OpenModal} /> : null}
+                    {!isOpen ?
+                    <img src={doticon} alt="" className='dotbtn'/> : null
+                    } */}
                     <ProjectContent inputValue={ProjectinputValue}/>
                 </div>
             </div>
             <div className='itemwrap'>
-                <Selectitem/>
+                {isOpen ? <Selectitem Close={ClosedModal} /> : null}
             </div>
         </WorkspaceBody>
     )
