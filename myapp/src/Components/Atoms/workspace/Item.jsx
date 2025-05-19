@@ -22,12 +22,14 @@ const Itemwrap = styled.div`
     } */
 `
 
-const Item = ({icon, children}) => {
+const Item = ({Close, icon, title}) => {
   return (
-    <Itemwrap>
-      <img src={icon ? icon : ""} alt="" />
-      <div className='itemtitle'>{children? children : ''}</div>
+    icon.map((el, index) =>
+    <Itemwrap onClick={Close} >
+      <img src={el ? el : ""} alt="" />
+      <div className='itemtitle' >{title[index]}</div>
     </Itemwrap>
+    )
   )
 }
 

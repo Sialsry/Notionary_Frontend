@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import ProjectInput from '../Atoms/workspace/ProjectInput'
+import ProjectInput from '../../Atoms/workspace/ProjectInput'
 
 
 const Contentwrap = styled.div`
@@ -15,9 +15,11 @@ const Contentwrap = styled.div`
 `
 
 const ProjectContent = ({inputValue}) => {
+    const icon = [header, bulletlist, numberlist, todolist, togglelist]
+    const icontitle = ['header', 'bullet list', 'numbered list', 'todo list', 'toggle list']
   return (
     <Contentwrap>
-       <ProjectInput inputValue={inputValue}/>
+       <ProjectInput inputValue={inputValue} icon={icon} title={icontitle} />
     </Contentwrap>
   )
 }
