@@ -3,16 +3,17 @@ import styled from 'styled-components';
 import Button from '../Atoms/Button';
 
 const CategoriesWrap = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
 `;
 
-const Categories = ({ items }) => {
+const Categories = ({ items, onSelect }) => {
   return (
     <CategoriesWrap>
       {items.map((el, index) => (
-        <Button key={index}>{el}</Button>
+        <Button onClick={() => onSelect(el.name)} key={index}>{el.text}</Button>
       ))}
     </CategoriesWrap>
   );
