@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
-
+import useSelecttitle from '../../../Hooks/workspace/useSelecttitle'
 
 const Itemwrap = styled.div`
     &:hover {
@@ -17,19 +17,34 @@ const Itemwrap = styled.div`
         box-sizing: border-box;
         margin-right: 10px;
     }
+    .suggesttitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: #7c7c7c;
+      margin: 5px;
+      display: inline-block;
+      padding: 20px;
+    }
     /* .itemtitle {
       display: inline-block;
     } */
 `
 
-const Item = ({Close, icon, title}) => {
-  return (
-    icon.map((el, index) =>
-    <Itemwrap onClick={Close} >
-      <img src={el ? el : ""} alt="" />
-      <div className='itemtitle' >{title[index]}</div>
-    </Itemwrap>
-    )
+const Item = ({setIsOpen, icon, title, Block, setitemactive }) => {
+  const {selecttitle, setSelecttitle} = useSelecttitle();
+  return (<>
+            <div className='suggesttitle'>suggestions</div>
+              {icon.map((el, index) =>
+                <Itemwrap key={index} onClick={() => {
+                  setSelecttitle(title[index])
+                  setitemactive("false")
+                  setIsOpen(new Array(Block.length).fill("false"))
+                }} >
+                <img src={el ? el : ""} alt="" />
+                <div className='itemtitle' >{title[index]}</div>
+                </Itemwrap>
+              )}
+          </>
   )
 }
 

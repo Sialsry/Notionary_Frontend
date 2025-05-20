@@ -9,11 +9,11 @@ import table from "./icons/table.png"
 import todolist from "./icons/todolist.png"
 import toggle from "./icons/toggle.png"
 import togglelist from "./icons/togglelist.png"
-
+import image from "./icons/image.png"
 
 
 
 
 export {addicon, bulletlist, calendar, databasetable, doticon, header,
-    numberlist, table,todolist, toggle, togglelist
+    numberlist, table,todolist, toggle, togglelist, image
 }

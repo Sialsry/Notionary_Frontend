@@ -2,6 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Titlewrap = styled.div`
+    width: 770px;
+
     textarea {
         width: ${({width}) => width ? width : '709.99px'};
         height:  ${({height}) => height ? height : '50.99px'};
@@ -14,6 +16,7 @@ const Titlewrap = styled.div`
         overflow : hidden;
         resize: none;
         display: block;
+        margin-left: 58px;
     }
 `
 const TitleInput = ({titleHandler}) => {
