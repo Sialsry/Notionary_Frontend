@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import SignupForm from "../Organisms/SignupForm";
-import { Title, Subtitle, Text } from "../Atoms/Typography";
+import { Title, Subtitle, Text } from "../Atoms/ming/Typography";
 import logo from "../../images/notionary-logo.png";
 
 const PageContainer = styled.div`

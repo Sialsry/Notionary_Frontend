@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import FormField from "../Molecules/FormField";
 import DaumAddressField from "../Molecules/DaumAddressField";
-import Button from "../Atoms/SignupButton";
-import { Title, Subtitle, Text } from "../Atoms/Typography";
+import Button from "../Atoms/ming/SignupButton";
+import { Title, Subtitle, Text } from "../Atoms/ming/Typography";
 import { validateForm, validateField } from "../utils/validation";
 import { registerUser, checkIdDuplicate } from "../api/authApi";
 

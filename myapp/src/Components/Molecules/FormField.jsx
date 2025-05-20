@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import Input from "../Atoms/SignupInput";
-import { Label } from "../Atoms/Typography";
+import Input from "../Atoms/ming/SignupInput";
+import { Label } from "../Atoms/ming/Typography";
 
 const FieldContainer = styled.div`
   width: 100%;

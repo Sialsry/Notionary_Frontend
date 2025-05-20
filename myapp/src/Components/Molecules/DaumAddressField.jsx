@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import FormField from "./FormField";
-import Button from "../Atoms/SignupButton";
-import { Text } from "../Atoms/Typography";
+import Button from "../Atoms/ming/SignupButton";
+import { Text } from "../Atoms/ming/Typography";
 
 // const AddressContainer = styled.div``;
 
