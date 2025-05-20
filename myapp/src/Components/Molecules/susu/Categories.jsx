@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Button from '../Atoms/Button';
+import Button from '../../Atoms/susu/Button';
 
 const CategoriesWrap = styled.div`
     display: flex;

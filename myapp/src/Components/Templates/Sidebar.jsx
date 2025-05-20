@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import SidebarItem from '../Molecules/SidearItem';
+import SidebarItem from '../Molecules/susu/SidearItem';
 
 
 const SidebarWrap = styled.div`

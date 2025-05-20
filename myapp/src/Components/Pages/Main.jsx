@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import Sidebar from '../Templates/Sidebar'
 import styled from 'styled-components'
-import Categories from '../Molecules/Categories'
+import Categories from '../Molecules/susu/Categories'
 import useModal from '../../Hooks/useModal'
-import Modal from '../Molecules/Modal'
-import Text from '../Atoms/Text'
-import Button from '../Atoms/Button'
-import PostCard from '../Molecules/PostCard'
+import Modal from '../Molecules/susu/Modal'
+import Text from '../Atoms/susu/Text'
+import Button from '../Atoms/susu/Button'
+import PostCard from '../Molecules/susu/PostCard'
 import PostList from '../Templates/PostList'
 
 const MainWrap = styled.div`
@@ -126,15 +126,14 @@ const Main = () => {
     });
   };
 
-  const AllSelectCategory = () => {
-    if (select && subCategories[select]) {
-      setSelectSubCategory(subCategories[select]);
-    }
-  };
 
   const SingleSelectCategory = () => {
     setSelectSubCategory([]);
   };
+
+  const isAllSelected = () => {
+  return subCategories[select]?.length === selectSubCategory.length;
+};
 
 
  return (
@@ -143,10 +142,18 @@ const Main = () => {
     <Modal width={'700px'} height={"auto"} isOpen={isOpen} closeModal={ClosedModal}>
       <Text fontSize={"15px"}>{select}</Text>
 
-      <ChoiceWrap>
-        <Button onClick={AllSelectCategory}>전체 선택</Button>
-        <Button onClick={SingleSelectCategory}>선택 및 해제</Button>
-      </ChoiceWrap>
+  <ChoiceWrap>
+      <Button onClick={() => {
+        if (isAllSelected()) {
+          setSelectSubCategory([]);
+        } else {
+          setSelectSubCategory(subCategories[select]);
+        }
+      }}>
+        {isAllSelected() ? '전체 해제' : '전체 선택'}
+      </Button>
+  <Button onClick={SingleSelectCategory}>선택 초기화</Button>
+</ChoiceWrap>
 
       {select && subCategories[select] && (
         <>

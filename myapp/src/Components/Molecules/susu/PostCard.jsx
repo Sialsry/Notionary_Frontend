@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Title from '../Molecules/Title';
-import Image from '../Atoms/Image';
-import Input from '../Atoms/Input';
+import Title from '../../Molecules/susu/Title';
+import Image from '../../Atoms/susu/Image';
+import Input from '../../Atoms/susu/Input';
 
 
 const CardBlock = styled.div`
