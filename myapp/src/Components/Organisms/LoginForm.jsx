@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import FormField from "../Molecules/FormField";
-import Button from "../Atoms/SignupButton";
-import { Title, Text, ErrorText } from "../Atoms/Typography";
+import Button from "../Atoms/ming/SignupButton";
+import { Title, Text, ErrorText } from "../Atoms/ming/Typography";
 import { loginUser } from "../api/authApi";
 
 const FormContainer = styled.div`
@@ -248,7 +248,9 @@ const LoginForm = () => {
         type="button"
         secondary
         fullWidth
-        onClick={() => (window.location.href = "/signup")}
+        onClick={() =>
+          (window.location.href = "http://localhost:4000/kakao/login")
+        }
         style={{
           backgroundColor: "#FEE500",
           color: "#000",

@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import Text from '../Atoms/Text';
+import React from "react";
+import styled from "styled-components";
+import Text from "../Atoms/ming/Text";
 
 const Section = styled.div`
   display: flex;
@@ -12,11 +12,11 @@ const Section = styled.div`
 const SidebarItem = ({ items }) => {
   return (
     <Section>
-    {items.map((item, index) => (
-      <Text key={index}>{item}</Text>
-    ))}
+      {items.map((item, index) => (
+        <Text key={index}>{item}</Text>
+      ))}
     </Section>
-  )
-}
+  );
+};
 
 export default SidebarItem;
