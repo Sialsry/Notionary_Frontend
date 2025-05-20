@@ -1,57 +1,163 @@
-// TiptapEditor.js
-import React from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
+import React from 'react'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Heading from '@tiptap/extension-heading'
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
+import styled from 'styled-components'
+import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
 
-const TiptapEditor = () => {
+// Styled wrappers
+const TaskListWrapper = styled.div`
+  width:709px;
+  * {
+  margin : 0;
+  }
+  table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  .Contents {
+    width: 709.99px;
+    /* height: 28px; */
+    min-height: 29.99px;
+    padding: 3px 2px;
+    box-sizing: border-box;
+    border : 1px solid #c7c7c7;
+    outline: none;
+    font-size: 16px;
+    white-space: pre-wrap;
+    overflow : hidden;
+    resize: none;
+    display: block;
+    /* margin-left: 60px; */
+    box-sizing:border-box;
+    /* position: absolute; */
+  }
+
+  ul[data-type='taskList'] {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box
+  }
+
+  ul[data-type='taskList'] li {
+    height: 21px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+     list-style: none;
+     box-sizing: border-box;
+  }
+  [data-type="taskList"] label {
+  margin-right: 0.5rem; /* optional: space between checkbox and text */
+  }
+
+  [data-type="taskList"] div {
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-type="taskList"] p {
+    margin: 0;
+    padding: 0;
+  }
+  .mb-2 {
+    display:none;
+  }
+`
+const TiptapEditor = ({inputValue, textareaRef, Block, index, setistitleFocused}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: { levels: [1, 2, 3] },
+        heading: false, // disable built-in heading to replace it
       }),
-      Underline,
+      Heading.configure({
+        levels: [1, 2, 3],
+      }),
       TaskList,
-      TaskItem.configure({ nested: true }),
-      Table.configure({ resizable: true }),
+      TaskItem,
+      Table.configure({
+        resizable: true,
+      }),
       TableRow,
-      TableCell,
       TableHeader,
-    ],
-    content: `
-      <h1>Hello Tiptap</h1>
-      <ul><li>Bullet list item</li></ul>
-      <ol><li>Numbered list item</li></ol>
-      <p><u>Underline</u> and <strong>bold</strong> text</p>
-    `,
-  });
+      TableCell,
+    ]
+    
+  })
 
-  if (!editor) return null;
+  if (!editor) return null
 
   return (
-    <div>
-      {/* Toolbar buttons */}
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => editor.chain().focus().toggleBold().run()}>Bold</button>
-        <button onClick={() => editor.chain().focus().toggleUnderline().run()}>Underline</button>
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>Bullet List</button>
-        <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>Numbered List</button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>H1</button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
-      </div>
+    <TaskListWrapper>
+      <div className="mb-2 space-x-2">
+        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          Bullet List
+        </button>
+        <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          Numbered List
+        </button>
+        <button onClick={() => editor.chain().focus().toggleBold().run()}>
+          Bold
+        </button>
+          <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+          H1
+        </button>
+        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+          H2
+        </button>
+        <button onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+          H3
+        </button>
+        <button onClick={() => editor.chain().focus().toggleTaskList().run()}>
+          To-do List
+        </button>
+             <button
+          onClick={() =>
+            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+          }
+        >
+          Insert Table
+        </button>
 
-      {/* Editor area */}
-      <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '6px' }}>
-        <EditorContent editor={editor} />
-      </div>
-    </div>
-  );
-};
+        <button onClick={() => editor.chain().focus().deleteTable().run()}>
+          Delete Table
+        </button>
 
-export default TiptapEditor;
+        <button onClick={() => editor.chain().focus().addRowAfter().run()}>
+          Add Row After
+        </button>
+
+        <button onClick={() => editor.chain().focus().addColumnBefore().run()}>
+          Add Column Before
+        </button>
+      </div>
+      <div className='Contents'>
+        <EditorContent editor={editor} {...inputValue} 
+            value={Block[index]}
+            onFocus={() => setistitleFocused(false)} 
+            ref={(el) => textareaRef.current[index] = el} 
+            data-index={index} type="text" 
+            key={index}/>
+      </div>
+    </TaskListWrapper>
+  )
+}
+
+export default TiptapEditor
