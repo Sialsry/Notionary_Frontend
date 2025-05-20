@@ -7,9 +7,13 @@ import Item from './Item';
 
 
 const Projectwrap = styled.div`
-    & {
+    position: relative;
+    width: 790px;
+    display: flex;
+
+    &:hover .addbtn, &:hover .dotbtn {
       /* position:relative; */
-      
+      display: inline-block;
     }
     textarea {
         width: 709.99px;
@@ -24,21 +28,25 @@ const Projectwrap = styled.div`
         overflow : hidden;
         resize: none;
         display: block;
-        /* position: relative; */
+        /* margin-left: 60px; */
+        box-sizing:border-box;
+        /* position: absolute; */
+        
     }
     .addbtn {
       width: 30px;
-      position:absolute;
-      left: -70px;
+      height: 30px;
+     display:none;
     }
     .dotbtn {
         width: 30px;
-        position:absolute;
-        left: -40px;
+        height: 30px;
+        display: none;
     }
     .Linecontent{
-      /* position: absolute; */
-      /* left:  */
+      width : 60px;
+      padding: 0 5px;
+      display: flex;
     }
     .itemwrap {
       width: 280px;
@@ -60,18 +68,57 @@ const Projectwrap = styled.div`
       display: inline-block;
       
     }
+    .Items {
+      width: 280px;
+      height: 300px;
+      border: 1px solid #dfdfdf;
+      border-radius: 10px;
+      position: absolute;
+      left: 70px;
+      top: 30px;
+      z-index: 100;
+      box-shadow: 0 0 15px -15px;
+      background-color: #FFFF;
+      padding: 10px;
+      /* display: none; */
+
+    }
+    .Itemwrap:hover {
+       
+      background-color: #dfdfdf;
+      border-radius: 5px;
+      user-select: none
+    }
+    .Itemwrap {
+      width: 280px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+    .Itemwrap img {
+          height: 20px;
+          box-sizing: border-box;
+          margin-right: 10px;
+     }
     
 `
 const ProjectInput = ({inputValue, icon, title}) => {
-    const {OpenModal, ClosedModal, isOpen} = useModal();
     const Block = inputValue.textareavalue;
+    const [isOpen, setIsOpen] = useState(new Array(Block.length).fill("false"));
     const {textareaRef, setistitleFocused} = inputValue;
-    console.log(Block,'asdff')
+  
+
     return (<>
         {Block.map((el,index) => 
-          <Projectwrap >
+          <Projectwrap key={index}>
+            {/* {isOpen[index]} */}
             <div className='Linecontent' >
-              <img src={addicon} alt="" className='addbtn' onClick={OpenModal} />
+              <img src={addicon} alt="" className='addbtn' onClick={() => {
+                const isOpen = new Array(Block.length).fill("false")
+                isOpen[index] = "true"
+                console.log("123")
+                setIsOpen([...isOpen])}
+            } />
               <img src={doticon} alt="" className='dotbtn'/> 
             </div>
               <textarea {...inputValue} 
@@ -80,17 +127,20 @@ const ProjectInput = ({inputValue, icon, title}) => {
               ref={(el) => textareaRef.current[index] = el} 
               data-index={index} type="text" 
               key={index} />
-              {isOpen ? <div className='itemwrap'>
+              {isOpen[index] == "true" ? 
+              <div className='Items'>
                 <div className='suggesttitle'>suggestions</div>
-                 <Item icon={icon} title={title} Close={ClosedModal}/> 
-              </div> : null }
+                {icon.map((el, index) =>
+                  <div key={index} className='Itemwrap' onClick={() => {
+                      // isOpen[index] = "false"
+                      setIsOpen(new Array(Block.length).fill("false"))}
+                  } >
+                    <img src={el ? el : "a"} alt="" />
+                    <div className='itemtitle' >{title[index]}</div>
+                  </div>
+                  )} 
+                </div> : null }
             </Projectwrap>
-            // icon.map((el, index) =>
-            //   <div onClick={Close} >
-            //     <img src={el ? el : ""} alt="" />
-            //     <div className='itemtitle' >{title[index]}</div>
-            //   </div>
-            //   )
             )
           }
           </>

@@ -1,14 +1,11 @@
-import React from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import ProjectContent from '../Molecules/workspace/ProjectContent'
 import TitleInput from '../Atoms/workspace/TitleInput'
 import useProjectinput from '../../Hooks/workspace/useProjectinput'
-import useKeydownTitleHandler from '../../Hooks/workspace/useTitleinput'
-import addbtn from '../../images/icons/addicon.png'
-import dotbtn from '../../images/icons/doticon.png'
 import Selectitem from '../Molecules/workspace/Selectitem'
-import { addicon, doticon } from '../../images'
 import useModal from '../../Hooks/useModal'
+
 
 
 const WorkspaceBody = styled.div`
@@ -32,9 +29,8 @@ const WorkspaceBody = styled.div`
 
 
 const ProjectBody = () => {
-    const {isOpen, isVisible, OpenModal, ClosedModal} = useModal();
+    const {isOpen, ClosedModal} = useModal();
     const ProjectinputValue = useProjectinput();
-    const TitleHandler = useKeydownTitleHandler();
     return (
         <WorkspaceBody>
             <TitleInput titleHandler={ProjectinputValue}/>
