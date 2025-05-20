@@ -17,15 +17,15 @@ const Titlewrap = styled.div`
     }
 `
 const TitleInput = ({titleHandler}) => {
-  const {titletextareaRef, setIstitlefocused} = titleHandler;
-  const Block = titleHandler.titletextareavalue;
+  const {titleRef, setistitleFocused} = titleHandler;
+  const Block = titleHandler.titlevalue;
   console.log(typeof (Block),Block, 'bbb')
   return (
     <Titlewrap>
       {Block.map((el,index) => <textarea type="text" {...titleHandler} 
       key={index}
-      onFocus={() => setIstitlefocused(true)}  
-      ref={(el) => titletextareaRef.current[index] = el} 
+      onFocus={() => setistitleFocused(true)}  
+      ref={(el) => titleRef.current[index] = el} 
       data-index={index}/>)}
     </Titlewrap>
   )
