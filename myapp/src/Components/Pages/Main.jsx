@@ -3,6 +3,7 @@ import Sidebar from "../Templates/Sidebar";
 import styled from "styled-components";
 import Categories from "../Molecules/Categories";
 import Button from "../Atoms/ming/SignupButton";
+import Header from "../Templates/Header";
 
 const MainWrap = styled.div`
   display: flex;
@@ -16,6 +17,7 @@ const MainWrap = styled.div`
 const Main = () => {
   return (
     <>
+      <Header />
       <Sidebar />
       <MainWrap>
         <Categories items={["IT", "기술스택", "디자인", "여행", "기타"]} />
