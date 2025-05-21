@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 
 const Textareawrap = styled.div`
@@ -16,20 +16,22 @@ const Textareawrap = styled.div`
         resize: none;
         display: block;
         /* margin-left: 60px; */
-        box-sizing:border-box;
         /* position: absolute; */
       }
 `
 
-const Textarea = ({inputValue, textareaRef, Block, index, setistitleFocused}) => {
+const Textarea = ({ inputValue, textareaRef, Block, index, setistitleFocused, style }) => {
+
   return (
     <Textareawrap>
-      <textarea {...inputValue} 
-            value={Block[index]}
-            onFocus={() => setistitleFocused(false)} 
-            ref={(el) => textareaRef.current[index] = el} 
-            data-index={index} type="text" 
-            key={index} />
+      <textarea {...inputValue}
+        value={Block[index]}
+        onFocus={() => setistitleFocused(false)}
+        ref={(el) => textareaRef.current[index] = el}
+        data-index={index} type="text"
+        key={index}
+        style={style}
+      />
     </Textareawrap>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import ProjectBody from '../Templates/ProjectBody'
+import ProjectBody from '../Templates/workspace/ProjectBody'
 import Input from '../Atoms/workspace/ProjectInput'
 import Sidebar from '../Templates/Sidebar'
 

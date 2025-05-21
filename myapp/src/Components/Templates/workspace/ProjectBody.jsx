@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
-import ProjectContent from '../Molecules/workspace/ProjectContent'
-import TitleInput from '../Atoms/workspace/TitleInput'
-import useProjectinput from '../../Hooks/workspace/useProjectinput'
-import Selectitem from '../Molecules/workspace/Selectitem'
-import useModal from '../../Hooks/useModal'
+import ProjectContent from '../../Molecules/workspace/ProjectContent'
+import TitleInput from '../../Atoms/workspace/TitleInput'
+import useProjectinput from '../../../Hooks/workspace/useProjectinput'
+import Selectitem from '../../Molecules/workspace/Selectitem'
+import useModal from '../../../Hooks/useModal'
 
 
 

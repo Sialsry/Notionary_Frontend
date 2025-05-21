@@ -10,17 +10,16 @@ const useProjectinput = () => {
     const [titlevalue, settitleValue] = useState([''])
     const [clickHandler, setClickHandler] = useState()
     
-
     
     console.log(istitleFocused,titlevalue,'istitleFocused', textareavalue,'dkkkf')
     const valueHandler = (e) => {
+        console.log("eeeeeeeeeeeee")
         if(istitleFocused) {
             const newBlock = [...titlevalue]
             newBlock[index] = e.target.value;
             return settitleValue(newBlock)
         }
         else {
-
             const index = e.target.dataset.index
             const newBlock = [...textareavalue]
             newBlock[index] = e.target.value;
@@ -45,6 +44,16 @@ const useProjectinput = () => {
     //     setTextareaValue(newBlock)
     }
  
+    const resizeAreaAll = () => {
+        for (let index = 0; index < textareaRef.current.length; index++) {            
+            const textarea = textareaRef.current[index];
+            if(textarea) {
+                textarea.style.height = '29.99px';
+                textarea.style.height = `${textarea.scrollHeight}px`
+            }
+        }
+    }
+
     const resizeArea = () => {
         console.log(index,'re')
         const textarea = textareaRef.current[index];
@@ -148,6 +157,7 @@ const useProjectinput = () => {
     useEffect(() => {
         console.log('textareavalue')
         resizeArea()
+        resizeAreaAll ()
     }, [textareavalue])
 
     useEffect(() => {
