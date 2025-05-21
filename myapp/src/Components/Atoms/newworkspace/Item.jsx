@@ -30,7 +30,7 @@ const Itemwrap = styled.div`
     } */
 `
 
-const Item = ({setIsOpen, icon, title, Block, setitemactive, setSelecttitle }) => {
+const Item = ({ icon, title, setitemactive, setSelecttitle }) => {
 
   return (<>
             <div className='suggesttitle'>suggestions</div>
@@ -38,7 +38,6 @@ const Item = ({setIsOpen, icon, title, Block, setitemactive, setSelecttitle }) =
                 <Itemwrap key={index} onClick={() => {
                   setSelecttitle(title[index])
                   setitemactive("false")
-                  setIsOpen(new Array(Block.length).fill("false"))
                 }} >
                 <img src={el ? el : ""} alt="" />
                 <div className='itemtitle' >{title[index]}</div>
