@@ -8,6 +8,7 @@ import Item from '../../Atoms/workspace/Item'
 import MyEditor from '../../Atoms/workspace/tiptap'
 import TiptapEditor from '../../Atoms/workspace/tiptap'
 
+
 const Contentwrap = styled.div`
     position: relative;
     width: 780px;
@@ -90,7 +91,7 @@ const ProjectContent = ({inputValue}) => {
             </div> : null }
         </div>
         <div className='Textarea'>
-          <Textarea 
+          <TiptapEditor
             inputValue={inputValue} 
             textareaRef={textareaRef} 
             title={icontitle}

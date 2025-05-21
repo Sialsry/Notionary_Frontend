@@ -1,5 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
+import TiptapEditor from './tiptap'
+import ToggleList from '../../../Hooks/workspace/togglelist'
 
 const Textareawrap = styled.div`
       textarea{
@@ -24,12 +26,14 @@ const Textareawrap = styled.div`
 const Textarea = ({inputValue, textareaRef, Block, index, setistitleFocused}) => {
   return (
     <Textareawrap>
-      <textarea {...inputValue} 
+      <ToggleList />
+      <TiptapEditor />
+      {/* <textarea {...inputValue} 
             value={Block[index]}
             onFocus={() => setistitleFocused(false)} 
             ref={(el) => textareaRef.current[index] = el} 
             data-index={index} type="text" 
-            key={index} />
+            key={index} /> */}
     </Textareawrap>
   )
 }
