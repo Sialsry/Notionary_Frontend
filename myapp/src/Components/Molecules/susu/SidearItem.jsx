@@ -1,12 +1,6 @@
-<<<<<<< HEAD:myapp/src/Components/Molecules/susu/SidearItem.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Text from '../../Atoms/susu/Text';
-=======
-import React from "react";
-import styled from "styled-components";
-import Text from "../Atoms/ming/Text";
->>>>>>> ming:myapp/src/Components/Molecules/SidearItem.jsx
 
 const Section = styled.div`
   display: flex;

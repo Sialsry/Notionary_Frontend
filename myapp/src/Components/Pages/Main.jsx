@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react'
 import {useMutation} from '@tanstack/react-query';
 import {SubCategoryPost} from '../../API/PostApi';
@@ -10,16 +9,8 @@ import Modal from '../Molecules/susu/Modal'
 import Text from '../Atoms/susu/Text'
 import Button from '../Atoms/susu/Button'
 import PostList from '../Templates/PostList'
+import Header from '../Templates/Header';
 
-
-=======
-import React from "react";
-import Sidebar from "../Templates/Sidebar";
-import styled from "styled-components";
-import Categories from "../Molecules/Categories";
-import Button from "../Atoms/ming/SignupButton";
-import Header from "../Templates/Header";
->>>>>>> ming
 
 const MainWrap = styled.div`
   display: flex;
@@ -31,7 +22,6 @@ const MainWrap = styled.div`
   background-color: #fff;
 `;
 
-<<<<<<< HEAD
 const CategoryTitle = styled.div`
   display: flex;
   justify-content: center;
@@ -176,6 +166,8 @@ const Main = () => {
 
  return (
   <>
+
+    <Header></Header>
     <Sidebar />
     <Modal width={'700px'} height={"auto"} isOpen={isOpen} closeModal={ClosedModal}>
       <Text fontSize={"15px"}>{select}</Text>
@@ -266,33 +258,4 @@ const Main = () => {
   );
 };
 
-=======
-const Main = () => {
-  return (
-    <>
-      <Header />
-      <Sidebar />
-      <MainWrap>
-        <Categories items={["IT", "기술스택", "디자인", "여행", "기타"]} />
-      </MainWrap>
-      {/* <Button
-        type="button"
-        secondary
-        fullWidth
-        onClick={() =>
-          (window.location.href = "http://localhost:4000/main/unlink")
-        }
-        style={{
-          backgroundColor: "#FEE500",
-          color: "#000",
-          border: "none",
-        }}
-      >
-        카카오 계정으로 회원 탈퇴
-      </Button> */}
-    </>
-  );
-};
-
->>>>>>> ming
 export default Main;
