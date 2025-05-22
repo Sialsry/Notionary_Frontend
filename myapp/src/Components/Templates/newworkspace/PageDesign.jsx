@@ -8,8 +8,8 @@ const Designwrap = styled.div`
     border: 1px solid #a8a8a8;
     border-radius: 10px;
     padding: 20px;
-    box-sizing: border-box;
     margin: 10px 20px;
+    box-sizing: border-box;
 
     .imgwrap {
         width: 310px;

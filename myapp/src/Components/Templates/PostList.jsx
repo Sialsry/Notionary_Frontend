@@ -95,7 +95,8 @@ useEffect(() => {
   }, [visibleCount, allPosts.length, loading]);
 
   return (
-    <FeedWrapper>
+    <FeedWrapper>   
+      
       {allPosts.slice(0, visibleCount).map((post, index) => (
   <AnimatedCardWrapper
     key={post.post_id}

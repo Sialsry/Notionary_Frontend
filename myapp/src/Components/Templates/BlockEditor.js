@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import saveData from '../../API/workspaceapi';
+import saveData from '../../API/Workspaceapi';
 
 
 
@@ -9,6 +9,7 @@ const BlockEditorContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: 50px;
 `;
 
 const Block = styled.div`

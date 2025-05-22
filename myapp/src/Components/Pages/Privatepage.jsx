@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Sidebar from '../Templates/Sidebar'
 import PageDesign from '../Templates/newworkspace/PageDesign'
+import Header from '../Templates/Header'
 
 const Pagewrap = styled.div`
     
@@ -9,8 +10,8 @@ const Pagewrap = styled.div`
         width: 1650px;
         margin-top: 80px;
         margin-left: 240px;
-        min-height: calc(100vh - 80px);
-        padding: 80px 235px;
+        min-height: calc(100vh - 160px);
+        padding: 30px 235px;
         box-sizing: border-box;
         display: flex;
         justify-content: flex-start;
@@ -24,6 +25,7 @@ const Pagewrap = styled.div`
 const Privatepage = () => {
   return (
     <Pagewrap>
+      <Header />
       <Sidebar />
       <div className='Pagedesign'>  
             <PageDesign />

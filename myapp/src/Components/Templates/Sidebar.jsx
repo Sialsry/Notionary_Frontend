@@ -1,20 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import SidebarItem from '../Molecules/susu/SidearItem';
-
+import { addicon } from '../../images';
 
 const SidebarWrap = styled.div`
   width: 240px;
   background: rgb(248, 248, 247);
   height: 100vh;
-  padding-top: 20px;
+  padding: 50px 30px;
   position: fixed;
+  box-sizing: border-box;
 `;
 
 const Sidebar = () => {
   return (
     <SidebarWrap>
-      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스']} />
+      <SidebarItem items={[{name : '홈'}, 
+        {name : '글 추가'} ,
+        {name : '개인 워크스페이스', Symbol : addicon}, 
+        ]} />
+        <SidebarItem items={[{name : '팀 워크스페이스', Symbol : addicon}]} /> 
     </SidebarWrap>
   );
 };
