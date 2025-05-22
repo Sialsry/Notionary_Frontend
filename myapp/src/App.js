@@ -1,19 +1,20 @@
 import Main from "./Components/Pages/Main";
-import {BrowserRouter, Route, Routes}  from 'react-router-dom'
-import Myproject from "./Components/Pages/Myproject";
-import ProjectBody from "./Components/Templates/newworkspace/ProjectBody";
+import SignupPage from "./Components/Pages/SignupPage";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LoginPage from "./Components/Pages/LoginPage";
+import MyPage from "./Components/Pages/MyPage";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-            <Route path="/main" element={<Main/>}></Route>
+          <Route path="/main" element={<Main />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
-      {/* <Main /> */}
-      
-      <ProjectBody />
     </div>
   );
 }
