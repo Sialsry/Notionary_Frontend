@@ -1,6 +1,11 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
-import Textarea from '../../Atoms/newworkspace/textarea'
+import Textarea from '../../Atoms/newworkspace/workspacepage/Textarea'
+import useProjectinput from '../../../Hooks/newworkspace/useProjectinput'
+import Item from '../../Atoms/newworkspace/workspacepage/Item'
+import { header, bulletlist, numberlist, todolist, togglelist, image } from '../../../images'
+import Addcontent from '../../Atoms/newworkspace/workspacepage/Addcontent'
+
 
 
 
@@ -24,18 +29,29 @@ const WorkspaceBody = styled.div`
 
 const ProjectBody = () => {
     const [Content, setContent] = useState([
-        {fontsize : '24px', content : 'hello this is me1', fontweight : '600', type : 'header1' , height : '50px'},
-        {fontsize : '24px', content : 'hello this is me2', fontweight : '600', type : 'bulleted list' , height : '50px'},
-        {fontsize : '24px', content : 'hello this is me3', fontweight : '600', type : 'header2' , height : '50px'},
-        {fontsize : '32px', content : 'hello this is me4', fontweight : '600', type : 'header1' , height : '50px'},
-        {fontsize : '24px', content : 'hello this is me5', fontweight : '600', type : 'ordered list' , height : '29.9px'},
-        {fontsize : '24px', content : 'hello this is me6', fontweight : '600', type : 'checkbox' , height : '50px'},
-        {fontsize : '24px', content : 'hello this is me7', fontweight : '600', type : 'toggle' , height : '50px'},
-        {fontsize : '24px', content : 'hello this is me7', fontweight : '600', type : 'table' , height : '200px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'header1' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'bulleted list' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'bulleted list' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'bulleted list' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'header2' , height : '29px'},
+        {fontsize : '32px', content : '', fontweight : '600', type : 'header1' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'ordered list' , height : '29.9px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'ordered list' , height : '29.9px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'ordered list' , height : '29.9px'},
+        {fontsize : '28px', content : '', fontweight : '600', type : 'checkbox' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'toggle' , height : '29px'},
+        {fontsize : '24px', content : '', fontweight : '600', type : 'table' , height : '200px'},
     ])
+    const icon = [header, bulletlist, numberlist, todolist, togglelist, image]
+    const icontitle = ['header', 'bulleted list', 'numbered list', 'todo list', 'toggle list', 'image']
+    const ProjectInput = useProjectinput();
+    console.log(ProjectInput)
+
     return (
         <WorkspaceBody>
-           <Textarea Content={Content} setContent={setContent}  />
+            <Addcontent />
+           <Textarea ProjectInput={ProjectInput}  />
+           <Item icon={icon} title={icontitle} />
         </WorkspaceBody>
     )
 }
