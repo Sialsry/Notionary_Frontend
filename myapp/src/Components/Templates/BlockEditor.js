@@ -1,5 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import saveData from '../../API/workspaceapi';
+
+
+
 
 const BlockEditorContainer = styled.div`
   max-width: 800px;
@@ -272,6 +276,10 @@ const BlockEditor = () => {
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    saveData(blocks)
+  }, [blocks])
+
   const blockTypes = [
     { id: 'text', label: 'T 텍스트' },
     { id: 'h1', label: 'H1 제목' },
@@ -280,6 +288,8 @@ const BlockEditor = () => {
     { id: 'checkbox', label: '할 일 목록' },
     { id: 'image', label: '이미지' },
   ];
+
+
 
   const addBlock = (type, currentId) => {
     const newBlock = {
