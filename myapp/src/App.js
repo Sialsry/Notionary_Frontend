@@ -1,5 +1,7 @@
 import Main from "./Components/Pages/Main";
 import {BrowserRouter, Route, Routes}  from 'react-router-dom'
+import Myproject from "./Components/Pages/Myproject";
+import ProjectBody from "./Components/Templates/newworkspace/ProjectBody";
 
 function App() {
   return (
@@ -9,6 +11,9 @@ function App() {
             <Route path="/main" element={<Main/>}></Route>
         </Routes>
       </BrowserRouter>
+      {/* <Main /> */}
+      
+      <ProjectBody />
     </div>
   );
 }
