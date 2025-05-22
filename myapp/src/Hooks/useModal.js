@@ -7,7 +7,6 @@ export default function useModal() {
   const open = () => {            
     setIsVisible(true);
     setIsOpen(true);
-    console.log(isOpen, 'hello')
   };
 
   const close = () => {          
