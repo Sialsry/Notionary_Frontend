@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import {useMutation} from '@tanstack/react-query';
+import {SubCategoryPost} from '../../API/PostApi';
 import Sidebar from '../Templates/Sidebar'
 import styled from 'styled-components'
 import Categories from '../Molecules/susu/Categories'
@@ -6,8 +8,9 @@ import useModal from '../../Hooks/useModal'
 import Modal from '../Molecules/susu/Modal'
 import Text from '../Atoms/susu/Text'
 import Button from '../Atoms/susu/Button'
-import PostCard from '../Molecules/susu/PostCard'
 import PostList from '../Templates/PostList'
+
+
 
 const MainWrap = styled.div`
   display: flex;
@@ -62,17 +65,18 @@ const CategoryWrapper = styled.div`
   margin-bottom: 38px;
 `
 
-const CompleteWrap = styled.div`
+const ClosedWrap = styled.div`
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-`
+  top: 16px;
+  right: 20px;
+  z-index: 1;
+`;
 
-const ClosedWrap  = styled.div`
-  position: absolute;
-  top: -10px;
-  right: 10px;
-`
+const CompleteWrap = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+`;
 const ChoiceWrap = styled.div`
   display: flex;
   gap : 12px;
@@ -84,16 +88,39 @@ const PostWrap = styled.div`
   align-items: center;
 `
 
+
 const Main = () => {
   const { isOpen, isVisible, OpenModal, ClosedModal } = useModal();
   const [select, setSelect] = useState('전체');
   const [selectSubCategory, setSelectSubCategory] = useState([]);
+  const [posts, setPosts] = useState([]);
+
+  const mutation = useMutation({
+    mutationFn : SubCategoryPost,
+    onSuccess: (data) => {
+  const flattenedPosts = data.data.flatMap(item =>
+    item.Posts.map(post => ({
+      ...post,
+      subCategory: item.SubCategory?.category_name || '',
+      mainCategory: item.category_name || ''
+    }))
+  );
+  setPosts(flattenedPosts);
+},
+    onError : (data) => {
+      // console.log("에러!")
+       console.log(data);
+    },
+    onMutate : (data) => {
+      console.log("디버깅중...", data)
+    }
+  })
 
   const categoryList = [
     { name: '전체', text: "전체" },
-    { name: 'IT', text: 'IT' },
-    { name: '기술스택', text: '기술스택' },
-    { name: '디자인', text: '디자인' },
+    { name: 'IT', text: 'IT'},
+    { name: '기술스택', text: '기술스택'},
+    { name: '디자인', text: '디자인'},
     { name: '여행', text: '여행' },
     { name: '기타', text: '기타' }
   ];
@@ -109,11 +136,12 @@ const Main = () => {
   const handleCategorySelect = (category) => {
     setSelect(category);
     setSelectSubCategory([]);
-    if (category !== '전체') {
+   if (category !== '전체') {
       OpenModal();
     } else {
       ClosedModal();
-    }
+      setPosts([]);
+  }
   };
 
   const handleSubCategorySelect = (subCategory) => {
@@ -187,8 +215,30 @@ const Main = () => {
         </Text>
       )}
 
+
+
       <CompleteWrap>
-        <Button>완료</Button>
+   <Button
+  disabled={mutation.isLoading}
+  onClick={() => {
+    console.log('mutation payload:', {
+      category_name: select,
+      SubCategory: selectSubCategory,
+    });
+    mutation.mutate({
+      category_name: select,
+      SubCategory: selectSubCategory,
+    });
+    ClosedModal();
+  }}
+>
+  완료
+</Button>
+        {mutation.isLoading && (
+        <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
+           불러오는 중...
+        </Text>
+      )}
       </CompleteWrap>
     </Modal>
 
@@ -198,7 +248,7 @@ const Main = () => {
 
      {!isVisible && (
     <PostWrap>
-      <PostList />
+      <PostList posts={posts}/>
     </PostWrap>
     )}
     </MainWrap>

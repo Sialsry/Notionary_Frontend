@@ -8,12 +8,9 @@ import Input from '../../Atoms/susu/Input';
 const CardBlock = styled.div`
   width: 600px;
   margin-bottom: 12px;
-  &:hover .comment-panel {
-    max-height: 300px;
-    opacity: 1;
-    padding: 16px;
-  }
 `;
+
+
 
 
 const Card = styled.div`
@@ -53,20 +50,19 @@ const CommentPanel = styled.div`
   border-top: none;
   border-radius: 0 0 8px 8px;
   background: #fafafa;
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  padding: 0 16px;
-  transition: max-height .25s ease, opacity .25s ease, padding .25s ease;
+  max-height: 300px;
+  overflow: auto;
+  opacity: 1;
+  padding: 16px;
+  transition: all 0.25s ease;
 `;
-
 const CommentItem = styled.div`
   font-size: 14px;
   padding: 4px 0;
   color: #333;
 `;
 
-function PostCard({ title, imageSrc, imageAlt = title, content }) {
+function PostCard({ title, imageSrc,imageAlt = title, content, categoryName ,subCategoryName}) {
   const [expanded, setExpanded] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([
@@ -85,6 +81,10 @@ function PostCard({ title, imageSrc, imageAlt = title, content }) {
     <CardBlock>
       <Card>
         <Title fontSize="20px" style={{ padding: '16px' }}>{title}</Title>
+        <p style={{ padding: '0 16px', color: '#666', fontSize: '14px', marginTop: '-12px', marginBottom: '12px' }}>
+          카테고리: {categoryName}
+          {subCategoryName && ` > ${subCategoryName}`}
+        </p>
         <Image src={imageSrc} alt={imageAlt} width="100%" height="180px" />
 
         <ContentWrap>

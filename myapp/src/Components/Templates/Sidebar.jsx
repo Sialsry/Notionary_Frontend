@@ -14,7 +14,7 @@ const SidebarWrap = styled.div`
 const Sidebar = () => {
   return (
     <SidebarWrap>
-      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스' ]} />
+      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스']} />
     </SidebarWrap>
   );
 };
