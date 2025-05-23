@@ -8,12 +8,15 @@ const Wrap = styled.div`
   color: black;
 `;
 
-const Text = ({ fontSize, width, height, children }) => {
+const Text = ({ fontSize, width, height, children, onClick }) => {
   return (
-    <Wrap fontSize={fontSize} width={width} height={height}>
+    <Wrap fontSize={fontSize} width={width} height={height} onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+    >
       {children}
     </Wrap>
   );
 };
+
 
 export default Text;
