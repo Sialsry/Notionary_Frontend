@@ -5,6 +5,7 @@ import Sidebar from '../Templates/Sidebar'
 import BlockEditor from '../Templates/BlockEditor'
 import Header from '../Templates/Header'
 import NewBlock from '../Atoms/newworkspace/Newspace'
+import Sidebarcontent from '../Molecules/newworkspace/Sidebarcontent'
 
 
 
@@ -15,9 +16,9 @@ const Myproject = () => {
 
       <div>
           <Header />
-          {/* <Sidebar /> */}
-          <NewBlock />
-          {/* <BlockEditor /> */}
+          <Sidebarcontent />
+          {/* <NewBlock /> */}
+          <BlockEditor />
       </div>
   </>
   )
