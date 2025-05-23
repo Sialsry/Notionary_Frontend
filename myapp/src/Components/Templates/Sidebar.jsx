@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import SidebarItem from '../Molecules/SidearItem';
+import SidebarItem from '../Molecules/susu/SidearItem';
 
 
 const SidebarWrap = styled.div`
-  width: 230px;
+  width: 240px;
   background: rgb(248, 248, 247);
   height: 100vh;
   padding-top: 20px;
@@ -14,7 +14,7 @@ const SidebarWrap = styled.div`
 const Sidebar = () => {
   return (
     <SidebarWrap>
-      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스' ]} />
+      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스']} />
     </SidebarWrap>
   );
 };
