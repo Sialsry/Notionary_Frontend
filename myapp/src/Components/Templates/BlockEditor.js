@@ -279,6 +279,8 @@ const BlockEditor = () => {
 
   useEffect(() => {
     saveData(blocks)
+    console.log(blockRefs,' blockref')
+    console.log('check1')
   }, [blocks])
 
   const blockTypes = [

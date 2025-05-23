@@ -6,6 +6,9 @@ import LoginPage from "./Components/Pages/LoginPage";
 import MyPage from "./Components/Pages/MyPage";
 import Myproject from "./Components/Pages/Myproject";
 import Privatepage from "./Components/Pages/Privatepage";
+import Textarea from "./Components/Atoms/newworkspace/workspacepage/Textarea";
+import BlockEditor from "./Components/Templates/BlockEditor";
+import NewBlock from "./Components/Atoms/newworkspace/Newspace";
 
 function App() {
   return (
@@ -13,7 +16,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/privatepage" element={<Privatepage />} />
-          <Route path="/workspace" element={<Myproject />} />
+          <Route path="/workspace" element={<NewBlock />} />
           <Route path="/main" element={<Main />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/" element={<LoginPage />} />

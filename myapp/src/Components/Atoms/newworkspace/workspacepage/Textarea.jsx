@@ -202,10 +202,13 @@ const Textarea = ({ ProjectInput}) => {
                     //     )
                     default: {
                         return (
-                            <Contentwrap>
-                                <Area key={index}
-                                onChange={(e) => valueHandler(e, index)}
-                                value={el.content}></Area>
+                            // <Contentwrap>
+                            //     <Area key={index}
+                            //     onChange={(e) => valueHandler(e, index)}
+                            //     value={el.content}></Area>
+                            // </Contentwrap>
+                            <Contentwrap >
+                                
                             </Contentwrap>
                         )
                     }
