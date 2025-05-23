@@ -18,8 +18,10 @@ const Sidebar = () => {
       <SidebarItem items={[{name : '홈'}, 
         {name : '글 추가'} ,
         {name : '개인 워크스페이스', Symbol : addicon}, 
-        ]} />
-        <SidebarItem items={[{name : '팀 워크스페이스', Symbol : addicon}]} /> 
+        ]} >
+          <SidebarItem items={[{name : '팀 워크스페이스', Symbol : addicon}]}>
+            </SidebarItem> 
+        </SidebarItem>
     </SidebarWrap>
   );
 };
