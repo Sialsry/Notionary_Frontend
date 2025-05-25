@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import saveData from '../../../API/Workspaceapi';
+import {saveData} from '../../../API/Workspaceapi';
 
 
 const BlockEditorContainer = styled.div`

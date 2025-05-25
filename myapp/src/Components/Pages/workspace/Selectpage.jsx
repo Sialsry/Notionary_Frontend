@@ -1,16 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
-import Sidebar from '../Templates/Sidebar'
-import PageDesign from '../Templates/newworkspace/PageDesign'
-import Header from '../Templates/Header'
+import Sidebar from '../../Templates/Sidebar'
+import PageDesign from '../../Templates/newworkspace/PageDesign'
+import Header from '../../Templates/Header'
 
 const Pagewrap = styled.div`
     
     .Pagedesign{
         width: 1650px;
-        margin-top: 80px;
+        margin-top: 0px;
         margin-left: 240px;
-        min-height: calc(100vh - 160px);
+        min-height: calc(100vh - 380px);
         padding: 30px 235px;
         box-sizing: border-box;
         display: flex;
@@ -19,15 +19,24 @@ const Pagewrap = styled.div`
         gap: 20px;
         
     }
+    .workspaceTitle {
+      margin-left: 495px;
+      margin-top: 50px;
+    }
     
 `
 
-const Privatepage = () => {
+const Selectpage = ({header}) => {
   return (
     <Pagewrap>
       <Header />
       <Sidebar />
+      <div className='workspaceTitle'>
+        <h1>{header}</h1>
+      </div>
       <div className='Pagedesign'>  
+            <PageDesign />
+            <PageDesign />
             <PageDesign />
             <PageDesign />
             <PageDesign />
@@ -41,4 +50,4 @@ const Privatepage = () => {
   )
 }
 
-export default Privatepage
+export default Selectpage
