@@ -60,7 +60,7 @@ const MediaUploader = () => {
           accept="image/*,video/mp4"
           multiple
           onChange={handleFileChange}
-          name='image'
+          name='media'
         />
       </label>
 

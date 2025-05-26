@@ -28,6 +28,7 @@ export const registerUser = async (userData) => {
 export const loginUser = async (credentials) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, credentials);
+    console.log("너 누구야",response)
 
     // 로그인 성공 시 토큰을 쿠키에 저장
     if (response.data.success && response.data.token) {

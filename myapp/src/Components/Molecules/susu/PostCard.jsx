@@ -62,7 +62,7 @@ const CommentItem = styled.div`
   color: #333;
 `;
 
-function PostCard({ title, imageSrc,imageAlt = title, content, categoryName ,subCategoryName}) {
+function PostCard({ uid, title, imageSrc,imageAlt = title, content, categoryName ,subCategoryName}) {
   const [expanded, setExpanded] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([
@@ -80,6 +80,7 @@ function PostCard({ title, imageSrc,imageAlt = title, content, categoryName ,sub
   return (
     <CardBlock>
       <Card>
+         <p>작성자 ID: {uid}</p>
         <Title fontSize="20px" style={{ padding: '16px' }}>{title}</Title>
         <p style={{ padding: '0 16px', color: '#666', fontSize: '14px', marginTop: '-12px', marginBottom: '12px' }}>
           카테고리: {categoryName}

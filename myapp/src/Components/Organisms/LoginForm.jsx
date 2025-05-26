@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import FormField from "../Molecules/FormField";
 import Button from "../Atoms/ming/SignupButton";
@@ -96,6 +97,7 @@ const SignupLink = styled.a`
 `;
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     uid: "",
     upw: "",
@@ -155,7 +157,7 @@ const LoginForm = () => {
     try {
       // Login API call
       const response = await loginUser(formData);
-      console.log("Login response:", response);
+      console.log("로그인 API 정보!!:", response);
 
       // If login successful and we have a token, redirect to main page
       if (response.success && response.token) {

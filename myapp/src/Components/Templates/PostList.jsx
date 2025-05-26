@@ -103,23 +103,24 @@ useEffect(() => {
 )}
 
   {Array.isArray(allPosts) &&
-      allPosts.slice(0, visibleCount).map((post, index) => (
-    <AnimatedCardWrapper
-      key={post.post_id}
-      style={{ animationDelay: `${index * 300}ms` }}
-    >
-      <PostCard
-        title={post.title || "제목없음"}
-        imageSrc={post.imgPaths || ""}
-        imageAlt={post.title || "제목없음"}
-        content={post.content || "내용이 없습니다."}
-        categoryName={post.mainCategory || post.category_name}
-        subCategoryName={
-          post.subCategory || post.SubCategory?.category_name
-        }
-      />
-    </AnimatedCardWrapper>
-))}
+  allPosts.map(category =>
+    category.Posts?.map((post, index) => (
+      <AnimatedCardWrapper
+        key={post.post_id}
+        style={{ animationDelay: `${index * 300}ms` }}
+      >
+        <PostCard
+          uid={post.uid || "사용자 정보 없음"}
+          title={post.title || "제목없음"}
+          imageSrc={post.imgPaths || ""}
+          imageAlt={post.title || "제목없음"}
+          content={post.content || "내용이 없습니다."}
+          categoryName={category.ParentCategory?.category_name || "대표 카테고리"}
+          subCategoryName={category.category_name || "세부 카테고리"}
+        />
+      </AnimatedCardWrapper>
+    ))
+)}
 
       {loading && <LoadingText>로딩중...</LoadingText>}
       {!loading && visibleCount >= allPosts.length && (

@@ -106,14 +106,7 @@ const Main = () => {
   const mutation = useMutation({
     mutationFn: SubCategoryPost,
     onSuccess: (data) => {
-      const flattenedPosts = data.data.flatMap(item =>
-        item.Posts.map(post => ({
-          ...post,
-          subCategory: item.SubCategory?.category_name || '',
-          mainCategory: item.category_name || ''
-        }))
-      );
-      setPosts(flattenedPosts);
+       setPosts(data.data)
     },
     onError: (data) => {
       console.log(data);

@@ -60,7 +60,7 @@ const SelectAllButton = styled.button`
   cursor: pointer;
 `;
 
-const CategorySelector = () => {
+const CategorySelector = ({ onCategoryChange }) => {
   const [mainCategory, setMainCategory] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [subCategories, setSubCategories] = useState([]);
@@ -77,23 +77,25 @@ const CategorySelector = () => {
     setMainCategory(category);
     setSubCategories([]);
     setShowDropdown(false);
+    onCategoryChange?.(category, []);
   };
 
   const toggleSubCategory = (sub) => {
-    setSubCategories((prev) =>
-      prev.includes(sub) ? prev.filter((item) => item !== sub) : [...prev, sub]
-    );
+    const updated = subCategories.includes(sub)
+      ? subCategories.filter((item) => item !== sub)
+      : [...subCategories, sub];
+
+    setSubCategories(updated);
+    onCategoryChange?.(mainCategory, updated);
   };
 
   const areAllSelected = () =>
     categoryMap[mainCategory]?.every((sub) => subCategories.includes(sub));
 
   const toggleSelectAll = () => {
-    if (areAllSelected()) {
-      setSubCategories([]);
-    } else {
-      setSubCategories(categoryMap[mainCategory]);
-    }
+    const updated = areAllSelected() ? [] : categoryMap[mainCategory];
+    setSubCategories(updated);
+    onCategoryChange?.(mainCategory, updated);
   };
 
   return (
