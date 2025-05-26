@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Subtitle } from '../../Atoms/ming/Typography'
 import { saveData, getworkspaceData } from '../../../API/Workspaceapi'
 import { folder, logo, page } from '../../../images'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 
@@ -231,7 +231,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
             return { ...obj, [key]: [...obj[key], { [folderName]: [] }] }
         }))
         // const { data } = await saveData('workSpace/newFolder', { data : contents })
-        // alert('successful')
+        alert('successful')
     }
     const createFile = async (e) => {
         e.preventDefault();

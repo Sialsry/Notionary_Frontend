@@ -16,39 +16,55 @@ const SidebarWrap = styled.div`
 `;
 
 const Sidebar = () => {
+  const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
+  const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['data'],
-    queryFn: getworkspaceData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    enabled: true,
-    retry: 10
-  })
-  // const newData = data.map(el => [el])
-  console.log(data?.data[0][0], 'query')
-  if (data?.data[0][0] === '개인워크스페이스') {
-    setPrivatecontent(data.data[0][0])
-    
-  }
-  if (data?.data[0][0] === '개인워크스페이스') {
-    console.log(data?.data[0][0])
-    setPrivatecontent(data.data[0][0])
-    console.log('zzzzzzz')
-  }
+
   
-  const [privatecontent, setPrivatecontent] = useState([])
-  const [teamcontent, setTeamcontent] = useState([{ '팀워크스페이스': [] }])
+
+
+  // const { data, isLoading, refetch } = useQuery({
+  //   queryKey: ['data'],
+  //   queryFn: getworkspaceData,
+  //   refetchOnMount: true,
+  //   refetchOnWindowFocus: true,
+  //   enabled: true,
+  //   retry: 10
+  // })
+  
+  // console.log(data?.data, 'dd')
+  // const newData = data?.data
+  // console.log(Array.isArray(newData), newData, 'trueadsad');
+  
+  // console.log(newData[0], "asdf", newData[1])
+
+  // if(data ){
+  //   Object.keys(data) === '개인 워크스페이스'
+  //   console.log('yes')
+  // }
+  // if (data?.data === '개인 워크스페이스') {
+
+  //   setPrivatecontent(data.data[0])
+    
+  // }
+  // if (data?.data === '팀 워크스페이스') {
+  //   console.log(data?.data[0])
+  //   setPrivatecontent(data.data[0])
+  //   console.log('zzzzzzz')
+  // }
+  
+  // const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
+  // const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
   
   useEffect (() => {
-    console.log(privatecontent,'private', privatecontent)
+    console.log(typeof (privatecontent),'private', privatecontent)
   },[privatecontent, teamcontent])
 
   return (
     <SidebarWrap>
       <Sidebarcontent contents={privatecontent} setContent={setPrivatecontent} ></Sidebarcontent>
-      {/* <Sidebarcontent contents={teamcontent} setContent={setTeamcontent} ></Sidebarcontent> */}
+      <Sidebarcontent contents={teamcontent} setContent={setTeamcontent} ></Sidebarcontent>
     </SidebarWrap>
   );
 };

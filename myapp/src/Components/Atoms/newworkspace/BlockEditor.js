@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import {saveData} from '../../../API/Workspaceapi';
-
+import { saveData } from '../../../API/Workspaceapi';
+import { useParams } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
 
 
 
@@ -283,9 +284,14 @@ const BlockEditor = () => {
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
 
+  const { workspacename, foldername, filename } = useParams();
+  console.log(workspacename, foldername, filename, '2222222222222222222')
+
+
+
   useEffect(() => {
     saveData(blocks)
-    console.log(blockRefs,' blockref')
+    console.log(blockRefs, ' blockref')
     console.log('check1')
   }, [blocks])
 
@@ -298,6 +304,14 @@ const BlockEditor = () => {
     { id: 'image', label: '이미지' },
   ];
 
+    const dispatch = useDispatch();
+  // const onchangeHandler = async (e) => {
+  //   await dispatch('POST', {workspacename, foldername, filename, data : blocks})
+  //   console.log(e)
+    
+  // }
+  const textData = useSelector(state => state.textreducer.textData)
+  console.log(textData)
 
 
   const addBlock = (type, currentId) => {
@@ -332,7 +346,7 @@ const BlockEditor = () => {
     setBlocks(blocks.map(block =>
       block.id === id ? { ...block, type: newType } : block
     ));
-    
+
     // 이미지 타입으로 변경되면 아래에 텍스트 블록 추가
     if (newType === 'image') {
       const currentIndex = blocks.findIndex(block => block.id === id);
@@ -342,7 +356,7 @@ const BlockEditor = () => {
         content: '',
         checked: false,
       };
-      
+
       setBlocks(prev => {
         const newBlocks = [...prev];
         newBlocks.splice(currentIndex + 1, 0, newBlock);
@@ -357,7 +371,7 @@ const BlockEditor = () => {
         }
       }, 0);
     }
-    
+
     setActiveDropdown(null);
   };
 
@@ -462,12 +476,12 @@ const BlockEditor = () => {
   const handleDragOver = (e, blockId) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    
+
     const blockElement = e.currentTarget;
     const rect = blockElement.getBoundingClientRect();
     const mouseY = e.clientY;
     const threshold = rect.height / 2;
-    
+
     setDragOverBlock(blockId);
     setDragOverPosition(mouseY < rect.top + threshold ? 'top' : 'bottom');
   };
@@ -480,14 +494,14 @@ const BlockEditor = () => {
       const newBlocks = [...prevBlocks];
       const draggedIndex = newBlocks.findIndex(b => b.id === draggedBlock);
       const targetIndex = newBlocks.findIndex(b => b.id === targetBlockId);
-      
+
       const [movedBlock] = newBlocks.splice(draggedIndex, 1);
       const insertIndex = dragOverPosition === 'top' ? targetIndex : targetIndex + 1;
       newBlocks.splice(insertIndex, 0, movedBlock);
-      
+
       return newBlocks;
     });
-    
+
     setDragOverBlock(null);
     setDragOverPosition(null);
   };
@@ -515,7 +529,7 @@ const BlockEditor = () => {
     const blockType = blockTypes.find(t => t.id === block.type);
     const blockIndex = blocks.findIndex(b => b.id === block.id);
     const isOrderedList = block.type === 'ol';
-    
+
     let startNumber = 1;
     if (isOrderedList) {
       let consecutiveCount = 1;
@@ -529,12 +543,15 @@ const BlockEditor = () => {
       startNumber = consecutiveCount;
     }
 
+
     const isDragging = draggedBlock === block.id;
     const isDragOver = dragOverBlock === block.id;
     const dragOverClass = isDragOver ? `drag-over-${dragOverPosition}` : '';
 
+
+
     return (
-      <BlockContainer 
+      <BlockContainer
         className={`${isDragging ? 'dragging' : ''} ${dragOverClass}`}
         draggable={false}
         onDragOver={(e) => handleDragOver(e, block.id)}
@@ -657,7 +674,7 @@ const BlockEditor = () => {
               {block.content ? (
                 <ImageContainer>
                   <Image src={block.content} alt="Uploaded content" />
-                  <RemoveImageButton 
+                  <RemoveImageButton
                     onClick={() => updateBlockContent(block.id, '')}
                   >
                     ×
@@ -688,7 +705,7 @@ const BlockEditor = () => {
   return (
     <BlockEditorContainer>
       {blocks.map(block => (
-        <Block key={block.id} >
+        <Block key={block.id} onChange={dispatch('POST', {workspacename, foldername, filename, data : blocks})}>
           {renderBlock(block)}
         </Block>
       ))}

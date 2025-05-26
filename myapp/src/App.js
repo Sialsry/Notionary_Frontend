@@ -16,8 +16,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* <Route path="/workspace/detail" element={<Detailpage />} /> */}
-          <Route path="/workspace/selectspace/개인 워크스페이스/:foldername/:filename" element={<Detailpage />} />
-          <Route path="/workspace/selectspace/팀 워크스페이스/:foldername/:filename" element={<Detailpage />} />
+          {/* <Route path="/workspace/selectspace/개인 워크스페이스/:foldername/:filename" element={<Detailpage />} /> */}
+          <Route path="/workspace/selectspace/:workspacename/:foldername/:filename" element={<Detailpage />} />
           <Route path="/workspace/selectspace/개인 워크스페이스" element={<Selectpage header={'개인 워크스페이스'} />} />
           <Route path="/workspace/selectspace/팀 워크스페이스" element={<Selectpage header={'팀 워크스페이스'}/>} />
           <Route path="/main" element={<Main />} />
