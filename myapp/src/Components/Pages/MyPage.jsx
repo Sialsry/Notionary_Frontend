@@ -708,10 +708,7 @@ const MyPage = () => {
     formData.append("phone", editForm.phone);
     formData.append("dob", editForm.dob);
     formData.append("addr", editForm.addr);
-    const dummyData = {};
-    for (const [key, value] of formData.entries()) {
-      dummyData[key] = value;
-    }
+
     axios
       .post(url, formData, {
         headers: {
@@ -735,10 +732,11 @@ const MyPage = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setEditForm({ ...editForm, profImg: URL.createObjectURL(file) });
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setEditForm({ ...editForm, profImg: e.target.result });
-      };
+      // reader.onload = (e) => {
+
+      // };
       reader.readAsDataURL(file);
     }
   };
@@ -1067,8 +1065,8 @@ const MyPage = () => {
                   marginBottom: "12px",
                 }}
               >
-                <Avatar size="80px" src={user.profImg} editable>
-                  {!user.profImg}
+                <Avatar size="80px" src={editForm.profImg} editable>
+                  {/* {!user.profImg} */}
                 </Avatar>
                 <div>
                   <ImageUploadArea>
@@ -1101,7 +1099,7 @@ const MyPage = () => {
                 <label>닉네임</label>
                 <input
                   type="text"
-                  value={user.nick}
+                  value={editForm.nick}
                   onChange={(e) =>
                     setEditForm({ ...editForm, nick: e.target.value })
                   }
@@ -1111,7 +1109,7 @@ const MyPage = () => {
                 <label>성별</label>
                 <input
                   type="text"
-                  value={user.gender}
+                  value={editForm.gender}
                   onChange={(e) =>
                     setEditForm({ ...editForm, gender: e.target.value })
                   }
@@ -1121,7 +1119,7 @@ const MyPage = () => {
                 <label>전화번호</label>
                 <input
                   type="text"
-                  value={user.phone}
+                  value={editForm.phone}
                   onChange={(e) =>
                     setEditForm({ ...editForm, phone: e.target.value })
                   }
@@ -1131,7 +1129,7 @@ const MyPage = () => {
                 <label>생년월일</label>
                 <input
                   type="date"
-                  value={user.dob}
+                  value={editForm.dob}
                   onChange={(e) =>
                     setEditForm({ ...editForm, dob: e.target.value })
                   }
@@ -1141,7 +1139,7 @@ const MyPage = () => {
                 <label>주소</label>
                 <input
                   type="text"
-                  value={user.addr}
+                  value={editForm.addr}
                   onChange={(e) =>
                     setEditForm({ ...editForm, addr: e.target.value })
                   }
