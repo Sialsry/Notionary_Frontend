@@ -570,100 +570,53 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 const MyPage = () => {
   const [user, setUser] = useState({
     uid: null,
-    profileImage: null,
-    nickname: "사용자",
+    profImg: null,
+    nick: "사용자",
     gender: null,
     phone: null,
     dob: null,
     addr: null,
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = Cookies.get("authToken");
-        const loginAccessToken = Cookies.get("login_access_token");
-        console.log("토큰 확인:", token); // 토큰 확인
-        console.log("로그인 토큰 확인:", loginAccessToken); // 로그인 토큰 확인
+  const [editForm, setEditForm] = useState(user);
+  const [previewImage, setPreviewImage] = useState(null); // 미리보기 이미지
+  const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
-        if (!token) {
-          console.log("토큰이 없습니다");
-        }
+  // 유저 정보 가져오기 함수 분리
+  const fetchUserData = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const loginAccessToken = Cookies.get("login_access_token");
+      const accessToken = token || loginAccessToken;
 
-        console.log("API 요청 시작");
-
-        if (token) {
-          const response = await axios.get("http://localhost:4000/user/info", {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          });
-          console.log("API 응답 데이터:", response.data); // 응답 데이터 확인
-          setUser({
-            uid: response.data.user.uid,
-            profImg: response.data.user.profImg,
-            nick: response.data.user.nick,
-            gender: response.data.user.gender,
-            phone: response.data.user.phone,
-            dob: response.data.user.dob,
-            addr: response.data.user.addr,
-          });
-          setEditForm({
-            uid: response.data.user.uid,
-            profImg: response.data.user.profImg,
-            nick: response.data.user.nick,
-            gender: response.data.user.gender,
-            phone: response.data.user.phone,
-            dob: response.data.user.dob,
-            addr: response.data.user.addr,
-          });
-          console.log("유저 정보:", response.data.user); // 유저 정보 확인
-        }
-
-        if (loginAccessToken) {
-          const response = await axios.get("http://localhost:4000/user/info", {
-            headers: { Authorization: `Bearer ${loginAccessToken}` },
-            withCredentials: true,
-          });
-          console.log("로그인 유저 정보:", response.data.user); // 로그인 유저 정보 확인
-          setUser({
-            uid: response.data.user.uid,
-            profImg: response.data.user.profImg,
-            nick: response.data.user.nick,
-            gender: response.data.user.gender,
-            phone: response.data.user.phone,
-            dob: response.data.user.dob,
-            addr: response.data.user.addr,
-          });
-          setEditForm({
-            uid: response.data.user.uid,
-            profImg: response.data.user.profImg,
-            nick: response.data.user.nick,
-            gender: response.data.user.gender,
-            phone: response.data.user.phone,
-            dob: response.data.user.dob,
-            addr: response.data.user.addr,
-          });
-        }
-      } catch (error) {
-        console.error(
-          "유저 정보 가져오기 실패:",
-          error.response || error.message || error
-        );
+      if (!accessToken) {
+        console.log("토큰이 없습니다");
+        return;
       }
-    };
 
+      const response = await axios.get("http://localhost:4000/user/info", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+
+      const userData = response.data.user;
+      setUser(userData);
+      setEditForm(userData);
+      console.log("유저 정보 가져오기 성공:", userData);
+    } catch (error) {
+      console.error("유저 정보 가져오기 실패:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchUserData();
   }, []);
 
-  useEffect(() => {
-    console.log("유저 정보:", user); // 유저 정보 확인
-  }, [user]);
-
   // 더미 데이터 (페이지네이션 테스트용)
   const [allPosts] = useState([]);
-
   const [allMyProjects] = useState([]);
-
   const [allTeamProjects] = useState([]);
 
   // 페이지네이션 상태
@@ -689,58 +642,111 @@ const MyPage = () => {
     teamProjectPage
   );
 
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editForm, setEditForm] = useState(user);
+  // const [showEditModal, setShowEditModal] = useState(false);
+  // const [editForm, setEditForm] = useState(user);
   const [hoveredTeam, setHoveredTeam] = useState(null);
 
   // 프로필 수정 핸들러. 백엔드로 유저 정보 update 요청
-  const handleEditSubmit = () => {
-    const token = Cookies.get("authToken");
-    const loginAccessToken = Cookies.get("login_access_token");
-    const accessToken = token || loginAccessToken;
-    const url = "http://localhost:4000/user/update";
-    const formData = new FormData();
-    console.log("전송할 데이터:", editForm);
-    formData.append("uid", editForm.uid);
-    formData.append("nick", editForm.nick);
-    formData.append("profImg", editForm.profImg);
-    formData.append("gender", editForm.gender);
-    formData.append("phone", editForm.phone);
-    formData.append("dob", editForm.dob);
-    formData.append("addr", editForm.addr);
-    const dummyData = {};
-    for (const [key, value] of formData.entries()) {
-      dummyData[key] = value;
-    }
-    axios
-      .post(url, formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        console.log("수정 성공:", response.data);
-        setUser({ ...user, ...editForm });
+  const handleEditSubmit = async () => {
+    try {
+      setIsLoading(true);
 
-        setShowEditModal(false);
-      })
-      .catch((error) => {
-        console.error("수정 실패:", error.response || error.message || error);
-      });
-    setShowEditModal(false);
+      const token = Cookies.get("authToken");
+      const loginAccessToken = Cookies.get("login_access_token");
+      const accessToken = token || loginAccessToken;
+
+      if (!accessToken) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      const formData = new FormData();
+
+      // 기본 정보 추가
+      formData.append("nick", editForm.nick || "");
+      formData.append("gender", editForm.gender || "");
+      formData.append("phone", editForm.phone || "");
+      formData.append("dob", editForm.dob || "");
+      formData.append("addr", editForm.addr || "");
+
+      // 새 프로필 이미지가 선택된 경우에만 추가
+      if (selectedFile) {
+        formData.append("profImg", selectedFile);
+      }
+
+      console.log("전송할 데이터:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      const response = await axios.post(
+        "http://localhost:4000/user/update",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      console.log("수정 성공:", response.data);
+
+      // 수정 완료 후 최신 유저 정보 다시 가져오기
+      await fetchUserData();
+
+      // 모달 닫기 및 상태 초기화
+      setShowEditModal(false);
+      setPreviewImage(null);
+      setSelectedFile(null);
+
+      alert("프로필이 성공적으로 업데이트되었습니다!");
+    } catch (error) {
+      console.error("수정 실패:", error);
+      alert("프로필 업데이트에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setEditForm({ ...editForm, profImg: e.target.result });
-      };
-      reader.readAsDataURL(file);
+      // 파일 크기 체크 (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("파일 크기는 5MB 이하로 선택해주세요.");
+        return;
+      }
+
+      // 파일 형식 체크
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("JPG, JPEG, PNG 파일만 업로드 가능합니다.");
+        return;
+      }
+
+      // 미리보기를 위한 URL 생성
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      setSelectedFile(file);
+
+      console.log("선택한 파일:", file);
     }
+  };
+
+  // 모달 닫기 핸들러
+  const handleModalClose = () => {
+    setShowEditModal(false);
+    setEditForm(user); // 원래 상태로 복원
+    setPreviewImage(null);
+    setSelectedFile(null);
+  };
+
+  // 현재 표시할 프로필 이미지 결정
+  const getCurrentProfileImage = () => {
+    if (previewImage) return previewImage; // 미리보기 이미지
+    return user.profImg; // 기존 프로필 이미지
   };
 
   const getCategoryType = (categoryName) => {
@@ -759,7 +765,6 @@ const MyPage = () => {
   return (
     <Container>
       <LeftPanel>
-        {/* 로고 이미지를 클릭하면 메인 페이지로 이동 */}
         <Header>
           <img
             src={logo}
@@ -769,11 +774,10 @@ const MyPage = () => {
           />
         </Header>
 
-        {/* 내 정보 영역 */}
         <Card>
           <UserInfo>
-            <Avatar size="120px" src={user.profImg}>
-              {!user.profImg}
+            <Avatar size="120px" src={getCurrentProfileImage()}>
+              {!getCurrentProfileImage() && user.nick?.charAt(0)}
             </Avatar>
             <div>
               <h2
@@ -1044,7 +1048,7 @@ const MyPage = () => {
 
       {/* 수정 모달 */}
       {showEditModal && (
-        <ModalOverlay onClick={() => setShowEditModal(false)}>
+        <ModalOverlay onClick={handleModalClose}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <h3
               style={{
@@ -1067,15 +1071,15 @@ const MyPage = () => {
                   marginBottom: "12px",
                 }}
               >
-                <Avatar size="80px" src={user.profImg} editable>
-                  {!user.profImg}
+                <Avatar size="80px" src={getCurrentProfileImage()} editable>
+                  {!getCurrentProfileImage() && user.nick?.charAt(0)}
                 </Avatar>
                 <div>
                   <ImageUploadArea>
                     <input
                       type="file"
                       id="profile-upload"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png"
                       onChange={handleImageUpload}
                     />
                     <label
@@ -1089,81 +1093,116 @@ const MyPage = () => {
                       />
                       <div style={{ fontSize: "12px", color: "#6c757d" }}>
                         클릭하여 이미지 업로드
+                        <br />
+                        (JPG, PNG, 5MB 이하)
                       </div>
                     </label>
                   </ImageUploadArea>
                 </div>
               </div>
+              {selectedFile && (
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: colors.success,
+                    marginTop: "8px",
+                  }}
+                >
+                  ✓ {selectedFile.name} 선택됨
+                </div>
+              )}
             </FormGroup>
 
-            <div>
-              <FormGroup>
-                <label>닉네임</label>
-                <input
-                  type="text"
-                  value={user.nick}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, nick: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <FormGroup>
-                <label>성별</label>
-                <input
-                  type="text"
-                  value={user.gender}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, gender: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <FormGroup>
-                <label>전화번호</label>
-                <input
-                  type="text"
-                  value={user.phone}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, phone: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <FormGroup>
-                <label>생년월일</label>
-                <input
-                  type="date"
-                  value={user.dob}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, dob: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <FormGroup>
-                <label>주소</label>
-                <input
-                  type="text"
-                  value={user.addr}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, addr: e.target.value })
-                  }
-                />
-              </FormGroup>
-              <div
+            <FormGroup>
+              <label>닉네임</label>
+              <input
+                type="text"
+                value={editForm.nick || ""}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, nick: e.target.value })
+                }
+                placeholder="닉네임을 입력하세요"
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <label>성별</label>
+              <select
+                value={editForm.gender || ""}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, gender: e.target.value })
+                }
                 style={{
-                  display: "flex",
-                  gap: "12px",
-                  justifyContent: "flex-end",
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid #dee2e6",
+                  borderRadius: "8px",
+                  fontSize: "14px",
                 }}
               >
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  취소
-                </Button>
-                <Button variant="primary" onClick={handleEditSubmit}>
-                  저장
-                </Button>
-              </div>
+                <option value="">선택하세요</option>
+                <option value="남성">남성</option>
+                <option value="여성">여성</option>
+                <option value="기타">기타</option>
+              </select>
+            </FormGroup>
+
+            <FormGroup>
+              <label>전화번호</label>
+              <input
+                type="tel"
+                value={editForm.phone || ""}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, phone: e.target.value })
+                }
+                placeholder="010-1234-5678"
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <label>생년월일</label>
+              <input
+                type="date"
+                value={editForm.dob || ""}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, dob: e.target.value })
+                }
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <label>주소</label>
+              <input
+                type="text"
+                value={editForm.addr || ""}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, addr: e.target.value })
+                }
+                placeholder="주소를 입력하세요"
+              />
+            </FormGroup>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button
+                variant="secondary"
+                onClick={handleModalClose}
+                disabled={isLoading}
+              >
+                취소
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleEditSubmit}
+                disabled={isLoading}
+              >
+                {isLoading ? "저장 중..." : "저장"}
+              </Button>
             </div>
           </ModalContent>
         </ModalOverlay>
