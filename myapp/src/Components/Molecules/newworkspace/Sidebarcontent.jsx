@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Subtitle } from '../../Atoms/ming/Typography'
-import { saveData, getData } from '../../../API/Workspaceapi'
+import { saveData, getworkspaceData } from '../../../API/Workspaceapi'
 import { folder, logo, page } from '../../../images'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 
 const Contentwrap = styled.div`
@@ -200,10 +201,7 @@ const Folderwrap = styled.div`
 
 
 const Sidebarcontent = ({ contents, setContent }) => {
-    // const contents = [{ '팀 워크스페이스': [] }]
-    // const contents = [{ 'teamspace': [{ : []}] }]
-    // const [contents, setContents] = useState([]);
-    // const contents = [{  : [] }]
+   
     const [header, setHeader] = useState('');
     const [category, setCategory] = useState({})
     const [subcategory, setSubcategory] = useState({})
@@ -212,10 +210,9 @@ const Sidebarcontent = ({ contents, setContent }) => {
     const [popupfile, setPopupfile] = useState()
     const [isprivateopen, setIsprivateopen] = useState({})
     const [toggleindex, settoggleIndex] = useState()
-    // const [selectedMainIndex, setSelectedMainIndex] = useState(null);
-    // const [selectedSubIndex, setSelectedSubIndex] = useState(null);
 
-    console.log(contents, 'asdfde123123222222','index')
+
+
     const toggleSection = (key) => {
         if (isprivateopen[key]) return (
             setIsprivateopen(prev => ({ ...prev, [key]: false })))
@@ -261,6 +258,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
         }
         Run()
     }, [category])
+
     useEffect(() => {
         console.log(category, 'category', contents, )
         const Run = async () => {
@@ -268,13 +266,14 @@ const Sidebarcontent = ({ contents, setContent }) => {
         }
         Run()
     }, [subcategory])
+
     // useEffect(() => {
     //     console.log(toggleindex,'toggleinx  ')
     //     toggleSection(toggleindex)
     // },) 
     const Openworkspace = async (mainTitle) => {
-        const { data } = await getData(`workSpace/selectspace/${mainTitle}`)
-        console.log(data)
+        // const { data } = await getworkspaceData(`workSpace/selectspace/${mainTitle}`)
+        // console.log(data)
     }
 
     console.log(isprivateopen, 'open', popupfile)

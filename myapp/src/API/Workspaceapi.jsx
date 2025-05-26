@@ -16,11 +16,12 @@ const saveData = async (api,_data) => {
     }
 }
 
-const getData = async ( ) => {
+const getworkspaceData = async () => {
     try {
-        const { data } = await axios.get(`${WORKSPACE_URL}`)
+        console.log('axiosget')
+        const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedata`)
         console.log(data,'axiosget')
-        return {state : 200, message : 'success'}
+        return data
     } catch (error) {
         return {state : 403, message : error}
         
@@ -28,4 +29,7 @@ const getData = async ( ) => {
 }
 
 
-export {saveData, getData}
+
+
+
+export {saveData, getworkspaceData}

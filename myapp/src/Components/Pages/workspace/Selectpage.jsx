@@ -36,15 +36,6 @@ const Selectpage = ({header}) => {
       </div>
       <div className='Pagedesign'>  
             <PageDesign />
-            <PageDesign />
-            <PageDesign />
-            <PageDesign />
-            <PageDesign />
-            <PageDesign />
-            <PageDesign />
-          
-           
-        
       </div>
     </Pagewrap>
   )
