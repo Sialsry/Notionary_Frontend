@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Subtitle } from '../../Atoms/ming/Typography'
-import saveData from '../../../API/Workspaceapi'
+import { saveData, getData } from '../../../API/Workspaceapi'
 import { folder, logo, page } from '../../../images'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 
 const Contentwrap = styled.div`
@@ -81,14 +82,15 @@ const Addfolder = styled.div`
 `
 const Folderwrap = styled.div`
     width: 1000px;
-    height: 650px;
+    height: 700px;
     padding: 50px;
     padding-top: 10px;
-    background-color: white;
+    background-color: #f3f3f3;
     border-radius: 15px;
     box-shadow: 0 0 15 -18;
     box-sizing: border-box;
     position: relative;
+    z-index: 1000;
 
     img {
         height: 150px;
@@ -102,13 +104,16 @@ const Folderwrap = styled.div`
         justify-content: center;
         align-items: center;
     }
+     .crossbtn:hover {
+        color: #ec4343;
+     }
     .crossbtn{
         position: absolute;
         top: 20px;
         right: 35px;
         font-size: 28px; /* Increase this for a bigger × */
         font-weight: bold;
-        color: #333;
+        color: #161616;
         cursor: pointer;
         user-select: none;
 
@@ -117,27 +122,32 @@ const Folderwrap = styled.div`
  
     form {
 
-        padding: 50px;
+        padding: 20px 50px;
         margin: 30px auto;
-        width: 450px;
-        height: 400px;
+        width: 600px;
+        height: 500px;
         border-radius: 15px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Fixed */
-        /* box-sizing: border-box; */
+        background-color: #ffffff;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
 
         .folderTitle {
             width: 100%;
-            height: 35px;
+            /* height: 35px; */
         }
         label {
             font-size: 18px;
             font-weight: 400;
         }
         input{
-            height: 100%;
+            height: 45px;
             width: 100%;
-            margin-top:10px;
-            margin-left: 10px;
+            /* margin-top:10px;
+            margin-left: 10px; */
             padding: 5px;
             box-sizing: border-box;
             outline: none;
@@ -152,25 +162,36 @@ const Folderwrap = styled.div`
             box-shadow: 0 4px 20px rgba(0, 0, 5, 0.05);
             box-sizing: border-box;
             border-radius: 15px;
-            margin: auto;
-            margin-top: 70px;
+            /* margin: auto;
+            margin-top: 70px; */
             
         }
         
         .selectContent img {
             height: 25px;
         }
+        button:hover {
+            transform: scale(1.03);
+              transition: transform 0.4s ease;
+        }
         button {
-            width: 70%;
-            height: 40px;
-            float: right;
-            margin-top: 110px;
+            width: 90%;
+            height: 50px;
+            /* float: right; */
+            margin-left: 100px;
             border: none;
             background-color: #22168d;
             color: white;
             border-radius: 10px;
             font-size: 18px;
             cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+        .headerContent {
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
 }
@@ -178,72 +199,136 @@ const Folderwrap = styled.div`
 `
 
 
-const Sidebarcontent = () => {
-    const Title = '개인 페이지'
-    const contents = [{ '팀 워크스페이스': [{ '리액트': ['목표', '일정'] }] }]
+const Sidebarcontent = ({ contents, setContent }) => {
+    // const contents = [{ '팀 워크스페이스': [] }]
+    // const contents = [{ 'teamspace': [{ : []}] }]
     // const [contents, setContents] = useState([]);
-    // const contents = [{ '개인 페이지': [] }]
+    // const contents = [{  : [] }]
+    const [header, setHeader] = useState('');
+    const [category, setCategory] = useState({})
+    const [subcategory, setSubcategory] = useState({})
+    const navigate = useNavigate();
     const [popupfolder, setPopupfolder] = useState()
     const [popupfile, setPopupfile] = useState()
     const [isprivateopen, setIsprivateopen] = useState({})
-    const toggleSection = (key) => {
+    const [toggleindex, settoggleIndex] = useState()
+    // const [selectedMainIndex, setSelectedMainIndex] = useState(null);
+    // const [selectedSubIndex, setSelectedSubIndex] = useState(null);
 
+    console.log(contents, 'asdfde123123222222','index')
+    const toggleSection = (key) => {
         if (isprivateopen[key]) return (
             setIsprivateopen(prev => ({ ...prev, [key]: false })))
         setIsprivateopen(prev => ({ ...prev, [key]: true }))
 
     }
+    // const contents = [{ '팀 워크스페이스': [] }]
     const createFolder = async (e) => {
         e.preventDefault();
-        const {value : folderName} = e.target.foldername;
+        const { value: folderName } = e.target.foldername;
         console.log(folderName)
-        const { data } = await saveData('workSpace/newFolder', {folderName})
+        setContent(prev => prev.map((obj) => {
+            const key = Object.keys(obj)[0]
+            console.log(key, 'kkkkk', folderName)
+            setCategory({workSpace : key, folderName})
+            return { ...obj, [key]: [...obj[key], { [folderName]: [] }] }
+        }))
+        // const { data } = await saveData('workSpace/newFolder', { data : contents })
+        // alert('successful')
     }
-    const addFolder = async (Filename) => {
-        const { data } = await saveData('newFile', Filename)
+    const createFile = async (e) => {
+        e.preventDefault();
+        const { value: fileName } = e.target.filename;
+        setContent(prev => prev.map((obj, index) => {
+            const mainkey = Object.keys(obj)[0];
+            // if (index !== selectedMainIndex) return obj;
+            const updatedsub = obj[mainkey].map((subObj, subindex) => {
+                const subkey = Object.keys(subObj)[0];
+                // if (subindex !== selectedSubIndex) return subObj;
+                console.log(mainkey, subkey, 'subkey', fileName)
+                // toggleSection(index)
+                setSubcategory({workSpace : mainkey, folderName : subkey, fileName})
+                return { ...subObj, [subkey]: [...subObj[subkey], fileName] }
+            })
+            return { ...obj, [mainkey]: updatedsub }
+        }))
 
     }
-
-
+    useEffect(() => {
+        console.log(category, 'category', contents, )
+        const Run = async () => {
+            await saveData('workSpace/newFolder', { data : category })
+        }
+        Run()
+    }, [category])
+    useEffect(() => {
+        console.log(category, 'category', contents, )
+        const Run = async () => {
+            await saveData('workSpace/newPage', { data : subcategory })
+        }
+        Run()
+    }, [subcategory])
+    // useEffect(() => {
+    //     console.log(toggleindex,'toggleinx  ')
+    //     toggleSection(toggleindex)
+    // },) 
+    const Openworkspace = async (mainTitle) => {
+        const { data } = await getData(`workSpace/selectspace/${mainTitle}`)
+        console.log(data)
+    }
 
     console.log(isprivateopen, 'open', popupfile)
     return (<>
         {
             contents.map((item, index) => {
-                const [mainTitle, subContent] = Object.entries(item)[0]
+                const [mainTitle, subContent] = Object.entries(item)[index]
                 return (
                     < Contentwrap >
                         <Maintitle>
-                            <Maintitlecontent>
+                            <Maintitlecontent onClick={() => {
+                                Openworkspace(mainTitle);
+                                navigate(`/workspace/selectspace/${mainTitle}`);
+                            }}>
                                 {mainTitle}
                             </Maintitlecontent>
                             <Btnwrap>
                                 <Addbtn onClick={(e) => {
                                     e.stopPropagation()
                                     setPopupfolder(true)
+                                    setHeader(mainTitle)
                                 }}>+</Addbtn>
                             </Btnwrap>
                         </Maintitle>
-                        {subContent.map((subitem, subindex) => {
-                            const [subTitle, content] = Object.entries(subitem)[0]
+                        {subContent ? subContent.map((subitem, subindex) => {
+                            const [folderTitle, pageTitle] = Object.entries(subitem)[0]
                             return (
-                                <Titlewrap key={subindex} onClick={() => toggleSection(subindex)}>
-                                    <Titlecontent>{subTitle}
+                                <Titlewrap key={subindex} onClick={() => {
+                                    toggleSection(subindex)
+                                    settoggleIndex(subindex)
+                                    // navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}`);
+                                }
+
+                                }>
+                                    <Titlecontent >{folderTitle}
                                         <Btnwrap>
                                             <Addbtn onClick={(e) => {
+                                                // setSelectedMainIndex(index);       // Track main section
+                                                // setSelectedSubIndex(subindex);
                                                 e.stopPropagation()
-                                                setPopupfile(true)        
+                                                setPopupfile(true)
+
                                             }}>+</Addbtn>
                                         </Btnwrap>
                                     </Titlecontent>
-                                    {isprivateopen[subindex] && content.map((entry, entryIndex) => (
+                                    {!isprivateopen[subindex] && pageTitle.map((entry, entryIndex) => (
                                         <Content onClick={(e) => {
                                             e.stopPropagation()
+                                            navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle}`);
                                         }}>{entry}</Content>
                                     ))}
                                 </Titlewrap>
                             )
-                        })}
+                        }) : null}
                     </Contentwrap >
                 )
             })}
@@ -255,9 +340,13 @@ const Sidebarcontent = () => {
 
                 </div>
                 <form action="" onSubmit={(e) => createFolder(e)} >
-                    <div className='folderTitle'>
-                        <label htmlFor="">워크이스페이스 이름 : </label>
-                        <input type="text" name='foldername'/>
+                    <div className='headerContent'>
+
+                        <h2>{header} </h2>
+                        <div className='folderTitle'>
+                            <label htmlFor="">워크이스페이스 이름 : </label>
+                            <input type="text" name='foldername' required />
+                        </div>
                     </div>
                     <div className='selectContent'>
                         <img src={folder} alt="" />
@@ -275,16 +364,24 @@ const Sidebarcontent = () => {
                     <img src={logo} alt="" />
 
                 </div>
-                <form action="" >
-                    <div className='folderTitle'>
-                        <label htmlFor="">페이지 이름 : </label>
-                        <input type="text" />
+                <form action="" onSubmit={(e) => {
+                    createFile(e)
+
+                }}>
+                    <div className='headerContent'>
+
+                        <h2>페이지 생성하기</h2>
+                        <div className='folderTitle'>
+                            <label htmlFor="">페이지 이름 : </label>
+                            <input type="text" name='filename' required />
+                        </div>
                     </div>
+
                     <div className='selectContent'>
                         <img src={page} alt="" />
                         <div>New Page</div>
                     </div>
-                    <button>페이지 생성기</button>
+                    <button>페이지 생성성기</button>
 
                 </form>
             </Folderwrap>

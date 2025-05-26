@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import SidebarItem from '../Molecules/susu/SidearItem';
 import { addicon } from '../../images';
+import Sidebarcontent from '../Molecules/newworkspace/Sidebarcontent';
 
 const SidebarWrap = styled.div`
   width: 240px;
@@ -13,15 +14,13 @@ const SidebarWrap = styled.div`
 `;
 
 const Sidebar = () => {
+
+  const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
+  const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
   return (
     <SidebarWrap>
-      <SidebarItem items={[{name : '홈'}, 
-        {name : '글 추가'} ,
-        {name : '개인 워크스페이스', Symbol : addicon}, 
-        ]} >
-          <SidebarItem items={[{name : '팀 워크스페이스', Symbol : addicon}]}>
-            </SidebarItem> 
-        </SidebarItem>
+      <Sidebarcontent contents={privatecontent} setContent={setPrivatecontent} ></Sidebarcontent>
+      <Sidebarcontent contents={teamcontent} setContent={setTeamcontent} ></Sidebarcontent>
     </SidebarWrap>
   );
 };

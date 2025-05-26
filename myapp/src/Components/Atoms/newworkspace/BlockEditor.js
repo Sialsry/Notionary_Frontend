@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import saveData from '../../API/Workspaceapi';
+import {saveData} from '../../../API/Workspaceapi';
 
 
 
@@ -14,6 +14,7 @@ const BlockEditorContainer = styled.div`
 
 const Block = styled.div`
   margin-bottom: 8px;
+  
 `;
 
 const BlockContainer = styled.div`
@@ -154,6 +155,11 @@ const TextBlock = styled.div`
   color: #333;
   width: 100%;
   text-align: left;
+  &[contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+    display: block;}
 `;
 
 const List = styled.ul`
@@ -581,6 +587,7 @@ const BlockEditor = () => {
         <BlockContent>
           {block.type === 'text' && (
             <TextBlock
+              data-placeholder="Type something..."
               ref={el => (blockRefs.current[block.id] = el)}
               contentEditable
               suppressContentEditableWarning
@@ -681,7 +688,7 @@ const BlockEditor = () => {
   return (
     <BlockEditorContainer>
       {blocks.map(block => (
-        <Block key={block.id}>
+        <Block key={block.id} >
           {renderBlock(block)}
         </Block>
       ))}
