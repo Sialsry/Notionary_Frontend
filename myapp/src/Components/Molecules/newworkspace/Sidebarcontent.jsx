@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Subtitle } from '../../Atoms/ming/Typography'
 import { saveData, getworkspaceData } from '../../../API/Workspaceapi'
 import { folder, logo, page } from '../../../images'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 
@@ -223,7 +223,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
     const createFolder = async (e) => {
         e.preventDefault();
         const { value: folderName } = e.target.foldername;
-        console.log(folderName)
+        console.log(folderName, 'folderName')
         setContent(prev => prev.map((obj) => {
             const key = Object.keys(obj)[0]
             console.log(key, 'kkkkk', folderName)
@@ -231,7 +231,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
             return { ...obj, [key]: [...obj[key], { [folderName]: [] }] }
         }))
         // const { data } = await saveData('workSpace/newFolder', { data : contents })
-        // alert('successful')
+        alert('successful')
     }
     const createFile = async (e) => {
         e.preventDefault();
@@ -276,11 +276,15 @@ const Sidebarcontent = ({ contents, setContent }) => {
         // console.log(data)
     }
 
-    console.log(isprivateopen, 'open', popupfile)
+    console.log(contents, 'open', popupfile)
     return (<>
         {
             contents.map((item, index) => {
-                const [mainTitle, subContent] = Object.entries(item)[index]
+                // console.log(outeritem)
+                // const item = outeritem[0]
+                // if(!outeritem) return null;
+                const [mainTitle, subContent] = Object.entries(item)[0]
+                console.log(mainTitle,'asdf', subContent,'submanim', item[0], item,'outer')
                 return (
                     < Contentwrap >
                         <Maintitle>
