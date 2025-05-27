@@ -31,7 +31,7 @@ const getworkspaceDataTwo = async () => {
     try {
         console.log('axiosget')
         const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataTwo`)
-        console.log(data,'axiosget')
+        console.log(data,'axiosget2')
         return data
     } catch (error) {
         return {state : 403, message : error}
@@ -50,7 +50,17 @@ const getTextdata = async () => {
     }
 }
 
+const getWspacecontent = async (wname) => {
+    try {
+        const {data} = await axios.get(`${WORKSPACE_URL}/workspaceContent`, {wname})
+        console.log(data, 'getwspaceconte')
+        return data
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
 
 
 
-export {saveData, getworkspaceDataOne, getworkspaceDataTwo, getTextdata}
+export {saveData, getworkspaceDataOne, getworkspaceDataTwo, getTextdata, getWspacecontent}

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Sidebar from '../../Templates/Sidebar'
 import PageDesign from '../../Templates/newworkspace/PageDesign'
 import Header from '../../Templates/Header'
+import { getWspacecontent } from '../../../API/Workspaceapi'
 
 const Pagewrap = styled.div`
     
@@ -27,6 +28,16 @@ const Pagewrap = styled.div`
 `
 
 const Selectpage = ({header}) => {
+
+
+  const [data, setData] = useState([])
+  const workspacecontent = async () => {
+   const data = await getWspacecontent(header);
+   console.log(data, 'getwspaceconte11')
+   setData(data )
+  }
+  workspacecontent()
+
   return (
     <Pagewrap>
       <Header />
@@ -35,7 +46,7 @@ const Selectpage = ({header}) => {
         <h1>{header}</h1>
       </div>
       <div className='Pagedesign'>  
-            <PageDesign />
+            {data.map((el) => <PageDesign />)}
       </div>
     </Pagewrap>
   )
