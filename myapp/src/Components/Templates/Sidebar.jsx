@@ -4,7 +4,7 @@ import SidebarItem from '../Molecules/susu/SidearItem';
 import { addicon } from '../../images';
 import Sidebarcontent from '../Molecules/newworkspace/Sidebarcontent';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getworkspaceData } from '../../API/Workspaceapi';
+import { getworkspaceData, getworkspaceDataOne, getworkspaceDataTwo } from '../../API/Workspaceapi';
 
 const SidebarWrap = styled.div`
   width: 240px;
@@ -16,51 +16,93 @@ const SidebarWrap = styled.div`
 `;
 
 const Sidebar = () => {
-  const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
-  const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
+  const [teamcontent, setTeamcontent] = useState([])
+  const [privatecontent, setPrivatecontent] = useState([])
+    const [teamcontent1, setTeamcontent1] = useState([{ '팀 워크스페이스': [{hh : []}] }])
+  // const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
 
 
-  
 
 
-  // const { data, isLoading, refetch } = useQuery({
-  //   queryKey: ['data'],
-  //   queryFn: getworkspaceData,
-  //   refetchOnMount: true,
-  //   refetchOnWindowFocus: true,
-  //   enabled: true,
-  //   retry: 10
-  // })
+
+  const { data: workspacedataOne, isLoading: isLoadingOne } = useQuery({
+    queryKey: ['dataOne'],
+    queryFn: getworkspaceDataOne,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    enabled: true,
+    retry: 10,
+    
+  })
+
+  const { data: workspacedataTwo, isLoading: isLoadingTwo } = useQuery({
+    queryKey: ['dataTwo'],
+    queryFn: getworkspaceDataTwo,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    enabled: true,
+    retry: 10
+  })
+
   
-  // console.log(data?.data, 'dd')
+  // useEffect(() => {
+  //   const getworkspacedata = async () => {
+  //     const workspaceOne = await getworkspaceDataOne()
+  //     const workspaceTwo = await getworkspaceDataTwo()
+  //     setPrivatecontent(workspaceOne.data[0])
+  //     setTeamcontent(workspaceTwo.data[0])
+  //     console.log(privatecontent, teamcontent,'sdf')
+  //     return 
+  //   }
+  //   getworkspacedata()
+    
+  // },[])
+  // useEffect(() => {
+    
+  //   console.log(privatecontent, teamcontent,'sdf')
+  // }, [privatecontent])
   // const newData = data?.data
-  // console.log(Array.isArray(newData), newData, 'trueadsad');
-  
-  // console.log(newData[0], "asdf", newData[1])
 
-  // if(data ){
-  //   Object.keys(data) === '개인 워크스페이스'
-  //   console.log('yes')
-  // }
+  // console.log(newData[0], "asdf", newData[1])
+  // useEffect(() => {
+
+  //   if(!isLoadingOne && !isLoadingTwo){
+  //     console.log(Array.isArray(workspacedataTwo.data), workspacedataTwo, 'trueadsad');
+  //   }
+  // }, [])
+  // if(isLoadingOne || isLoadingTwo) return;
+
+
+  useEffect(() => {
+    
+    if (!isLoadingOne && !isLoadingTwo) {
+      setPrivatecontent(workspacedataOne.data[0] )
+      console.log(workspacedataOne.data[0], 'usequery1', teamcontent1)
+      console.log(typeof (privatecontent), 'usequery2')
+      console.log(teamcontent, 'usequery3')
+      console.log(workspacedataTwo.data, 'usequery4')
+      setTeamcontent(workspacedataTwo.data[0] )
+    }
+  }, [])
   // if (data?.data === '개인 워크스페이스') {
 
   //   setPrivatecontent(data.data[0])
-    
+
   // }
   // if (data?.data === '팀 워크스페이스') {
   //   console.log(data?.data[0])
   //   setPrivatecontent(data.data[0])
   //   console.log('zzzzzzz')
   // }
-  
+
   // const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   // const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
-  
-  useEffect (() => {
-    console.log(typeof (privatecontent),'private', privatecontent)
-  },[privatecontent, teamcontent])
 
+  useEffect(() => {
+    console.log(typeof (privatecontent), 'private', teamcontent)
+  }, [privatecontent, teamcontent])
+  // if()
   return (
     <SidebarWrap>
       <Sidebarcontent contents={privatecontent} setContent={setPrivatecontent} ></Sidebarcontent>

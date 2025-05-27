@@ -16,10 +16,21 @@ const saveData = async (api,_data) => {
     }
 }
 
-const getworkspaceData = async () => {
+const getworkspaceDataOne = async () => {
     try {
         console.log('axiosget')
-        const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedata`)
+        const  {data}  = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataOne`)
+        console.log(data,'axiosget')
+        return data
+    } catch (error) {
+        return {state : 403, message : error}
+        
+    }
+}
+const getworkspaceDataTwo = async () => {
+    try {
+        console.log('axiosget')
+        const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataTwo`)
         console.log(data,'axiosget')
         return data
     } catch (error) {
@@ -29,7 +40,17 @@ const getworkspaceData = async () => {
 }
 
 
+const getTextdata = async () => {
+    try {
+        const {data} =  await axios.get(`${WORKSPACE_URL}/workspace/getPage`)
+        return data
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
 
 
 
-export {saveData, getworkspaceData}
+
+export {saveData, getworkspaceDataOne, getworkspaceDataTwo, getTextdata}

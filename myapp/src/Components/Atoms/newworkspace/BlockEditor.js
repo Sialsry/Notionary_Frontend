@@ -290,7 +290,7 @@ const BlockEditor = () => {
 
 
   useEffect(() => {
-    saveData(blocks)
+    // saveData(blocks)
     console.log(blockRefs, ' blockref')
     console.log('check1')
   }, [blocks])
@@ -310,8 +310,8 @@ const BlockEditor = () => {
   //   console.log(e)
     
   // }
-  const textData = useSelector(state => state.textreducer.textData)
-  console.log(textData)
+  const textData = useSelector(state => state.textreducer)
+  console.log(textData,'textdata')
 
 
   const addBlock = (type, currentId) => {
@@ -705,7 +705,7 @@ const BlockEditor = () => {
   return (
     <BlockEditorContainer>
       {blocks.map(block => (
-        <Block key={block.id} onChange={dispatch('POST', {workspacename, foldername, filename, data : blocks})}>
+        <Block key={block.id} onChange={dispatch({type : 'POST',payload : {workspacename, foldername, filename, data : blocks}})}>
           {renderBlock(block)}
         </Block>
       ))}

@@ -223,7 +223,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
     const createFolder = async (e) => {
         e.preventDefault();
         const { value: folderName } = e.target.foldername;
-        console.log(folderName)
+        console.log(folderName, 'folderName')
         setContent(prev => prev.map((obj) => {
             const key = Object.keys(obj)[0]
             console.log(key, 'kkkkk', folderName)
@@ -276,11 +276,15 @@ const Sidebarcontent = ({ contents, setContent }) => {
         // console.log(data)
     }
 
-    console.log(isprivateopen, 'open', popupfile)
+    console.log(contents, 'open', popupfile)
     return (<>
         {
             contents.map((item, index) => {
-                const [mainTitle, subContent] = Object.entries(item)[index]
+                // console.log(outeritem)
+                // const item = outeritem[0]
+                // if(!outeritem) return null;
+                const [mainTitle, subContent] = Object.entries(item)[0]
+                console.log(mainTitle,'asdf', subContent,'submanim', item[0], item,'outer')
                 return (
                     < Contentwrap >
                         <Maintitle>

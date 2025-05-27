@@ -19,11 +19,11 @@ const queryClient = new QueryClient({
 })
 
 root.render(
-    <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
+    <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
             <App />
-        </Provider>
-    </QueryClientProvider>
+        </QueryClientProvider>
+    </Provider>
 );
 
 reportWebVitals();
