@@ -291,6 +291,29 @@ const PostContent = styled.div`
   min-width: 0;
 `;
 
+const AuthorInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+`;
+
+const AuthorAvatar = styled.div`
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: ${colors.gradient};
+  background-image: ${(props) => (props.src ? `url(${props.src})` : "none")};
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 8px;
+  font-weight: 600;
+`;
+
 const PostStats = styled.div`
   display: flex;
   align-items: center;
@@ -886,16 +909,39 @@ const MyPage = () => {
   };
 
   // 게시글 렌더링 함수
-  const renderPostList = (posts, emptyMessage, emptyIcon) => (
+  const renderPostList = (
+    posts,
+    emptyMessage,
+    emptyIcon,
+    showAuthor = false
+  ) => (
     <>
       {posts.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {posts.map((post) => (
             <PostItem key={post.post_id}>
-              <PostThumbnail src={post.imgPaths}>
-                {!post.imgPaths && <FileText size={20} />}
+              <PostThumbnail src={post.firstImage || post.imgPaths}>
+                {!post.firstImage && !post.imgPaths && <FileText size={20} />}
               </PostThumbnail>
               <PostContent>
+                {/* 작성자 정보 (좋아요/댓글 게시글에서만 표시) */}
+                {showAuthor && post.author && (
+                  <AuthorInfo>
+                    <AuthorAvatar src={post.author.profImg}>
+                      {!post.author.profImg && post.author.nick?.charAt(0)}
+                    </AuthorAvatar>
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        color: "#6c757d",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {post.author.nick}
+                    </span>
+                  </AuthorInfo>
+                )}
+
                 <div>
                   <h4
                     style={{
@@ -903,6 +949,9 @@ const MyPage = () => {
                       fontSize: "13px",
                       fontWeight: "600",
                       lineHeight: "1.3",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {post.title}
@@ -911,6 +960,7 @@ const MyPage = () => {
                     {post.category_name}
                   </Badge>
                 </div>
+
                 <PostStats>
                   <span
                     style={{
@@ -932,7 +982,7 @@ const MyPage = () => {
                     <MessageCircle size={10} color={colors.info} />
                     {post.comments}
                   </span>
-                  <span>{post.created_at}</span>
+                  <span>{post.createdAt}</span>
                 </PostStats>
               </PostContent>
             </PostItem>
@@ -1026,7 +1076,8 @@ const MyPage = () => {
                 {renderPostList(
                   paginatedPosts.items,
                   "아직 작성한 게시글이 없습니다",
-                  "📝"
+                  "📝",
+                  false // 내 게시글이므로 작성자 정보 표시 안함
                 )}
               </ScrollableContent>
               {paginatedPosts.totalPages > 1 && (
@@ -1048,7 +1099,8 @@ const MyPage = () => {
                 {renderPostList(
                   paginatedLikedPosts.items,
                   "좋아요를 누른 게시글이 없습니다",
-                  "❤️"
+                  "❤️",
+                  true // 다른 사람 게시글이므로 작성자 정보 표시
                 )}
               </ScrollableContent>
               {paginatedLikedPosts.totalPages > 1 && (
@@ -1070,7 +1122,8 @@ const MyPage = () => {
                 {renderPostList(
                   paginatedCommentedPosts.items,
                   "댓글을 작성한 게시글이 없습니다",
-                  "💬"
+                  "💬",
+                  true // 다른 사람 게시글이므로 작성자 정보 표시
                 )}
               </ScrollableContent>
               {paginatedCommentedPosts.totalPages > 1 && (
