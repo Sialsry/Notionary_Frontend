@@ -611,7 +611,7 @@ const MyPage = () => {
   const [likedPostPage, setLikedPostPage] = useState(1);
   const [commentedPostPage, setCommentedPostPage] = useState(1);
   const [workspacePage, setWorkspacePage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 4;
 
   const [hoveredTeam, setHoveredTeam] = useState(null);
 
