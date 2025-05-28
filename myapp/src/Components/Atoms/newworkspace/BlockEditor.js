@@ -314,14 +314,16 @@ const BlockEditor = () => {
   // console.log(textData, 'textdata')
   useEffect(() => {
     const run = async () => {
-     const newData = await getBlock2(workspacename, foldername, filename)
-    console.log(newData.data, 'newdata')
-    setBlockstate(true)
-    if (blockstate) {
-      setBlocks(newData.data)
-      setBlockstate(false)
-      console.log(blocks, 'blocks111')
-    }}
+      const newData = await getBlock2(workspacename, foldername, filename)
+      console.log(newData, 'newdata',)
+      setBlockstate(true)
+      if (blockstate && newData) {
+        setBlocks(newData.data)
+        setBlockstate(false)
+        console.log(blocks, 'blocks111')
+      }
+    }
+
     run()
   }, [])
 
@@ -429,7 +431,7 @@ const BlockEditor = () => {
     //   type: 'POST',
     //   payload: { workspacename, foldername, filename, data: blocks }
     // })
-        // dispatch({
+    // dispatch({
     //   type: 'POST',
     //   payload: { workspacename, foldername, filename, data: blocks }
     // })
@@ -486,12 +488,24 @@ const BlockEditor = () => {
         }
       }
     }
-    const newData = await getBlock(workspacename, foldername, filename, {data: blocks})
-    console.log(newData.data, 'newdata')
-    if (blockstate) {
-      console.log(blocks, 'blocks')
-    }
+    // const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
+    setBlockstate(true)
+
   };
+
+  useEffect(() => {
+    const run = async () => {
+      // setBlockstate(true)
+      const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
+      if (blockstate ) {
+        setBlockstate(false)
+        console.log(blocks, 'blocks111')
+      }
+
+
+    }
+    run()
+  }, [blockstate])
 
   const handleDragStart = (e, blockId) => {
     setDraggedBlock(blockId);

@@ -16,10 +16,10 @@ const saveData = async (api,_data) => {
     }
 }
 
-const getworkspaceDataOne = async () => {
+const getworkspaceDataOne = async (userInfo) => {
     try {
         console.log('axiosget')
-        const  {data}  = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataOne`)
+        const  {data}  = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataOne`, {userInfo})
         console.log(data,'axiosget')
         return data
     } catch (error) {
@@ -27,10 +27,10 @@ const getworkspaceDataOne = async () => {
         
     }
 }
-const getworkspaceDataTwo = async () => {
+const getworkspaceDataTwo = async (userInfo) => {
     try {
         console.log('axiosget')
-        const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataTwo`)
+        const { data } = await axios.get(`${WORKSPACE_URL}/workspace/workspacedataTwo`, {userInfo})
         console.log(data,'axiosget2')
         return data
     } catch (error) {
@@ -62,14 +62,19 @@ const getWspacecontent = async (wname) => {
 }
 const getBlock = async (workspacename, foldername, filename, data) => {
     const {data : workspaceData} = await axios.post(`${WORKSPACE_URL}/workspace/selectspace/${workspacename}/${foldername}/${filename}` , {data})
-    const newData = JSON.parse(workspaceData.data.PageData.page_content)
-    return newData
+    // const newData = JSON.parse(workspaceData.data.PageData.page_content)
+    return {state : 200, message : 'nice'}
 }
 
 const getBlock2 = async (workspacename, foldername, filename) => {
     const {data : workspaceData} = await axios.get(`${WORKSPACE_URL}/workspace/selectspace/${workspacename}/${foldername}/${filename}` )
+    console.log(workspaceData, 'workspacedata')
+    if(workspaceData.data.PageData) {
     const newData = JSON.parse(workspaceData.data.PageData.page_content)
-    return newData
+    return newData}
+    else {
+        return null
+    }
 }
 
 
