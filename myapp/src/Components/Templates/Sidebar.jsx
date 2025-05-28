@@ -16,48 +16,51 @@ const SidebarWrap = styled.div`
 `;
 
 const Sidebar = () => {
-  const [teamcontent, setTeamcontent] = useState([])
-  const [privatecontent, setPrivatecontent] = useState([])
-    const [teamcontent1, setTeamcontent1] = useState([{ '팀 워크스페이스': [{hh : []}] }])
-  // const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
+  const [state, setState] = useState(false)
+  // const [teamcontent, setTeamcontent] = useState([])
+  // const [privatecontent, setPrivatecontent] = useState([])
+    const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
+  const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
 
 
 
 
 
-  const { data: workspacedataOne, isLoading: isLoadingOne } = useQuery({
-    queryKey: ['dataOne'],
-    queryFn: getworkspaceDataOne,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    enabled: true,
-    retry: 10,
+  // const { data: workspacedataOne, isLoading: isLoadingOne } = useQuery({
+  //   queryKey: ['dataOne'],
+  //   queryFn: getworkspaceDataOne,
+  //   refetchOnMount: true,
+  //   refetchOnWindowFocus: true,
+  //   enabled: true,
+  //   retry: 10,
     
-  })
+  // })
 
-  const { data: workspacedataTwo, isLoading: isLoadingTwo } = useQuery({
-    queryKey: ['dataTwo'],
-    queryFn: getworkspaceDataTwo,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    enabled: true,
-    retry: 10
-  })
+  // const { data: workspacedataTwo, isLoading: isLoadingTwo } = useQuery({
+  //   queryKey: ['dataTwo'],
+  //   queryFn: getworkspaceDataTwo,
+  //   refetchOnMount: true,
+  //   refetchOnWindowFocus: true,
+  //   enabled: true,
+  //   retry: 10
+  // })
 
   
-  // useEffect(() => {
-  //   const getworkspacedata = async () => {
-  //     const workspaceOne = await getworkspaceDataOne()
-  //     const workspaceTwo = await getworkspaceDataTwo()
-  //     setPrivatecontent(workspaceOne.data[0])
-  //     setTeamcontent(workspaceTwo.data[0])
-  //     console.log(privatecontent, teamcontent,'sdf')
-  //     return 
-  //   }
-  //   getworkspacedata()
+  useEffect(() => {
+    const getworkspacedata = async () => {
+      const workspaceOne = await getworkspaceDataOne()
+      const workspaceTwo = await getworkspaceDataTwo()
+      if(workspaceOne  && workspaceTwo) {
+      setPrivatecontent(workspaceOne.data)
+      setTeamcontent(workspaceTwo.data)
+      console.log(privatecontent, teamcontent,'sdf', workspaceTwo.data, workspaceOne.data)
+      setState(false)
+      }
+    }
+    getworkspacedata()
     
-  // },[])
+  },[state])
   // useEffect(() => {
     
   //   console.log(privatecontent, teamcontent,'sdf')
@@ -74,17 +77,17 @@ const Sidebar = () => {
   // if(isLoadingOne || isLoadingTwo) return;
 
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    if (!isLoadingOne && !isLoadingTwo) {
-      setPrivatecontent(workspacedataOne.data[0] )
-      console.log(workspacedataOne.data[0], 'usequery1', teamcontent1)
-      console.log(typeof (privatecontent), 'usequery2')
-      console.log(teamcontent, 'usequery3')
-      console.log(workspacedataTwo.data, 'usequery4')
-      setTeamcontent(workspacedataTwo.data[0] )
-    }
-  }, [])
+  //   if (!isLoadingOne && !isLoadingTwo) {
+  //     setPrivatecontent(workspacedataOne.data[0] )
+  //     console.log(workspacedataOne.data[0], 'usequery1', teamcontent1)
+  //     console.log(typeof (privatecontent), 'usequery2')
+  //     console.log(teamcontent, 'usequery3')
+  //     console.log(workspacedataTwo.data, 'usequery4')
+  //     setTeamcontent(workspacedataTwo.data[0] )
+  //   }
+  // }, [state])
   // if (data?.data === '개인 워크스페이스') {
 
   //   setPrivatecontent(data.data[0])
@@ -105,8 +108,8 @@ const Sidebar = () => {
   // if()
   return (
     <SidebarWrap>
-      <Sidebarcontent contents={privatecontent} setContent={setPrivatecontent} ></Sidebarcontent>
-      <Sidebarcontent contents={teamcontent} setContent={setTeamcontent} ></Sidebarcontent>
+      <Sidebarcontent contents={privatecontent} setState={setState} setContent={setPrivatecontent} ></Sidebarcontent>
+      <Sidebarcontent contents={teamcontent} setState={setState} setContent={setTeamcontent} ></Sidebarcontent>
     </SidebarWrap>
   );
 };

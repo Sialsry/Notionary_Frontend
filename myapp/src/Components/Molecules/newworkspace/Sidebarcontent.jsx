@@ -200,7 +200,7 @@ const Folderwrap = styled.div`
 `
 
 
-const Sidebarcontent = ({ contents, setContent }) => {
+const Sidebarcontent = ({ contents,setState, setContent }) => {
    
     const [header, setHeader] = useState('');
     const [category, setCategory] = useState({})
@@ -260,7 +260,7 @@ const Sidebarcontent = ({ contents, setContent }) => {
     }, [category])
 
     useEffect(() => {
-        console.log(category, 'category', contents, )
+        console.log(subcategory, 'category1111', contents, )
         const Run = async () => {
             await saveData('workSpace/newPage', { data : subcategory })
         }
@@ -337,7 +337,10 @@ const Sidebarcontent = ({ contents, setContent }) => {
             })}
         {popupfolder ? <Addfolder>
             <Folderwrap>
-                <span className='crossbtn' onClick={() => setPopupfolder(false)}>×</span>
+                <span className='crossbtn' onClick={() => {
+                    setPopupfolder(false)
+                    setState(true)
+                    }}>×</span>
                 <div className='imgdiv'>
                     <img src={logo} alt="" />
 
@@ -362,7 +365,10 @@ const Sidebarcontent = ({ contents, setContent }) => {
         </Addfolder> : null}
         {popupfile ? <Addfolder>
             <Folderwrap>
-                <span className='crossbtn' onClick={() => setPopupfile(false)}>×</span>
+                <span className='crossbtn' onClick={() => {
+                    setPopupfile(false)
+                    setState(true)
+                    }}>×</span>
                 <div className='imgdiv'>
                     <img src={logo} alt="" />
 
