@@ -8,16 +8,21 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 
 const Contentwrap = styled.div`
+    margin-top: 30px;
     width: 210px;
     min-height: 30px;
-    border: 1px solid;
+    /* border: 1px solid; */
     box-sizing: border-box;
 /* cursor: pointer; */
 `
 const Maintitle = styled.div`
+    padding : 3px 10px;
+    background-color: #e1e1fd;
     width: 210px;
     position: relative;
     right: 0px;
+    box-sizing: border-box;
+    border-radius: 7px;
 `
 const Maintitlecontent = styled.div`
     
@@ -25,9 +30,10 @@ const Maintitlecontent = styled.div`
 const Titlewrap = styled.div`
     width: 199px;
     margin-left: 10px;
-    border: 1px solid;
+    /* border: 1px solid; */
     position: relative;
     box-sizing: border-box;
+    /* background-color: #dddddd; */
     /* display: flex; */
     `
 const Titlecontent = styled.div`
@@ -35,14 +41,36 @@ const Titlecontent = styled.div`
     height: 27px;
     width: 199px;
     position: relative;
+    background-color: #e1e1fd;
+    /* padding : 3px 10px; */
+    margin: 3px 0px 3px 0px;
+    
+    border-radius: 11px ;
+    box-sizing: border-box;
+    .Tcontent {
+        padding : 3px 10px;
+        font-size: 16px;
+        width: 175px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 `
 
 const Content = styled.div`
-    margin-left: 10px;
-    border: 1px solid;
+    padding : 3px 10px;
+    margin: 3px 0px 3px 12px;
+    height: 32px;
+    border-radius: 15px ;
     cursor: pointer;
+    background-color: #c4c6ff;
     /* display: inline-block; */
     box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .threedots {
+
+    }
 `
 const Btnwrap = styled.div`
     position: absolute;
@@ -61,8 +89,9 @@ const Addbtn = styled.button`
     display: flex;
     justify-content:  center;
     align-items: center;
+    background-color:  #e1e1fd;
     &:hover {
-        background-color: #bdbdbd;
+        background-color:  #9b9be6;
     }
 `
 
@@ -194,14 +223,11 @@ const Folderwrap = styled.div`
             flex-direction: column;
             justify-content: space-between;
         }
-
 }
-
 `
 
+const Sidebarcontent = ({ contents, setState, setContent }) => {
 
-const Sidebarcontent = ({ contents,setState, setContent }) => {
-   
     const [header, setHeader] = useState('');
     const [category, setCategory] = useState({})
     const [subcategory, setSubcategory] = useState({})
@@ -211,15 +237,12 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
     const [isprivateopen, setIsprivateopen] = useState({})
     const [toggleindex, settoggleIndex] = useState()
 
-
-
     const toggleSection = (key) => {
         if (isprivateopen[key]) return (
             setIsprivateopen(prev => ({ ...prev, [key]: false })))
         setIsprivateopen(prev => ({ ...prev, [key]: true }))
 
     }
-    // const contents = [{ '팀 워크스페이스': [] }]
     const createFolder = async (e) => {
         e.preventDefault();
         const { value: folderName } = e.target.foldername;
@@ -227,10 +250,9 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
         setContent(prev => prev.map((obj) => {
             const key = Object.keys(obj)[0]
             console.log(key, 'kkkkk', folderName)
-            setCategory({workSpace : key, folderName})
+            setCategory({ workSpace: key, folderName })
             return { ...obj, [key]: [...obj[key], { [folderName]: [] }] }
         }))
-        // const { data } = await saveData('workSpace/newFolder', { data : contents })
         alert('successful')
     }
     const createFile = async (e) => {
@@ -238,13 +260,10 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
         const { value: fileName } = e.target.filename;
         setContent(prev => prev.map((obj, index) => {
             const mainkey = Object.keys(obj)[0];
-            // if (index !== selectedMainIndex) return obj;
             const updatedsub = obj[mainkey].map((subObj, subindex) => {
                 const subkey = Object.keys(subObj)[0];
-                // if (subindex !== selectedSubIndex) return subObj;
                 console.log(mainkey, subkey, 'subkey', fileName)
-                // toggleSection(index)
-                setSubcategory({workSpace : mainkey, folderName : subkey, fileName})
+                setSubcategory({ workSpace: mainkey, folderName: subkey, fileName })
                 return { ...subObj, [subkey]: [...subObj[subkey], fileName] }
             })
             return { ...obj, [mainkey]: updatedsub }
@@ -252,48 +271,31 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
 
     }
     useEffect(() => {
-        console.log(category, 'category', contents, )
         const Run = async () => {
-            await saveData('workSpace/newFolder', { data : category })
+            const data = await saveData('workSpace/newFolder', { data: category })
         }
         Run()
     }, [category])
 
     useEffect(() => {
-        console.log(subcategory, 'category1111', contents, )
         const Run = async () => {
-            await saveData('workSpace/newPage', { data : subcategory })
+            await saveData('workSpace/newPage', { data: subcategory })
         }
         Run()
     }, [subcategory])
 
-    // useEffect(() => {
-    //     console.log(toggleindex,'toggleinx  ')
-    //     toggleSection(toggleindex)
-    // },) 
-    const Openworkspace = async (mainTitle) => {
-        // const { data } = await getworkspaceData(`workSpace/selectspace/${mainTitle}`)
-        // console.log(data)
-    }
     const pagenavigate = (mainTitle, folderTitle, pageTitle, entryIndex) => {
-        console.log(mainTitle, folderTitle, pageTitle,'zzzzzzzz', entryIndex)
         navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle[entryIndex]}`)
     }
 
-    console.log(contents, 'open', popupfile)
     return (<>
         {
             contents.map((item, index) => {
-                // console.log(outeritem)
-                // const item = outeritem[0]
-                // if(!outeritem) return null;
                 const [mainTitle, subContent] = Object.entries(item)[0]
-                console.log(mainTitle,'asdf', subContent,'submanim', item[0], item,'outer')
                 return (
                     < Contentwrap >
                         <Maintitle>
                             <Maintitlecontent onClick={() => {
-                                Openworkspace(mainTitle);
                                 navigate(`/workspace/selectspace/${mainTitle}`);
                             }}>
                                 {mainTitle}
@@ -312,27 +314,31 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
                                 <Titlewrap key={subindex} onClick={() => {
                                     toggleSection(subindex)
                                     settoggleIndex(subindex)
-                                    // navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}`);
                                 }
-
                                 }>
-                                    <Titlecontent >{folderTitle}
+                                    <Titlecontent >
+                                        <div className='Tcontent'>
+                                            {folderTitle}
+                                        </div>
                                         <Btnwrap>
+                                              
+                                      
                                             <Addbtn onClick={(e) => {
-                                                // setSelectedMainIndex(index);       // Track main section
-                                                // setSelectedSubIndex(subindex);
                                                 e.stopPropagation()
                                                 setPopupfile(true)
-
                                             }}>+</Addbtn>
                                         </Btnwrap>
                                     </Titlecontent>
                                     {isprivateopen[subindex] && pageTitle.map((entry, entryIndex) => (
+
                                         <Content onClick={(e) => {
                                             e.stopPropagation()
                                             pagenavigate(mainTitle, folderTitle, pageTitle, entryIndex)
-                                            // navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle}`);
-                                        }}>{entry}</Content>
+                                        }}>
+                                            {entry}
+                                            {/* <span className='contentdot'>⋮⋮</span> */}
+                                        
+                                        </Content>
                                     ))}
                                 </Titlewrap>
                             )
@@ -345,7 +351,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
                 <span className='crossbtn' onClick={() => {
                     setPopupfolder(false)
                     setState(true)
-                    }}>×</span>
+                }}>×</span>
                 <div className='imgdiv'>
                     <img src={logo} alt="" />
 
@@ -373,7 +379,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
                 <span className='crossbtn' onClick={() => {
                     setPopupfile(false)
                     setState(true)
-                    }}>×</span>
+                }}>×</span>
                 <div className='imgdiv'>
                     <img src={logo} alt="" />
 
