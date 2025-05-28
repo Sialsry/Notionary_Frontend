@@ -13,6 +13,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Camera,
+  User,
+  ThumbsUp,
+  MessageSquare,
 } from "lucide-react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -33,7 +36,7 @@ const colors = {
   gradientInfo: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
 };
 
-// 아토믹 디자인 패턴 - Atoms
+// 기존 styled components들은 동일하게 유지...
 const Button = styled.button`
   padding: ${(props) => (props.size === "small" ? "6px 12px" : "10px 20px")};
   border: none;
@@ -161,13 +164,56 @@ const Badge = styled.span`
       case "design":
         return colors.gradientAccent;
       default:
-        return "#e9ecef";
+        return colors.gradient;
     }
   }};
   color: ${(props) => (props.type ? "white" : "#495057")};
 `;
 
-// Molecules
+// 탭 관련 styled components 추가
+const TabContainer = styled.div`
+  display: flex;
+  border-bottom: 2px solid #f1f3f4;
+  margin-bottom: 16px;
+`;
+
+const TabButton = styled.button`
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #6c757d;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  ${(props) =>
+    props.active &&
+    `
+    color: ${colors.primary};
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: ${colors.primary};
+    }
+  `}
+
+  &:hover {
+    color: ${colors.primary};
+    background: rgba(102, 126, 234, 0.05);
+  }
+`;
+
+// 기존 컴포넌트들...
 const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -254,7 +300,7 @@ const PostStats = styled.div`
 `;
 
 const WorkspaceItem = styled.div`
-  padding: 23px;
+  padding: 20px;
   border: 1px solid #e9ecef;
   border-radius: 10px;
   cursor: pointer;
@@ -269,34 +315,7 @@ const WorkspaceItem = styled.div`
   }
 `;
 
-const TeamTooltip = styled.div`
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-100%);
-  background: #212529;
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 11px;
-  white-space: nowrap;
-  opacity: ${(props) => (props.show ? 1 : 0)};
-  visibility: ${(props) => (props.show ? "visible" : "hidden")};
-  transition: all 0.2s ease;
-  z-index: 10;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: #212529;
-  }
-`;
-
-// 페이지네이션 컴포넌트
+// 페이지네이션 컴포넌트들...
 const PaginationContainer = styled.div`
   display: flex;
   align-items: center;
@@ -332,7 +351,7 @@ const PageButton = styled.button`
   }
 `;
 
-// 모달 컴포넌트
+// 모달 컴포넌트들...
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -404,7 +423,7 @@ const ImageUploadArea = styled.div`
   }
 `;
 
-// 메인 컨테이너
+// 메인 컨테이너들...
 const Container = styled.div`
   height: 100vh;
   display: flex;
@@ -441,26 +460,10 @@ const Header = styled.div`
   }
 `;
 
-// const Logo = styled.div`
-//   font-family: "Brush Script MT", cursive;
-//   font-size: 28px;
-//   font-weight: bold;
-//   background: ${colors.gradient};
-//   -webkit-background-clip: text;
-//   -webkit-text-fill-color: transparent;
-//   background-clip: text;
-// `;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 700;
-  color: #212529;
-  margin: 0;
-`;
-
 const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
+  /* grid-template-columns: 1fr 1fr; */
   gap: 20px;
   flex: 1;
   min-height: 0;
@@ -469,7 +472,8 @@ const ContentGrid = styled.div`
 const SectionCard = styled(Card)`
   display: flex;
   flex-direction: column;
-  height: -1%;
+  height: 90%;
+  width: 50%;
 `;
 
 const SectionTitle = styled.h3`
@@ -487,7 +491,6 @@ const SectionTitle = styled.h3`
 const ScrollableContent = styled.div`
   flex: 1;
   overflow-y: auto;
-
   margin: -8px;
   padding: 8px;
 
@@ -523,10 +526,18 @@ const EmptyState = styled.div`
   }
 `;
 
+// 전체 너비 카드 (워크스페이스용)
+const FullWidthCard = styled(Card)`
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+`;
+
 // 페이지네이션 컴포넌트
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
-  const maxVisible = 5;
+  const maxVisible = 100;
 
   let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
   let end = Math.min(totalPages, start + maxVisible - 1);
@@ -579,12 +590,32 @@ const MyPage = () => {
   });
 
   const [editForm, setEditForm] = useState(user);
-  const [previewImage, setPreviewImage] = useState(null); // 미리보기 이미지
-  const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 유저 정보 가져오기 함수 분리
+  // 데이터 상태들
+  const [allPosts, setAllPost] = useState([]);
+  const [allMyProjects, setAllMyProjects] = useState([]);
+  const [allTeamProjects, setAllTeamProjects] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [commentedPosts, setCommentedPosts] = useState([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+
+  // 탭 상태 (워크스페이스용)
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState("personal"); // 'personal' 또는 'team'
+
+  // 페이지네이션 상태
+  const [postPage, setPostPage] = useState(1);
+  const [likedPostPage, setLikedPostPage] = useState(1);
+  const [commentedPostPage, setCommentedPostPage] = useState(1);
+  const [workspacePage, setWorkspacePage] = useState(1);
+  const itemsPerPage = 5;
+
+  const [hoveredTeam, setHoveredTeam] = useState(null);
+
+  // 유저 정보 가져오기 함수
   const fetchUserData = async () => {
     try {
       const token = Cookies.get("authToken");
@@ -610,20 +641,124 @@ const MyPage = () => {
     }
   };
 
+  // 게시글 데이터 가져오기 함수들
+  const fetchUserPosts = async () => {
+    setIsLoadingPosts(true);
+    try {
+      const token = Cookies.get("authToken");
+      const loginAccessToken = Cookies.get("login_access_token");
+      const accessToken = token || loginAccessToken;
+
+      if (!accessToken) {
+        console.log("토큰이 없습니다");
+        return;
+      }
+
+      const response = await axios.get(
+        "http://localhost:4000/mypage/getMyPost",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        }
+      );
+
+      setAllPost(response.data.data || []);
+    } catch (error) {
+      console.error("게시글 가져오기 실패:", error);
+      setAllPost([]);
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  };
+
+  // 좋아요 누른 게시글 가져오기
+  const fetchLikedPosts = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const loginAccessToken = Cookies.get("login_access_token");
+      const accessToken = token || loginAccessToken;
+
+      if (!accessToken) return;
+
+      const response = await axios.get(
+        "http://localhost:4000/mypage/getLikedPosts",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        }
+      );
+
+      setLikedPosts(response.data.data || []);
+    } catch (error) {
+      console.error("좋아요 게시글 가져오기 실패:", error);
+      setLikedPosts([]);
+    }
+  };
+
+  // 댓글 작성한 게시글 가져오기
+  const fetchCommentedPosts = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      const loginAccessToken = Cookies.get("login_access_token");
+      const accessToken = token || loginAccessToken;
+
+      if (!accessToken) return;
+
+      const response = await axios.get(
+        "http://localhost:4000/mypage/getCommentedPosts",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        }
+      );
+
+      setCommentedPosts(response.data.data || []);
+    } catch (error) {
+      console.error("댓글 게시글 가져오기 실패:", error);
+      setCommentedPosts([]);
+    }
+  };
+
+  // 프로젝트 데이터 가져오기 함수들
+  const fetchMyProjects = async () => {
+    try {
+      const accessToken = Cookies.get("login_access_token");
+      const response = await axios.get("http://localhost:4000/projects/my", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+
+      setAllMyProjects(response.data.projects || []);
+    } catch (error) {
+      console.error("내 프로젝트 가져오기 실패:", error);
+      setAllMyProjects([]);
+    }
+  };
+
+  const fetchTeamProjects = async () => {
+    try {
+      const accessToken = Cookies.get("login_access_token");
+      const response = await axios.get("http://localhost:4000/projects/team", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      });
+
+      setAllTeamProjects(response.data.projects || []);
+    } catch (error) {
+      console.error("팀 프로젝트 가져오기 실패:", error);
+      setAllTeamProjects([]);
+    }
+  };
+
+  // useEffect에서 모든 데이터 가져오기
   useEffect(() => {
     fetchUserData();
+    fetchUserPosts();
+    fetchLikedPosts();
+    fetchCommentedPosts();
+    fetchMyProjects();
+    fetchTeamProjects();
   }, []);
-
-  // 더미 데이터 (페이지네이션 테스트용)
-  const [allPosts] = useState([]);
-  const [allMyProjects] = useState([]);
-  const [allTeamProjects] = useState([]);
-
-  // 페이지네이션 상태
-  const [postPage, setPostPage] = useState(1);
-  const [myProjectPage, setMyProjectPage] = useState(1);
-  const [teamProjectPage, setTeamProjectPage] = useState(1);
-  const itemsPerPage = 5;
 
   // 페이지네이션 계산
   const getPaginatedData = (data, page) => {
@@ -636,21 +771,30 @@ const MyPage = () => {
   };
 
   const paginatedPosts = getPaginatedData(allPosts, postPage);
-  const paginatedMyProjects = getPaginatedData(allMyProjects, myProjectPage);
-  const paginatedTeamProjects = getPaginatedData(
-    allTeamProjects,
-    teamProjectPage
+  const paginatedLikedPosts = getPaginatedData(likedPosts, likedPostPage);
+  const paginatedCommentedPosts = getPaginatedData(
+    commentedPosts,
+    commentedPostPage
   );
 
-  // const [showEditModal, setShowEditModal] = useState(false);
-  // const [editForm, setEditForm] = useState(user);
-  const [hoveredTeam, setHoveredTeam] = useState(null);
+  // 워크스페이스 탭에 따른 데이터 선택
+  const currentWorkspaceData =
+    activeWorkspaceTab === "personal" ? allMyProjects : allTeamProjects;
+  const paginatedWorkspace = getPaginatedData(
+    currentWorkspaceData,
+    workspacePage
+  );
 
-  // 프로필 수정 핸들러. 백엔드로 유저 정보 update 요청
+  // 탭 변경 시 페이지 초기화
+  const handleWorkspaceTabChange = (tab) => {
+    setActiveWorkspaceTab(tab);
+    setWorkspacePage(1);
+  };
+
+  // 프로필 관련 함수들은 기존과 동일
   const handleEditSubmit = async () => {
     try {
       setIsLoading(true);
-
       const token = Cookies.get("authToken");
       const loginAccessToken = Cookies.get("login_access_token");
       const accessToken = token || loginAccessToken;
@@ -661,22 +805,14 @@ const MyPage = () => {
       }
 
       const formData = new FormData();
-
-      // 기본 정보 추가
       formData.append("nick", editForm.nick || "");
       formData.append("gender", editForm.gender || "");
       formData.append("phone", editForm.phone || "");
       formData.append("dob", editForm.dob || "");
       formData.append("addr", editForm.addr || "");
 
-      // 새 프로필 이미지가 선택된 경우에만 추가
       if (selectedFile) {
         formData.append("profImg", selectedFile);
-      }
-
-      console.log("전송할 데이터:");
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
       }
 
       const response = await axios.post(
@@ -691,16 +827,10 @@ const MyPage = () => {
         }
       );
 
-      console.log("수정 성공:", response.data);
-
-      // 수정 완료 후 최신 유저 정보 다시 가져오기
       await fetchUserData();
-
-      // 모달 닫기 및 상태 초기화
       setShowEditModal(false);
       setPreviewImage(null);
       setSelectedFile(null);
-
       alert("프로필이 성공적으로 업데이트되었습니다!");
     } catch (error) {
       console.error("수정 실패:", error);
@@ -713,40 +843,33 @@ const MyPage = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 파일 크기 체크 (5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert("파일 크기는 5MB 이하로 선택해주세요.");
         return;
       }
 
-      // 파일 형식 체크
       const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
         alert("JPG, JPEG, PNG 파일만 업로드 가능합니다.");
         return;
       }
 
-      // 미리보기를 위한 URL 생성
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
       setSelectedFile(file);
-
-      console.log("선택한 파일:", file);
     }
   };
 
-  // 모달 닫기 핸들러
   const handleModalClose = () => {
     setShowEditModal(false);
-    setEditForm(user); // 원래 상태로 복원
+    setEditForm(user);
     setPreviewImage(null);
     setSelectedFile(null);
   };
 
-  // 현재 표시할 프로필 이미지 결정
   const getCurrentProfileImage = () => {
-    if (previewImage) return previewImage; // 미리보기 이미지
-    return user.profImg; // 기존 프로필 이미지
+    if (previewImage) return previewImage;
+    return user.profImg;
   };
 
   const getCategoryType = (categoryName) => {
@@ -761,6 +884,68 @@ const MyPage = () => {
         return "default";
     }
   };
+
+  // 게시글 렌더링 함수
+  const renderPostList = (posts, emptyMessage, emptyIcon) => (
+    <>
+      {posts.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {posts.map((post) => (
+            <PostItem key={post.post_id}>
+              <PostThumbnail src={post.imgPaths}>
+                {!post.imgPaths && <FileText size={20} />}
+              </PostThumbnail>
+              <PostContent>
+                <div>
+                  <h4
+                    style={{
+                      margin: "0 0 4px 0",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                      lineHeight: "1.3",
+                    }}
+                  >
+                    {post.title}
+                  </h4>
+                  <Badge type={getCategoryType(post.category_name)}>
+                    {post.category_name}
+                  </Badge>
+                </div>
+                <PostStats>
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "3px",
+                    }}
+                  >
+                    <Heart size={10} color={colors.danger} />
+                    {post.hearts}
+                  </span>
+                  <span
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "3px",
+                    }}
+                  >
+                    <MessageCircle size={10} color={colors.info} />
+                    {post.comments}
+                  </span>
+                  <span>{post.created_at}</span>
+                </PostStats>
+              </PostContent>
+            </PostItem>
+          ))}
+        </div>
+      ) : (
+        <EmptyState>
+          <div className="icon">{emptyIcon}</div>
+          <div className="message">{emptyMessage}</div>
+        </EmptyState>
+      )}
+    </>
+  );
 
   return (
     <Container>
@@ -823,227 +1008,279 @@ const MyPage = () => {
       <RightPanel>
         <ContentGrid>
           {/* 내가 작성한 게시글 */}
-          <SectionCard>
-            <SectionTitle>
-              <FileText size={16} color={colors.info} />
-              내가 작성한 게시글 ({allPosts.length})
-            </SectionTitle>
-            <ScrollableContent>
-              {paginatedPosts.items.length > 0 ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                  }}
-                >
-                  {paginatedPosts.items.map((post) => (
-                    <PostItem key={post.post_id}>
-                      <PostThumbnail src={post.imgPaths}>
-                        {!post.imgPaths && <FileText size={20} />}
-                      </PostThumbnail>
-                      <PostContent>
-                        <div>
-                          <h4
-                            style={{
-                              margin: "0 0 4px 0",
-                              fontSize: "13px",
-                              fontWeight: "600",
-                              lineHeight: "1.3",
-                            }}
-                          >
-                            {post.title}
-                          </h4>
-                          <Badge type={getCategoryType(post.category_name)}>
-                            {post.category_name}
-                          </Badge>
-                        </div>
-                        <PostStats>
-                          <span
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "3px",
-                            }}
-                          >
-                            <Heart size={10} color={colors.danger} />
-                            {post.hearts}
-                          </span>
-                          <span
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "3px",
-                            }}
-                          >
-                            <MessageCircle size={10} color={colors.info} />
-                            {post.comments}
-                          </span>
-                          <span>{post.created_at}</span>
-                        </PostStats>
-                      </PostContent>
-                    </PostItem>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState>
-                  <div className="icon">📝</div>
-                  <div className="message">아직 작성한 게시글이 없습니다</div>
-                  <Button variant="accent" size="small">
-                    <Plus size={14} />
-                    글쓰기
-                  </Button>
-                </EmptyState>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "row",
+              gap: "20px",
+              height: "50%",
+            }}
+          >
+            <SectionCard>
+              <SectionTitle>
+                <FileText size={16} color={colors.info} />
+                내가 작성한 게시글 ({allPosts.length})
+              </SectionTitle>
+              <ScrollableContent>
+                {renderPostList(
+                  paginatedPosts.items,
+                  "아직 작성한 게시글이 없습니다",
+                  "📝"
+                )}
+              </ScrollableContent>
+              {paginatedPosts.totalPages > 1 && (
+                <Pagination
+                  currentPage={postPage}
+                  totalPages={paginatedPosts.totalPages}
+                  onPageChange={setPostPage}
+                />
               )}
-            </ScrollableContent>
-            {paginatedPosts.totalPages > 1 && (
-              <Pagination
-                currentPage={postPage}
-                totalPages={paginatedPosts.totalPages}
-                onPageChange={setPostPage}
-              />
-            )}
-          </SectionCard>
+            </SectionCard>
 
-          {/* 개인 워크스페이스 */}
-          <SectionCard>
-            <SectionTitle>
-              <Folder size={16} color={colors.success} />
-              개인 워크스페이스 ({allMyProjects.length})
-            </SectionTitle>
-            <ScrollableContent>
-              {paginatedMyProjects.items.length > 0 ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                  }}
-                >
-                  {paginatedMyProjects.items.map((project) => (
-                    <WorkspaceItem key={project.project_id}>
-                      <h4
-                        style={{
-                          margin: "0 0 6px 0",
-                          fontSize: "13px",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {project.project_name}
-                      </h4>
-                      <p
-                        style={{
-                          margin: "0",
-                          fontSize: "11px",
-                          color: "#6c757d",
-                        }}
-                      >
-                        생성일: {project.created_at}
-                      </p>
-                    </WorkspaceItem>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState>
-                  <div className="icon">📂</div>
-                  <div className="message">워크스페이스를 만들어보세요</div>
-                  <Button variant="success" size="small">
-                    <Plus size={14} />새 워크스페이스
-                  </Button>
-                </EmptyState>
+            {/* 좋아요 누른 게시글 */}
+            <SectionCard>
+              <SectionTitle>
+                <ThumbsUp size={16} color={colors.danger} />
+                좋아요 누른 게시글 ({likedPosts.length})
+              </SectionTitle>
+              <ScrollableContent>
+                {renderPostList(
+                  paginatedLikedPosts.items,
+                  "좋아요를 누른 게시글이 없습니다",
+                  "❤️"
+                )}
+              </ScrollableContent>
+              {paginatedLikedPosts.totalPages > 1 && (
+                <Pagination
+                  currentPage={likedPostPage}
+                  totalPages={paginatedLikedPosts.totalPages}
+                  onPageChange={setLikedPostPage}
+                />
               )}
-            </ScrollableContent>
-            {paginatedMyProjects.totalPages > 1 && (
-              <Pagination
-                currentPage={myProjectPage}
-                totalPages={paginatedMyProjects.totalPages}
-                onPageChange={setMyProjectPage}
-              />
-            )}
-          </SectionCard>
-        </ContentGrid>
+            </SectionCard>
 
-        {/* 팀 워크스페이스 - 전체 너비 */}
-        <SectionCard>
-          <SectionTitle>
-            <Users size={16} color={colors.warning} />팀 워크스페이스 (
-            {allTeamProjects.length})
-          </SectionTitle>
-          <ScrollableContent>
-            {paginatedTeamProjects.items.length > 0 ? (
+            {/* 댓글 작성한 게시글 */}
+            <SectionCard>
+              <SectionTitle>
+                <MessageSquare size={16} color={colors.success} />
+                댓글 작성한 게시글 ({commentedPosts.length})
+              </SectionTitle>
+              <ScrollableContent>
+                {renderPostList(
+                  paginatedCommentedPosts.items,
+                  "댓글을 작성한 게시글이 없습니다",
+                  "💬"
+                )}
+              </ScrollableContent>
+              {paginatedCommentedPosts.totalPages > 1 && (
+                <Pagination
+                  currentPage={commentedPostPage}
+                  totalPages={paginatedCommentedPosts.totalPages}
+                  onPageChange={setCommentedPostPage}
+                />
+              )}
+            </SectionCard>
+          </div>
+
+          {/* 통합 워크스페이스 - 전체 너비 */}
+          <div>
+            <FullWidthCard>
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                  gap: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "16px",
                 }}
               >
-                {paginatedTeamProjects.items.map((project) => (
-                  <WorkspaceItem
-                    key={project.project_id}
-                    onMouseEnter={() => setHoveredTeam(project.project_id)}
-                    onMouseLeave={() => setHoveredTeam(null)}
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <Folder size={16} color={colors.warning} />
+                  <span
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      color: "#212529",
+                    }}
                   >
-                    <TeamTooltip show={hoveredTeam === project.project_id}>
-                      <div style={{ marginBottom: "6px" }}>
-                        <strong>팀원:</strong> {project.members.join(", ")}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                        }}
-                      >
-                        <Calendar size={10} />
-                        생성일: {project.created_at}
-                      </div>
-                    </TeamTooltip>
-
-                    <h4
-                      style={{
-                        margin: "0 0 8px 0",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      {project.project_name}
-                    </h4>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                      }}
-                    >
-                      <Users size={10} color={colors.warning} />
-                      <span style={{ fontSize: "11px", color: "#6c757d" }}>
-                        {project.members.length}명
-                      </span>
-                    </div>
-                  </WorkspaceItem>
-                ))}
-              </div>
-            ) : (
-              <EmptyState>
-                <div className="icon">👥</div>
-                <div className="message">
-                  참여중인 팀 워크스페이스가 없습니다
+                    워크스페이스
+                  </span>
                 </div>
-                <Button variant="primary" size="small">
-                  <Plus size={14} />팀 만들기
-                </Button>
-              </EmptyState>
-            )}
-          </ScrollableContent>
-          {paginatedTeamProjects.totalPages > 1 && (
-            <Pagination
-              currentPage={teamProjectPage}
-              totalPages={paginatedTeamProjects.totalPages}
-              onPageChange={setTeamProjectPage}
-            />
-          )}
-        </SectionCard>
+              </div>
+
+              {/* 탭 메뉴 */}
+              <TabContainer>
+                <TabButton
+                  active={activeWorkspaceTab === "personal"}
+                  onClick={() => handleWorkspaceTabChange("personal")}
+                >
+                  <User size={14} />
+                  개인 워크스페이스 ({allMyProjects.length})
+                </TabButton>
+                <TabButton
+                  active={activeWorkspaceTab === "team"}
+                  onClick={() => handleWorkspaceTabChange("team")}
+                >
+                  <Users size={14} />팀 워크스페이스 ({allTeamProjects.length})
+                </TabButton>
+              </TabContainer>
+
+              <ScrollableContent>
+                {paginatedWorkspace.items.length > 0 ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        activeWorkspaceTab === "team"
+                          ? "repeat(auto-fill, minmax(280px, 1fr))"
+                          : "repeat(auto-fill, minmax(250px, 1fr))",
+                      gap: "12px",
+                    }}
+                  >
+                    {paginatedWorkspace.items.map((project) => (
+                      <WorkspaceItem
+                        key={project.project_id}
+                        onMouseEnter={() =>
+                          activeWorkspaceTab === "team" &&
+                          setHoveredTeam(project.project_id)
+                        }
+                        onMouseLeave={() => setHoveredTeam(null)}
+                      >
+                        {/* 팀 프로젝트인 경우 툴팁 표시 */}
+                        {activeWorkspaceTab === "team" && project.members && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "-10px",
+                              left: "50%",
+                              transform: "translateX(-50%) translateY(-100%)",
+                              background: "#212529",
+                              color: "white",
+                              padding: "12px",
+                              borderRadius: "8px",
+                              fontSize: "11px",
+                              whiteSpace: "nowrap",
+                              opacity:
+                                hoveredTeam === project.project_id ? 1 : 0,
+                              visibility:
+                                hoveredTeam === project.project_id
+                                  ? "visible"
+                                  : "hidden",
+                              transition: "all 0.2s ease",
+                              zIndex: 10,
+                            }}
+                          >
+                            <div style={{ marginBottom: "6px" }}>
+                              <strong>팀원:</strong>{" "}
+                              {project.members.join(", ")}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              <Calendar size={10} />
+                              생성일: {project.created_at}
+                            </div>
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                border: "5px solid transparent",
+                                borderTopColor: "#212529",
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        <h4
+                          style={{
+                            margin: "0 0 8px 0",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            lineHeight: "1.3",
+                          }}
+                        >
+                          {project.project_name}
+                        </h4>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            {activeWorkspaceTab === "personal" ? (
+                              <User size={10} color={colors.success} />
+                            ) : (
+                              <>
+                                <Users size={10} color={colors.warning} />
+                                <span
+                                  style={{ fontSize: "11px", color: "#6c757d" }}
+                                >
+                                  {project.members?.length || 0}명
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <span style={{ fontSize: "10px", color: "#6c757d" }}>
+                            {project.created_at}
+                          </span>
+                        </div>
+                      </WorkspaceItem>
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState>
+                    <div className="icon">
+                      {activeWorkspaceTab === "personal" ? "📂" : "👥"}
+                    </div>
+                    <div className="message">
+                      {activeWorkspaceTab === "personal"
+                        ? "개인 워크스페이스를 만들어보세요"
+                        : "참여중인 팀 워크스페이스가 없습니다"}
+                    </div>
+                    <Button
+                      variant={
+                        activeWorkspaceTab === "personal"
+                          ? "success"
+                          : "primary"
+                      }
+                      size="small"
+                    >
+                      <Plus size={14} />
+                      {activeWorkspaceTab === "personal"
+                        ? "새 워크스페이스"
+                        : "팀 만들기"}
+                    </Button>
+                  </EmptyState>
+                )}
+              </ScrollableContent>
+
+              {paginatedWorkspace.totalPages > 1 && (
+                <Pagination
+                  currentPage={workspacePage}
+                  totalPages={paginatedWorkspace.totalPages}
+                  onPageChange={setWorkspacePage}
+                />
+              )}
+            </FullWidthCard>
+          </div>
+        </ContentGrid>
       </RightPanel>
 
       {/* 수정 모달 */}
