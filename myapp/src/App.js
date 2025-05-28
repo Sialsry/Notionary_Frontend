@@ -7,10 +7,16 @@ import MyPage from "./Components/Pages/MyPage";
 import Sidebar from "./Components/Templates/Sidebar";
 import Selectpage from "./Components/Pages/workspace/Selectpage";
 import Detailpage from "./Components/Pages/workspace/Detailpage";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 
 
 function App() {
+  const select = useSelector(state => state);
+  useEffect(()=> {
+    console.log(select,"11111111111232312")
+  },[select])
   return (
     <div className="App">
       <BrowserRouter>

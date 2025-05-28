@@ -7,12 +7,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getworkspaceData, getworkspaceDataOne, getworkspaceDataTwo } from '../../API/Workspaceapi';
 
 const SidebarWrap = styled.div`
-  width: 240px;
+  width: 300px;
   background: rgb(248, 248, 247);
   height: 100vh;
-  padding: 50px 30px;
+  padding: 100px 30px;
   position: fixed;
   box-sizing: border-box;
+  overflow-y: scroll;
 `;
 
 const Sidebar = () => {
