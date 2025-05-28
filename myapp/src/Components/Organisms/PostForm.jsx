@@ -68,14 +68,12 @@ const QuestionForm = () => {
       console.log(data);
     }
   });
-
-  const isFormValid =
-    typeof mainCategory === 'string' &&
-    mainCategory.trim() !== '' &&
-    Array.isArray(subCategories) &&
-    subCategories.length > 0 &&
-    typeof content === 'string' &&
-    content.trim() !== '';
+const isFormValid =
+  typeof mainCategory === 'string' &&
+  mainCategory.trim() !== '' &&
+  typeof content === 'string' &&
+  content.trim() !== '' &&
+  (mainCategory === '기타' || (Array.isArray(subCategories) && subCategories.length > 0));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -84,11 +82,10 @@ const QuestionForm = () => {
       return;
     }
 
-    if (!categoryId) {
+    if (!categoryId && mainCategory !== '기타') {
       alert('세부 카테고리를 선택해주세요.');
       return;
-    }
-
+    }     
     const formData = new FormData();
     formData.append('mainCategory', mainCategory);
     formData.append('subCategories', subCategories.join(','));
@@ -113,12 +110,20 @@ const QuestionForm = () => {
       <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} />
       <MediaUpload onFileSelect={(newFiles) => setFiles(newFiles)} />
       <CategorySelect
-        onCategoryChange={(main, subs, selectedCategoryId) => {
-          setMainCategory(main);
-          setSubCategories(subs);
-          setCategoryId(selectedCategoryId);
-        }}
-      />
+    onCategoryChange={(main, subs, selectedCategoryId) => {
+  setMainCategory(main);
+  setSubCategories(subs);
+
+  if (main === '기타') {
+    setCategoryId(6);
+  } else if (subs.length > 0) {
+    setCategoryId(subs[0]);
+  } else {
+    setCategoryId(null);
+  }
+}}
+/>
+
       <ContentEdit value={content} onChange={(e) => setContent(e.target.value)} />
       <ButtonGroup>
         <Button onClick={handleCancel} type="button">취소</Button>

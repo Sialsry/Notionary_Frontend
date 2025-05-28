@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { SubCategoryPost } from '../../API/PostApi';
+import { SubCategoryPost , AllCategoryPost} from '../../API/PostApi';
 import Sidebar from '../Templates/Sidebar';
 import styled from 'styled-components';
 import Categories from '../Molecules/susu/Categories';
@@ -106,41 +106,50 @@ const Main = () => {
   const mutation = useMutation({
     mutationFn: SubCategoryPost,
     onSuccess: (data) => {
-       setPosts(data.data)
+      setPosts(data.data);
     },
-    onError: (data) => {
-      console.log(data);
+    onError: (error) => {
+      console.log(error);
     },
-    onMutate: (data) => {
-      console.log('디버깅중...', data);
-    }
+  });
+
+  const allCategoryMutation = useMutation({
+    mutationFn: AllCategoryPost,
+    onSuccess: (data) => {
+      setPosts(data.data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
   });
 
   const categoryList = [
     { name: '전체', text: '전체' },
     { name: 'IT', text: 'IT' },
-    { name: '기술스택', text: '기술스택' },
     { name: '디자인', text: '디자인' },
-    { name: '여행', text: '여행' },
+    { name: '교육', text: '교육' },
+    { name: '금융', text: '금융' },
+    { name: '취미', text: '취미' },
     { name: '기타', text: '기타' }
   ];
 
   const subCategories = {
-    IT: ['앱 개발', '웹 개발', '개발PM', '블록체인 개발', '데이터분석가', '데이터 엔지니어', '웹 마스터', '백엔드/서버개발', '프론트엔드', '보안 컨설팅'],
-    기술스택: ['C언어', 'C++', 'C#', 'java', 'javascript', 'jQuery', 'Node.js', 'MySQL', 'React', 'HTML', 'CSS', 'Python', 'PHP', 'React-Native', 'Redux'],
-    디자인: ['가구디자인', '그래픽 디자인', '건축디자인', '광고디자인', '게임디자인', '공간디자인', '공공디자인', '공예디자인', '로고 디자인', '모바일 디자인'],
-    여행: ['국내여행', '해외여행', '맛집 탐방', '액티비티 여행', '호캉스', '캠핑', '차박', '역사 탐방', '문화 체험', '자연 경관 여행'],
-    기타: ['자유 주제', 'Q&A']
+    IT: ['프로그래밍', '인공지능', '클라우드', '사물인터넷', '게임', '네트워크', '보안', '기타'],
+    디자인 : ['UI/UX', '그래픽 디자인', '건축디자인', '공간디자인', '기타'],
+    교육 : ['예체능', '공학', '의학', '법학', '인문학', '사회과학', '자연과학', '기타'],
+    금융 : ['주식투자', '가상화폐', '부동산', '재테크', '기타'],
+    취미 : ['여행', '스포츠/액티비티', '예술/공예', '독서/글쓰기', '요리/음식', '음악', '게임', '자연/힐링'],
   };
 
   const handleCategorySelect = (category) => {
     setSelect(category);
     setSelectSubCategory([]);
-    if (category !== '전체') {
-      OpenModal();
-    } else {
+    if (category === '전체' || category === '기타') {
       ClosedModal();
       setPosts([]);
+      allCategoryMutation.mutate({ category_name: category });
+    } else {
+      OpenModal();
     }
   };
 
@@ -164,7 +173,6 @@ const Main = () => {
     <>
       {!showMainText && <Header />}
       {!showMainText && <Sidebar />}
-
 
       {showMainText ? (
         <div className="fade-in">
@@ -235,10 +243,6 @@ const Main = () => {
           <Button
             disabled={mutation.isLoading}
             onClick={() => {
-              console.log('mutation payload:', {
-                category_name: select,
-                SubCategory: selectSubCategory
-              });
               mutation.mutate({
                 category_name: select,
                 SubCategory: selectSubCategory
@@ -249,7 +253,7 @@ const Main = () => {
             조회
           </Button>
 
-          {mutation.isLoading && (
+          {(mutation.isLoading || allCategoryMutation.isLoading) && (
             <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
               불러오는 중...
             </Text>
