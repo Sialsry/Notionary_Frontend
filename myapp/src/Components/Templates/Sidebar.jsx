@@ -1,10 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import SidebarItem from '../Molecules/susu/SidearItem';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SidebarItem from '../Molecules/susu/SidearItem';
 import { addicon } from '../../images';
 import Sidebarcontent from '../Molecules/newworkspace/Sidebarcontent';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -21,15 +18,19 @@ const SidebarWrap = styled.div`
 `;
 
 const Sidebar = () => {
+    const navigate = useNavigate();
+    const handleItemClick = (item) => {
+     console.log('Clicked:', item);
+    if (item === '글 추가') {
+      navigate('/post');
+    }
+  };
   const [state, setState] = useState(false)
   // const [teamcontent, setTeamcontent] = useState([])
   // const [privatecontent, setPrivatecontent] = useState([])
     const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
   const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
-
-
-
 
 
   // const { data: workspacedataOne, isLoading: isLoadingOne } = useQuery({
@@ -111,12 +112,15 @@ const Sidebar = () => {
     console.log(typeof (privatecontent), 'private', teamcontent)
   }, [privatecontent, teamcontent])
   // if()
+
   return (
     <SidebarWrap>
+      <SidebarItem items={['홈', '글 추가']} onClick={handleItemClick} />
       <Sidebarcontent contents={privatecontent} setState={setState} setContent={setPrivatecontent} ></Sidebarcontent>
       <Sidebarcontent contents={teamcontent} setState={setState} setContent={setTeamcontent} ></Sidebarcontent>
     </SidebarWrap>
   );
 };
+
 
 export default Sidebar;

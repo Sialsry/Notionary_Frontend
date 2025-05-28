@@ -2,8 +2,13 @@
 import Main from "./Components/Pages/Main";
 import SignupPage from "./Components/Pages/SignupPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Detailpage from './Components/Pages/workspace/Detailpage'
+import Selectpage from './Components/Pages/workspace/Selectpage'
 import LoginPage from "./Components/Pages/LoginPage";
+import PostPage from './Components/Pages/PostPage';
 import MyPage from "./Components/Pages/MyPage";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
   const select = useSelector(state => state);
