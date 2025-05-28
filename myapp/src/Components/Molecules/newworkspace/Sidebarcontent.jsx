@@ -275,6 +275,10 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
         // const { data } = await getworkspaceData(`workSpace/selectspace/${mainTitle}`)
         // console.log(data)
     }
+    const pagenavigate = (mainTitle, folderTitle, pageTitle, entryIndex) => {
+        console.log(mainTitle, folderTitle, pageTitle,'zzzzzzzz', entryIndex)
+        navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle[entryIndex]}`)
+    }
 
     console.log(contents, 'open', popupfile)
     return (<>
@@ -323,10 +327,11 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
                                             }}>+</Addbtn>
                                         </Btnwrap>
                                     </Titlecontent>
-                                    {!isprivateopen[subindex] && pageTitle.map((entry, entryIndex) => (
+                                    {isprivateopen[subindex] && pageTitle.map((entry, entryIndex) => (
                                         <Content onClick={(e) => {
                                             e.stopPropagation()
-                                            navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle}`);
+                                            pagenavigate(mainTitle, folderTitle, pageTitle, entryIndex)
+                                            // navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle}`);
                                         }}>{entry}</Content>
                                     ))}
                                 </Titlewrap>

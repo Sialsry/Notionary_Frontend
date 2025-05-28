@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { saveData } from '../../../API/Workspaceapi';
+import { getBlock, getBlock2, saveData } from '../../../API/Workspaceapi';
 import { useParams } from 'react-router-dom';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
@@ -283,7 +283,7 @@ const BlockEditor = () => {
   const [dragOverPosition, setDragOverPosition] = useState(null); // 'top' or 'bottom'
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
-
+  const [blockstate, setBlockstate] = useState(true)
   const { workspacename, foldername, filename } = useParams();
   console.log(workspacename, foldername, filename, '2222222222222222222')
 
@@ -304,15 +304,26 @@ const BlockEditor = () => {
     { id: 'image', label: '이미지' },
   ];
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const onchangeHandler = async (e) => {
   //   await dispatch('POST', {workspacename, foldername, filename, data : blocks})
   //   console.log(e)
-    
-  // }
-  const textData = useSelector(state => state.textreducer)
-  console.log(textData,'textdata')
 
+  // }
+  // const textData = useSelector(state => state.textreducer)
+  // console.log(textData, 'textdata')
+  useEffect(() => {
+    const run = async () => {
+     const newData = await getBlock2(workspacename, foldername, filename)
+    console.log(newData.data, 'newdata')
+    setBlockstate(true)
+    if (blockstate) {
+      setBlocks(newData.data)
+      setBlockstate(false)
+      console.log(blocks, 'blocks111')
+    }}
+    run()
+  }, [])
 
   const addBlock = (type, currentId) => {
     const newBlock = {
@@ -413,7 +424,16 @@ const BlockEditor = () => {
     sel.addRange(range);
   };
 
-  const handleKeyDown = (e, blockId, type) => {
+  const handleKeyDown = async (e, blockId, type) => {
+    // dispatch({
+    //   type: 'POST',
+    //   payload: { workspacename, foldername, filename, data: blocks }
+    // })
+        // dispatch({
+    //   type: 'POST',
+    //   payload: { workspacename, foldername, filename, data: blocks }
+    // })
+
     const index = blocks.findIndex(b => b.id === blockId);
     const currentEl = blockRefs.current[blockId];
     if (!currentEl) return;
@@ -465,6 +485,11 @@ const BlockEditor = () => {
           moveCursorToStart(nextEl);
         }
       }
+    }
+    const newData = await getBlock(workspacename, foldername, filename, {data: blocks})
+    console.log(newData.data, 'newdata')
+    if (blockstate) {
+      console.log(blocks, 'blocks')
     }
   };
 
@@ -689,7 +714,9 @@ const BlockEditor = () => {
                     type="file"
                     accept="image/*"
                     style={{ display: 'none' }}
-                    onChange={(e) => handleImageUpload(e, block.id)}
+                    onChange={async (e) => {
+                      handleImageUpload(e, block.id)
+                    }}
                   />
                   <UploadIcon>+</UploadIcon>
                   <UploadText>이미지 추가하기</UploadText>
@@ -705,7 +732,8 @@ const BlockEditor = () => {
   return (
     <BlockEditorContainer>
       {blocks.map(block => (
-        <Block key={block.id} onChange={dispatch({type : 'POST',payload : {workspacename, foldername, filename, data : blocks}})}>
+        <Block key={block.id} >
+          {/* <Block key={block.id} onChange={dispatch({type : 'POST',payload : {workspacename, foldername, filename, data : blocks}})}> */}
           {renderBlock(block)}
         </Block>
       ))}

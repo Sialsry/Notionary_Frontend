@@ -60,7 +60,17 @@ const getWspacecontent = async (wname) => {
         return error
     }
 }
+const getBlock = async (workspacename, foldername, filename, data) => {
+    const {data : workspaceData} = await axios.post(`${WORKSPACE_URL}/workspace/selectspace/${workspacename}/${foldername}/${filename}` , {data})
+    const newData = JSON.parse(workspaceData.data.PageData.page_content)
+    return newData
+}
+
+const getBlock2 = async (workspacename, foldername, filename) => {
+    const {data : workspaceData} = await axios.get(`${WORKSPACE_URL}/workspace/selectspace/${workspacename}/${foldername}/${filename}` )
+    const newData = JSON.parse(workspaceData.data.PageData.page_content)
+    return newData
+}
 
 
-
-export {saveData, getworkspaceDataOne, getworkspaceDataTwo, getTextdata, getWspacecontent}
+export {getBlock, saveData, getworkspaceDataOne, getworkspaceDataTwo, getTextdata, getWspacecontent, getBlock2}
