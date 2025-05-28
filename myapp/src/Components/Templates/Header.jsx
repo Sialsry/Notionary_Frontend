@@ -86,6 +86,10 @@ const Header = () => {
   const [user, setUser] = useState({
     profileImage: null,
     nickname: "사용자",
+    gender: null,
+    phone: null,
+    dob: null,
+    addr: null,
   });
 
   const navigate = useNavigate();
@@ -142,6 +146,10 @@ const Header = () => {
           setUser({
             profileImage: response.data.user.profImg,
             nickname: response.data.user.nick,
+            gender: response.data.user.gender,
+            phone: response.data.user.phone,
+            dob: response.data.user.dob,
+            addr: response.data.user.addr,
           });
 
             dispatch({
