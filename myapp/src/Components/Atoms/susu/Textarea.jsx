@@ -14,7 +14,7 @@ const StyledTextarea = styled.textarea`
   color: ${({ color = '#000' }) => color};
 `;
 
-const Textarea = ({ width, height, padding, fontSize, fontWeight, borderRadius,borderColor, color,}) => {
+const Textarea = ({ width, height, padding, fontSize, fontWeight, borderRadius,borderColor, color, value, onChange}) => {
   return (
     <StyledTextarea
       width={width}
@@ -25,6 +25,8 @@ const Textarea = ({ width, height, padding, fontSize, fontWeight, borderRadius,b
       borderRadius={borderRadius}
       borderColor={borderColor}
       color={color}
+      value={value}
+      onChange={onChange}
     />
   );
 };

@@ -7,10 +7,10 @@ const Wrapper = styled.div`
   margin-bottom: 16px;
 `;
 
-const ContentEdit = () => (
+const ContentEdit = ({value, onChange}) => (
   <Wrapper>
     <Label>내용</Label>
-    <Textarea fontWeight={"bold"} name="content" rows="5" placeholder="질문 내용을 입력하세요" />
+    <Textarea fontWeight={"bold"} name="content" value={value} onChange={onChange} rows="5" placeholder="질문 내용을 입력하세요" />
   </Wrapper>
 );
 

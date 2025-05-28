@@ -7,10 +7,10 @@ const Wrapper = styled.div`
   margin-bottom: 16px;
 `;
 
-const TitleInput = () => (
+const TitleInput = ({ value, onChange }) => (
   <Wrapper>
     <Text>제목</Text>
-    <Input  width={"200px"}name="title" placeholder="질문 제목을 입력하세요" />
+    <Input  width={"200px"} name="title" value={value} onChange={onChange} placeholder="질문 제목을 입력하세요"/>
   </Wrapper>
 );
 

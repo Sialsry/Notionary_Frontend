@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 import { AllCategoryPost } from "../../API/PostApi";
 import PostCard from "../Molecules/susu/PostCard";
+import CommentList from "../Molecules/susu/CommentList";
+
 
 const fadeUp = keyframes`
   from {opacity:0; transform: translateY(20px);} 
@@ -27,103 +31,115 @@ const LoadingText = styled.h2`
   margin-top: 20px;
 `;
 
-// 게시글 개수 기본 개수 5
 const PAGE_SIZE = 5;
 
-const PostList = ({ posts }) => {
-  // 전체 게시글 저장 상태
-  const [allPosts, setAllPosts] = useState([]);
-  // 화면에 보여지는 게시글 갯수 상태 
+const PostList = () => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  // 로딩 상태관리
-  const [loading, setLoading] = useState(false);
-
+ const {
+  data: allPosts = [],
+  isLoading,
+  isError,
+} = useQuery({
+  queryKey: ['allPosts'],
+  queryFn: async () => {
+    const res = await AllCategoryPost({ offset: 0, limit: 800 });
+    return res.data;
+  },
+});
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE); 
+  }, []);
 
 
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE); // 카테고리 변경 시 초기화
-  }, [posts]);
-
-  
-useEffect(() => {
-  if (posts && posts.length > 0) {
-    setAllPosts(posts);
-  } else {
-    async function dataAll() {
-      setLoading(true);
-      try {
-        const res = await AllCategoryPost({ offset: 0, limit: 800 });
-        setAllPosts(res.data);
-      } catch (error) {
-        console.log(error);
-      }
-      setLoading(false);
-    }
-    dataAll();
-  }
-}, [posts]);
-
-  useEffect(() => {
-    // 스크롤 이벤트 핸들러 함수 
     const onScroll = () => {
-      if (loading) return;
-      // 화면에 보여지는 게시글 수가 전체 게시글 수보다 크거나 같으면 반환
+      if (isLoading) return;
       if (visibleCount >= allPosts.length) return;
 
-      // 스크롤 위치 값 윈도우 기준
       const scrollY = window.scrollY;
-      // 윈도우 창 높이 
       const innerHeight = window.innerHeight;
-      // 문서 전체 높이
       const scrollHeight = document.documentElement.scrollHeight;
 
       if (scrollHeight - (scrollY + innerHeight) < 300) {
-        setLoading(true);
         setTimeout(() => {
           let newCount = visibleCount + PAGE_SIZE;
           if (newCount > allPosts.length) {
             newCount = allPosts.length;
           }
           setVisibleCount(newCount);
-          setLoading(false);
         }, 500);
       }
     };
 
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [visibleCount, allPosts.length, loading]);
+  }, [visibleCount, allPosts.length, isLoading]);
+
+  if (isLoading) return <LoadingText>로딩중...</LoadingText>;
+  if (isError) return <LoadingText>데이터를 불러오는 중 오류가 발생했어요.</LoadingText>;
+
+  const parseImgPaths = (str) => {
+  try {
+    const parsed = JSON.parse(str);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const parseVideoPaths = (str) => {
+  try {
+    const parsed = JSON.parse(str);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return str ? [str] : [];
+  }
+};
+
+
 
   return (
     <FeedWrapper>
+      {allPosts.length === 0 && (
+        <LoadingText>게시글이 없습니다.</LoadingText>
+      )}
 
+      {allPosts.slice(0, visibleCount).map((category) =>
+        category.Posts?.map((post, index) => (
+          <AnimatedCardWrapper
+            key={post.post_id}
+            style={{ animationDelay: `${index * 300}ms` }}
+          >
+            <PostCard
+              authorUid={post.uid || "사용자 정보 없음"} 
+              title={post.title || "제목없음"}
+              images={parseImgPaths(post.imgPaths)}
+              videos={parseVideoPaths(post.videoPaths)}
+              imageAlt={post.title || "제목없음"}
+              content={post.content || "내용이 없습니다."}
+              categoryName={
+              category.ParentCategory?.category_name || "대표 카테고리"
+              }
+              subCategoryName={category.category_name || "세부 카테고리"}
+              post_id={post.post_id}
+              category_id={category.category_id}
+              hearts={post.Hearts || []} 
+            />
+            <CommentList
+            postId={post.post_id}
+            category_id={category.category_id}
+            comments={(post.Comments || []).map((comment) => ({
+            profileImageUrl: '/images/default_profile.png',
+            nickname: comment.nick,
+            content: comment.content,
+            createdAt: comment.createdAt,
+      }))}
+      />
+          </AnimatedCardWrapper>
+        ))
+      )}
 
-  {!loading && allPosts.length === 0 && (
-  <LoadingText>게시글이 없습니다.</LoadingText>
-)}
-
-  {Array.isArray(allPosts) &&
-  allPosts.map(category =>
-    category.Posts?.map((post, index) => (
-      <AnimatedCardWrapper
-        key={post.post_id}
-        style={{ animationDelay: `${index * 300}ms` }}
-      >
-        <PostCard
-          uid={post.uid || "사용자 정보 없음"}
-          title={post.title || "제목없음"}
-          imageSrc={post.imgPaths || ""}
-          imageAlt={post.title || "제목없음"}
-          content={post.content || "내용이 없습니다."}
-          categoryName={category.ParentCategory?.category_name || "대표 카테고리"}
-          subCategoryName={category.category_name || "세부 카테고리"}
-        />
-      </AnimatedCardWrapper>
-    ))
-)}
-
-      {loading && <LoadingText>로딩중...</LoadingText>}
-      {!loading && visibleCount >= allPosts.length && (
+      {visibleCount >= allPosts.length && (
         <p style={{ textAlign: "center" }}>마지막 게시물입니다.</p>
       )}
     </FeedWrapper>

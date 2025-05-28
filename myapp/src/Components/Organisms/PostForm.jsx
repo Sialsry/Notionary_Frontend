@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom'
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import TitleInput from '../Molecules/susu/TitleInput';
@@ -46,58 +46,83 @@ const ButtonGroup = styled.div`
 
 const QuestionForm = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log(userInfo);
+  // console.log(userInfo)
   const uid = userInfo?.uid;
-  const [categoryId, setCategoryId] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [mainCategory, setMainCategory] = useState('');
   const [subCategories, setSubCategories] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const { mutate } = useMutation({
     mutationFn : CreatePost,
     onSuccess : (data) => {
       console.log(data);
+      queryClient.invalidateQueries(['posts']);
+      navigate('/main');
     },
     onError : (data) => {
-      console.log(data)
+      console.log(data);
     }
-  })
+  });
+
+  const isFormValid =
+    typeof mainCategory === 'string' &&
+    mainCategory.trim() !== '' &&
+    Array.isArray(subCategories) &&
+    subCategories.length > 0 &&
+    typeof content === 'string' &&
+    content.trim() !== '';
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isFormValid) {
+      alert('제목, 대표 카테고리, 세부 카테고리, 내용을 모두 입력해주세요.');
+      return;
+    }
 
-    const formData = new FormData(e.target);
+    if (!categoryId) {
+      alert('세부 카테고리를 선택해주세요.');
+      return;
+    }
+
+    const formData = new FormData();
     formData.append('mainCategory', mainCategory);
     formData.append('subCategories', subCategories.join(','));
     formData.append('uid', uid);
     formData.append('category_id', categoryId);
     formData.append('title', title);
     formData.append('content', content);
+    files.forEach((file) => {
+      formData.append('media', file);
+    });
+
     mutate(formData);
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.preventDefault();
     navigate('/main');
   };
 
-  const isFormValid = mainCategory && subCategories.length > 0;
-
   return (
-    <Form onSubmit={handleSubmit} encType="multipart/form-data">
+    <Form onSubmit={handleSubmit}>
       <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} />
-      <MediaUpload />
-      <CategorySelect onCategoryChange={(main, subs) => {
-        setMainCategory(main);
-        setSubCategories(subs);
-      }} />
+      <MediaUpload onFileSelect={(newFiles) => setFiles(newFiles)} />
+      <CategorySelect
+        onCategoryChange={(main, subs, selectedCategoryId) => {
+          setMainCategory(main);
+          setSubCategories(subs);
+          setCategoryId(selectedCategoryId);
+        }}
+      />
       <ContentEdit value={content} onChange={(e) => setContent(e.target.value)} />
       <ButtonGroup>
         <Button onClick={handleCancel} type="button">취소</Button>
-        <Button type="submit" disabled={!isFormValid}>
-          질문 등록
-        </Button>
+        <Button type="submit" disabled={!isFormValid}>질문 등록</Button>
       </ButtonGroup>
     </Form>
   );

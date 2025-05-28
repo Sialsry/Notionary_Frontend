@@ -19,11 +19,7 @@ const SubCategoryPost = async ({category_name , SubCategory}) => {
 }
 
 const CreatePost = async (formData) => {
-  const { data } = await axios.post(`${API_BASE_URL}/post`,  formData, {
-    headers : {
-      "Content-Type" : "multipart/form-data"
-    }
-  })
+  const { data } = await axios.post(`${API_BASE_URL}/post`, formData)
   console.log("서버에서 받은 데이터 : " , data);
   return data;
 }

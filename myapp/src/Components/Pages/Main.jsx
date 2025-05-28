@@ -246,7 +246,7 @@ const Main = () => {
               ClosedModal();
             }}
           >
-            완료
+            조회
           </Button>
 
           {mutation.isLoading && (
