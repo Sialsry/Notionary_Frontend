@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { addicon, doticon } from '../../../images'
+import { addicon, doticon } from '../../../../images'
 
 
 const  Select = styled.div`

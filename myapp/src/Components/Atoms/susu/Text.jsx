@@ -6,7 +6,10 @@ const Wrap = styled.div`
   width: ${({ width }) => width || 'auto'};
   height: ${({ height }) => height || 'auto'};
   color: black;
-`;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
 
 const Text = ({ fontSize, width, height, children, onClick }) => {
   return (
