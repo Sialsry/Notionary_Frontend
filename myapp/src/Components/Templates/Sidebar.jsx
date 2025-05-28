@@ -20,7 +20,7 @@ const Sidebar = () => {
   const [state, setState] = useState(false)
   // const [teamcontent, setTeamcontent] = useState([])
   // const [privatecontent, setPrivatecontent] = useState([])
-    const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
+  const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
   const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
 
@@ -35,7 +35,7 @@ const Sidebar = () => {
   //   refetchOnWindowFocus: true,
   //   enabled: true,
   //   retry: 10,
-    
+
   // })
 
   // const { data: workspacedataTwo, isLoading: isLoadingTwo } = useQuery({
@@ -47,23 +47,35 @@ const Sidebar = () => {
   //   retry: 10
   // })
 
-  
+
   useEffect(() => {
     const getworkspacedata = async () => {
       const workspaceOne = await getworkspaceDataOne()
       const workspaceTwo = await getworkspaceDataTwo()
-      if(workspaceOne  && workspaceTwo) {
-      setPrivatecontent(workspaceOne.data)
-      setTeamcontent(workspaceTwo.data)
-      console.log(privatecontent, teamcontent,'sdf', workspaceTwo.data, workspaceOne.data)
-      setState(false)
+      if (workspaceOne.data.length === 0) {
+        return
       }
+      else {
+
+      }
+      setPrivatecontent(workspaceOne.data)
+      // setTeamcontent(workspaceTwo.data)
+      // console.log(privatecontent, teamcontent,'sdf', workspaceTwo.data, workspaceOne.data)
+      // setState(false)
+      if (workspaceTwo.data.length === 0) {
+        return
+      }
+      else { setTeamcontent(workspaceTwo.data) }
+      console.log(workspaceOne, workspaceTwo, 'wodkkd')
+      console.log(privatecontent, teamcontent,'sdf', workspaceTwo.data, workspaceOne.data)
+      // setState(false)
+
     }
     getworkspacedata()
-    
-  },[state])
+
+  }, [state])
   // useEffect(() => {
-    
+
   //   console.log(privatecontent, teamcontent,'sdf')
   // }, [privatecontent])
   // const newData = data?.data
@@ -79,7 +91,7 @@ const Sidebar = () => {
 
 
   // useEffect(() => {
-    
+
   //   if (!isLoadingOne && !isLoadingTwo) {
   //     setPrivatecontent(workspacedataOne.data[0] )
   //     console.log(workspacedataOne.data[0], 'usequery1', teamcontent1)
@@ -104,7 +116,7 @@ const Sidebar = () => {
   // const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
 
   useEffect(() => {
-    console.log(typeof (privatecontent), 'private', teamcontent)
+    console.log(privatecontent, 'private', teamcontent)
   }, [privatecontent, teamcontent])
   // if()
   return (
