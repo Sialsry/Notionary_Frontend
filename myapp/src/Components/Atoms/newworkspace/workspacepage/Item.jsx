@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import useSelecttitle from '../../../Hooks/workspace/useSelecttitle'
+import useSelecttitle from '../../../../Hooks/workspace/useSelecttitle'
 
 const Itemwrap = styled.div`
     &:hover {
@@ -36,8 +36,8 @@ const Item = ({ icon, title, setitemactive, setSelecttitle }) => {
             <div className='suggesttitle'>suggestions</div>
               {icon.map((el, index) =>
                 <Itemwrap key={index} onClick={() => {
-                  setSelecttitle(title[index])
-                  setitemactive("false")
+                  // setSelecttitle(title[index])
+                  // setitemactive("false")
                 }} >
                 <img src={el ? el : ""} alt="" />
                 <div className='itemtitle' >{title[index]}</div>

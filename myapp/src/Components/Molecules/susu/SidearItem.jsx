@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Text from '../../Atoms/susu/Text';
-
 const Section = styled.div`
   display: flex;
   flex-direction: column;
@@ -9,11 +8,14 @@ const Section = styled.div`
   margin-bottom: 20px;
 `;
 
-const SidebarItem = ({ items }) => {
+const SidebarItem = ({ items, onClick }) => {
   return (
     <Section>
       {items.map((item, index) => (
-        <Text key={index}>{item}</Text>
+        <Text key={index} style={{ cursor: 'pointer' }} onClick={() => onClick && onClick(item)}
+        >
+          {item}
+        </Text>
       ))}
     </Section>
   );
