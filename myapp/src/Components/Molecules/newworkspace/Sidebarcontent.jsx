@@ -5,6 +5,7 @@ import { saveData, getworkspaceData } from '../../../API/Workspaceapi'
 import { folder, logo, page } from '../../../images'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 const Contentwrap = styled.div`
@@ -226,7 +227,7 @@ const Folderwrap = styled.div`
 }
 `
 
-const Sidebarcontent = ({ contents, setState, setContent }) => {
+const Sidebarcontent = ({setPagestate, contents, setState, setContent }) => {
 
     const [header, setHeader] = useState('');
     const [category, setCategory] = useState({})
@@ -236,6 +237,12 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
     const [popupfile, setPopupfile] = useState()
     const [isprivateopen, setIsprivateopen] = useState({})
     const [toggleindex, settoggleIndex] = useState()
+    const [dispatchstate, setDispatchstate] = useState(false)
+    const dispatch = useDispatch();
+    
+    
+
+    
 
     const toggleSection = (key) => {
         if (isprivateopen[key]) return (
@@ -253,19 +260,27 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
             setCategory({ workSpace: key, folderName })
             return { ...obj, [key]: [...obj[key], { [folderName]: [] }] }
         }))
+        setPopupfolder(false)
         alert('successful')
     }
     const createFile = async (e) => {
         e.preventDefault();
         const { value: fileName } = e.target.filename;
+        console.log(fileName, 'filename')
         setContent(prev => prev.map((obj, index) => {
             const mainkey = Object.keys(obj)[0];
             const updatedsub = obj[mainkey].map((subObj, subindex) => {
                 const subkey = Object.keys(subObj)[0];
                 console.log(mainkey, subkey, 'subkey', fileName)
-                setSubcategory({ workSpace: mainkey, folderName: subkey, fileName })
-                return { ...subObj, [subkey]: [...subObj[subkey], fileName] }
+                if (subcategory === subkey) {
+                    setSubcategory({ workSpace: mainkey, folderName: subkey, fileName })
+                    
+                    return { ...subObj, [subkey]: [...subObj[subkey], fileName] }
+                }
+                return { ...subObj, [subkey]: [...subObj[subkey]] }
+                // else {return}
             })
+            setPopupfile(false)
             return { ...obj, [mainkey]: updatedsub }
         }))
 
@@ -326,6 +341,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                                             <Addbtn onClick={(e) => {
                                                 e.stopPropagation()
                                                 setPopupfile(true)
+                                                setSubcategory(folderTitle)
                                             }}>+</Addbtn>
                                         </Btnwrap>
                                     </Titlecontent>
@@ -334,6 +350,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                                         <Content onClick={(e) => {
                                             e.stopPropagation()
                                             pagenavigate(mainTitle, folderTitle, pageTitle, entryIndex)
+                                            // setPagestate(true)
+                                            dispatch({type : 'True'})
                                         }}>
                                             {entry}
                                             {/* <span className='contentdot'>⋮⋮</span> */}
