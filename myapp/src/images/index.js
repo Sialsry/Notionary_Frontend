@@ -9,11 +9,14 @@ import table from "./icons/table.png"
 import todolist from "./icons/todolist.png"
 import toggle from "./icons/toggle.png"
 import togglelist from "./icons/togglelist.png"
+import cute from "./pics/download.jfif"
 import image from "./icons/image.png"
-
-
+import logo from "./notionary-logo.png"
+import page from "./icons/page.png"
+import folder from "./icons/folder.png"
 
 
 export {addicon, bulletlist, calendar, databasetable, doticon, header,
-    numberlist, table,todolist, toggle, togglelist, image
+    numberlist, table, todolist, toggle, togglelist,  cute, image, logo,
+    folder, page
 }
