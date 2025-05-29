@@ -284,6 +284,7 @@ const BlockEditor = () => {
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
   const [blockstate, setBlockstate] = useState(true)
+  const [filedata, setFiledata] = useState(false)
   const { workspacename, foldername, filename } = useParams();
   console.log(workspacename, foldername, filename, '2222222222222222222')
 
@@ -493,19 +494,7 @@ const BlockEditor = () => {
 
   };
 
-  useEffect(() => {
-    const run = async () => {
-      // setBlockstate(true)
-      const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
-      if (blockstate ) {
-        setBlockstate(false)
-        console.log(blocks, 'blocks111')
-      }
 
-
-    }
-    run()
-  }, [blockstate])
 
   const handleDragStart = (e, blockId) => {
     setDraggedBlock(blockId);
@@ -543,6 +532,7 @@ const BlockEditor = () => {
 
     setDragOverBlock(null);
     setDragOverPosition(null);
+    setBlockstate(true)
   };
 
   const handleDragEnd = () => {
@@ -553,6 +543,7 @@ const BlockEditor = () => {
 
   const handleImageUpload = (e, blockId) => {
     const file = e.target.files[0];
+    console.log(file.name, 'file')
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -561,8 +552,22 @@ const BlockEditor = () => {
         ));
       };
       reader.readAsDataURL(file);
+      setBlockstate(true)
     }
   };
+
+
+  useEffect(() => {
+    const run = async () => {
+      // setBlockstate(true)
+      const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
+      if (blockstate ) {
+        setBlockstate(false)
+        console.log(blocks, 'blocks111')
+      }
+    }
+    run()
+  }, [blockstate])
 
   const renderBlock = (block) => {
     const blockType = blockTypes.find(t => t.id === block.type);
