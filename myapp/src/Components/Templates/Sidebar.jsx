@@ -16,12 +16,13 @@ const SidebarWrap = styled.div`
   overflow-y: scroll;
 `;
 
-const Sidebar = () => {
+const Sidebar = ({setPagestate}) => {
   const [state, setState] = useState(false)
   const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
   const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
   const queryClient = useQueryClient();
 
+  console.log(setPagestate, 'setPage')
   useEffect(() => {
     const getworkspacedata = async () => {
       const workspaceOne = await getworkspaceDataOne()
@@ -39,8 +40,16 @@ const Sidebar = () => {
 
   return (
     <SidebarWrap>
-      <Sidebarcontent contents={privatecontent} setState={setState} setContent={setPrivatecontent} ></Sidebarcontent>
-      <Sidebarcontent contents={teamcontent} setState={setState} setContent={setTeamcontent} ></Sidebarcontent>
+      <Sidebarcontent contents={privatecontent} 
+      setState={setState} 
+      setContent={setPrivatecontent} 
+      setPagestate={setPagestate}
+      ></Sidebarcontent>
+      <Sidebarcontent contents={teamcontent} 
+      setState={setState} 
+      setContent={setTeamcontent} 
+      setPagestate={setPagestate}
+      ></Sidebarcontent>
     </SidebarWrap>
   );
 };
