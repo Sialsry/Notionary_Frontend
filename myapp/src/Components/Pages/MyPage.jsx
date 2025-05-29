@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   Heart,
@@ -602,6 +603,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 // 메인 컴포넌트
 const MyPage = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     uid: null,
     profImg: null,
@@ -703,6 +705,7 @@ const MyPage = () => {
 
       if (!accessToken) return;
 
+      console.log("토큰:", accessToken);
       const response = await axios.get(
         "http://localhost:4000/mypage/getLikedPosts",
         {
@@ -710,7 +713,6 @@ const MyPage = () => {
           withCredentials: true,
         }
       );
-
       setLikedPosts(response.data.data || []);
     } catch (error) {
       console.error("좋아요 게시글 가져오기 실패:", error);
@@ -908,6 +910,10 @@ const MyPage = () => {
     }
   };
 
+  const handlePostClick = (postId) => {
+    navigate(`/detail/${postId}`);
+  };
+
   // 게시글 렌더링 함수
   const renderPostList = (
     posts,
@@ -919,7 +925,11 @@ const MyPage = () => {
       {posts.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {posts.map((post) => (
-            <PostItem key={post.post_id}>
+            <PostItem
+              key={post.post_id}
+              onClick={() => handlePostClick(post.post_id)} // 클릭 핸들러 추가
+              style={{ cursor: "pointer" }} // 커서 포인터 추가
+            >
               <PostThumbnail src={post.firstImage || post.imgPaths}>
                 {!post.firstImage && !post.imgPaths && <FileText size={20} />}
               </PostThumbnail>
