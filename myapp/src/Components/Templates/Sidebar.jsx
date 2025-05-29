@@ -1,20 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SidebarItem from '../Molecules/SidearItem';
-
+import SidebarItem from '../Molecules/susu/SidearItem';
+import { addicon } from '../../images';
+import Sidebarcontent from '../Molecules/newworkspace/Sidebarcontent';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getworkspaceData, getworkspaceDataOne, getworkspaceDataTwo } from '../../API/Workspaceapi';
 
 const SidebarWrap = styled.div`
-  width: 230px;
+  width: 300px;
   background: rgb(248, 248, 247);
   height: 100vh;
-  padding-top: 20px;
+  padding: 0px 0px 100px 40px;
   position: fixed;
+  box-sizing: border-box;
+  overflow-y: scroll;
 `;
 
-const Sidebar = () => {
+const Sidebar = ({setPagestate}) => {
+  const [state, setState] = useState(false)
+  const [teamcontent, setTeamcontent] = useState([{ '팀 워크스페이스': [] }])
+  const [privatecontent, setPrivatecontent] = useState([{ '개인 워크스페이스': [] }])
+  const queryClient = useQueryClient();
+
+  console.log(setPagestate, 'setPage')
+  useEffect(() => {
+    const getworkspacedata = async () => {
+      const workspaceOne = await getworkspaceDataOne()
+      const workspaceTwo = await getworkspaceDataTwo()
+      if (workspaceOne.data.length !== 0) {
+        setPrivatecontent(workspaceOne.data)
+      }
+      if (workspaceTwo.data.length !== 0) {
+        setTeamcontent(workspaceTwo.data)
+      }
+      
+    }
+    getworkspacedata()
+  }, [state])
+
   return (
     <SidebarWrap>
-      <SidebarItem items={['홈', '글 추가' ,'개인 워크스페이스', '팀 워크스페이스' ]} />
+      <Sidebarcontent contents={privatecontent} 
+      setState={setState} 
+      setContent={setPrivatecontent} 
+      setPagestate={setPagestate}
+      ></Sidebarcontent>
+      <Sidebarcontent contents={teamcontent} 
+      setState={setState} 
+      setContent={setTeamcontent} 
+      setPagestate={setPagestate}
+      ></Sidebarcontent>
     </SidebarWrap>
   );
 };
