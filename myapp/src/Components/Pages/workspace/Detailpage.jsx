@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "../../Templates/Header";
 import Sidebar from "../../Templates/Sidebar";
@@ -14,11 +14,13 @@ const Mainwrap = styled.div`
 
 
 const Detailpage = () => {
+  const [pagestate, setPagestate] = useState(false);
+  console.log(pagestate, 'pagestate')
   return (
     <Mainwrap>
       <Header/>
-      <Sidebar /> 
-      <BlockEditor />
+      <Sidebar setPagestate={setPagestate} /> 
+      <BlockEditor pagestate={pagestate} setPagestate={setPagestate} />
     </Mainwrap>
   );
 };
