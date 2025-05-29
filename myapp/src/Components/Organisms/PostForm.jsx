@@ -110,9 +110,10 @@ const isFormValid =
       <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} />
       <MediaUpload onFileSelect={(newFiles) => setFiles(newFiles)} />
       <CategorySelect
-    onCategoryChange={(main, subs, selectedCategoryId) => {
+    onCategoryChange={(main, subs) => {
   setMainCategory(main);
   setSubCategories(subs);
+  
 
   if (main === '기타') {
     setCategoryId(6);

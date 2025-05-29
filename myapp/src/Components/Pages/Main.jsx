@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { SubCategoryPost , AllCategoryPost} from '../../API/PostApi';
+import { useNavigate } from 'react-router-dom';
+import { SubCategoryPost , AllCategoryPost,  EtcCategoryPost } from '../../API/PostApi';
 import Sidebar from '../Templates/Sidebar';
 import styled from 'styled-components';
 import Categories from '../Molecules/susu/Categories';
@@ -96,12 +97,14 @@ const Main = () => {
   const [posts, setPosts] = useState([]);
   const [showMainText, setShowMainText] = useState(true);
 
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMainText(false);
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
+  
 
   const mutation = useMutation({
     mutationFn: SubCategoryPost,
@@ -123,6 +126,17 @@ const Main = () => {
     },
   });
 
+  const etcCategoryMutation = useMutation({
+  mutationFn: EtcCategoryPost,
+  onSuccess: (data) => {
+    setPosts(data.data);
+  },
+  onError: (error) => {
+    console.log(error);
+  },
+});
+
+
   const categoryList = [
     { name: '전체', text: '전체' },
     { name: 'IT', text: 'IT' },
@@ -141,18 +155,21 @@ const Main = () => {
     취미 : ['여행', '스포츠/액티비티', '예술/공예', '독서/글쓰기', '요리/음식', '음악', '게임', '자연/힐링'],
   };
 
-  const handleCategorySelect = (category) => {
-    setSelect(category);
-    setSelectSubCategory([]);
-    if (category === '전체' || category === '기타') {
-      ClosedModal();
-      setPosts([]);
-      allCategoryMutation.mutate({ category_name: category });
-    } else {
-      OpenModal();
-    }
-  };
+const handleCategorySelect = (category) => {
+  setSelect(category);
+  setSelectSubCategory([]);
+  setPosts([]);
 
+  if (category === '전체') {
+    ClosedModal();
+    allCategoryMutation.mutate();
+  } else if (category === '기타') {
+    ClosedModal();
+    etcCategoryMutation.mutate();
+  } else {
+    OpenModal();
+  }
+};
   const handleSubCategorySelect = (subCategory) => {
     setSelectSubCategory(prev =>
       prev.includes(subCategory)
@@ -253,11 +270,11 @@ const Main = () => {
             조회
           </Button>
 
-          {(mutation.isLoading || allCategoryMutation.isLoading) && (
-            <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
-              불러오는 중...
-            </Text>
-          )}
+       {(mutation.isLoading || allCategoryMutation.isLoading || etcCategoryMutation.isLoading) && (
+      <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
+        불러오는 중...
+      </Text>
+    )}
         </CompleteWrap>
       </Modal>
     </>

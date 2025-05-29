@@ -43,10 +43,9 @@ const PostList = ({ posts: externalPosts }) => {
   } = useQuery({
     queryKey: ['allPosts'],
     queryFn: async () => {
-      const res = await AllCategoryPost({ offset: 0, limit: 800 });
+      const res = await AllCategoryPost({ offset: 0, limit: 1000 });
       return res.data;
     },
-    enabled: !externalPosts, // 외부 posts가 있을 땐 전체 API 호출 안 함
   });
 
   const postsToRender = externalPosts || allPostsData;
@@ -100,7 +99,6 @@ const PostList = ({ posts: externalPosts }) => {
     }
   };
 
-  // ⚠️ 게시글이 없는 경우 처리
   const flatPosts = postsToRender.flatMap((category) => category.Posts || []);
   if (flatPosts.length === 0) {
     return <LoadingText>게시글이 없습니다.</LoadingText>;

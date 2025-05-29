@@ -69,70 +69,70 @@ const categoryMap = {
   IT: {
     id: 1,
     subs: [
-      { id: 6, name: '프로그래밍' },
-      { id: 7, name: '인공지능' },
-      { id: 8, name: '클라우드' },
-      { id: 9, name: '사물인터넷' },
-      { id: 10, name: '게임' },
-      { id: 11, name: '네트워크'},
-      { id: 12, name: '보안' },
-      { id: 13, name: '기타' },
+      { id: 7, name: '프로그래밍' },
+      { id: 8, name: '인공지능' },
+      { id: 9, name: '클라우드' },
+      { id: 10, name: '사물인터넷' },
+      { id: 11, name: '게임' },
+      { id: 12, name: '네트워크'},
+      { id: 13, name: '보안' },
+      { id: 14, name: '기타' },
     ],
   },
 
   디자인: {
     id: 2,
     subs: [
-      { id: 16, name: 'UI/UX' },
-      { id: 17, name: '그래픽디자인' },
-      { id: 18, name: '건축디자인' },
-      { id: 19, name: '공간디자인' },
-      { id: 20, name: '기타' },
+      { id: 15, name: 'UI/UX' },
+      { id: 16, name: '그래픽디자인' },
+      { id: 17, name: '건축디자인' },
+      { id: 18, name: '공간디자인' },
+      { id: 19, name: '기타' },
     ],
   },
 
   교육: {
     id: 3,
     subs: [
-      { id: 31, name: '예체능' },
-      { id: 32, name: '공학' },
-      { id: 33, name: '의학' },
-      { id: 34, name: '법학' },
-      { id: 35, name: '인문학' },
-      { id: 36, name: '사회과학' },
-      { id: 37, name: '자연과학' },
-      { id: 38, name: '기타' },
+      { id: 20, name: '예체능' },
+      { id: 21, name: '공학' },
+      { id: 22, name: '의학' },
+      { id: 23, name: '법학' },
+      { id: 24, name: '인문학' },
+      { id: 25, name: '사회과학' },
+      { id: 26, name: '자연과학' },
+      { id: 27, name: '기타' },
     ],
   },
 
   금융: {
     id: 4,
     subs: [
-      { id: 41, name: '주식투자' },
-      { id: 42, name: '가상화폐' },
-      { id: 43, name: '부동산' },
-      { id: 44, name: '재테크' },
-      { id: 45, name: '기타' },
+      { id: 28, name: '주식투자' },
+      { id: 29, name: '가상화폐' },
+      { id: 30, name: '부동산' },
+      { id: 31, name: '재테크' },
+      { id: 32, name: '기타' },
     ],
   },
 
   취미 : {
     id: 5,
     subs: [
-      { id: 51, name: '여행' },
-      { id: 52, name: '스포츠/액티비티' },
-      { id: 53, name: '예술/공예' },
-      { id: 54, name: '독서/글쓰기' },
-      { id: 55, name: '요리/음식' },
-      { id: 56, name: '음악' },
-      { id: 57, name: '게임' },
-      { id: 58, name: '자연/힐링' },
+      { id: 33, name: '여행' },
+      { id: 34, name: '스포츠/액티비티' },
+      { id: 35, name: '예술/공예' },
+      { id: 36, name: '독서/글쓰기' },
+      { id: 37, name: '요리/음식' },
+      { id: 38, name: '음악' },
+      { id: 39, name: '게임' },
+      { id: 40, name: '자연/힐링' },
     ],
   },
-  
-  기타 : {
-    id : 6,
-    subs : []
+
+  기타: {
+    id: 6,
+    subs: []
   }
 };
 
