@@ -50,15 +50,6 @@ const Chip = styled.div`
   user-select: none;
 `;
 
-const SelectAllButton = styled.button`
-  margin: 8px 0;
-  padding: 6px 12px;
-  background-color: #7e57c2;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-`;
 
 const CategorySelector = ({ onCategoryChange }) => {
   const [mainCategory, setMainCategory] = useState('');

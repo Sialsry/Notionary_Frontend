@@ -242,7 +242,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
             const updatedsub = obj[mainkey].map((subObj, subindex) => {
                 const subkey = Object.keys(subObj)[0];
                 // if (subindex !== selectedSubIndex) return subObj;
-                console.log(mainkey, subkey, 'subkey', fileName)
+                // console.log(mainkey, subkey, 'subkey', fileName)
                 // toggleSection(index)
                 setSubcategory({workSpace : mainkey, folderName : subkey, fileName})
                 return { ...subObj, [subkey]: [...subObj[subkey], fileName] }
@@ -252,7 +252,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
 
     }
     useEffect(() => {
-        console.log(category, 'category', contents, )
+        // console.log(category, 'category', contents, )
         const Run = async () => {
             await saveData('workSpace/newFolder', { data : category })
         }
@@ -260,7 +260,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
     }, [category])
 
     useEffect(() => {
-        console.log(subcategory, 'category1111', contents, )
+        // console.log(subcategory, 'category1111', contents, )
         const Run = async () => {
             await saveData('workSpace/newPage', { data : subcategory })
         }
@@ -280,7 +280,7 @@ const Sidebarcontent = ({ contents,setState, setContent }) => {
         navigate(`/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle[entryIndex]}`)
     }
 
-    console.log(contents, 'open', popupfile)
+    // console.log(contents, 'open', popupfile)
     return (<>
         {
             contents.map((item, index) => {
