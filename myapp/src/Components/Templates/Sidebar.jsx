@@ -41,6 +41,7 @@ const Sidebar = ({ setPagestate }) => {
     const getworkspacedata = async () => {
       const workspaceOne = await getworkspaceDataOne();
       const workspaceTwo = await getworkspaceDataTwo();
+      console.log(workspaceOne, workspaceTwo, "workspaceOne, workspaceTwo");
       if (workspaceOne.data.length !== 0) {
         setPrivatecontent(workspaceOne.data);
       }
