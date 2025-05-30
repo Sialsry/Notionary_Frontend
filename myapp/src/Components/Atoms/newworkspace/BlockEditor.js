@@ -273,7 +273,7 @@ const RemoveImageButton = styled.button`
   }
 `;
 
-const BlockEditor = () => {
+const BlockEditor = ({ setPagestate, pagestate }) => {
   const [blocks, setBlocks] = useState([
     { id: 1, type: 'text', content: '', checked: false },
   ]);
@@ -284,17 +284,15 @@ const BlockEditor = () => {
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
   const [blockstate, setBlockstate] = useState(true)
+  const [filedata, setFiledata] = useState(false)
   const { workspacename, foldername, filename } = useParams();
-  console.log(workspacename, foldername, filename, '2222222222222222222')
+  const dispatch = useDispatch()
+  const action = useSelector(state => state.pagestate)
+  const [imagepath, setImagepath] = useState()
 
 
-
-  useEffect(() => {
-    // saveData(blocks)
-    console.log(blockRefs, ' blockref')
-    console.log('check1')
-  }, [blocks])
-
+  console.log(action, 'setPagestate')
+  console.log(workspacename, foldername, filename, 'params')
   const blockTypes = [
     { id: 'text', label: 'T 텍스트' },
     { id: 'h1', label: 'H1 제목' },
@@ -304,26 +302,32 @@ const BlockEditor = () => {
     { id: 'image', label: '이미지' },
   ];
 
-  const dispatch = useDispatch();
-  // const onchangeHandler = async (e) => {
-  //   await dispatch('POST', {workspacename, foldername, filename, data : blocks})
-  //   console.log(e)
+  
 
-  // }
-  // const textData = useSelector(state => state.textreducer)
-  // console.log(textData, 'textdata')
   useEffect(() => {
     const run = async () => {
-     const newData = await getBlock2(workspacename, foldername, filename)
-    console.log(newData.data, 'newdata')
-    setBlockstate(true)
-    if (blockstate) {
-      setBlocks(newData.data)
-      setBlockstate(false)
-      console.log(blocks, 'blocks111')
-    }}
+      const newData = await getBlock2(workspacename, foldername, filename) 
+      console.log(newData, 'newdata',)
+      console.log(action, 'setPagestate')
+      if (newData) {
+        if (newData.length !== 0) {
+          setBlocks(newData)
+          // setBlockstate(true)
+          // setBlockstate(false)
+          // setPagestate(false)
+          dispatch({ type: 'False' })
+          console.log(blocks, 'blocks111')
+        }
+
+      }
+      else {
+        dispatch({ type: 'False' })
+        return
+      }
+    }
+
     run()
-  }, [])
+  }, [action])
 
   const addBlock = (type, currentId) => {
     const newBlock = {
@@ -425,14 +429,6 @@ const BlockEditor = () => {
   };
 
   const handleKeyDown = async (e, blockId, type) => {
-    // dispatch({
-    //   type: 'POST',
-    //   payload: { workspacename, foldername, filename, data: blocks }
-    // })
-        // dispatch({
-    //   type: 'POST',
-    //   payload: { workspacename, foldername, filename, data: blocks }
-    // })
 
     const index = blocks.findIndex(b => b.id === blockId);
     const currentEl = blockRefs.current[blockId];
@@ -486,12 +482,12 @@ const BlockEditor = () => {
         }
       }
     }
-    const newData = await getBlock(workspacename, foldername, filename, {data: blocks})
-    console.log(newData.data, 'newdata')
-    if (blockstate) {
-      console.log(blocks, 'blocks')
-    }
+    // const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
+    setBlockstate(true)
+
   };
+
+
 
   const handleDragStart = (e, blockId) => {
     setDraggedBlock(blockId);
@@ -529,6 +525,7 @@ const BlockEditor = () => {
 
     setDragOverBlock(null);
     setDragOverPosition(null);
+    setBlockstate(true)
   };
 
   const handleDragEnd = () => {
@@ -539,16 +536,36 @@ const BlockEditor = () => {
 
   const handleImageUpload = (e, blockId) => {
     const file = e.target.files[0];
+    console.log(file.name, 'file')
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        setBlocks(blocks.map(block =>
-          block.id === blockId ? { ...block, content: event.target.result } : block
+      reader.onload = async (event) => {
+        
+        console.log("12312312eventevent", event)
+        setBlocks(blocks.map(block => block.id === blockId ? { ...block, content: event.target.result } : block
         ));
+      await getBlock(workspacename, foldername, filename, { data: blocks }, file, blockId);
       };
       reader.readAsDataURL(file);
+      // setImagepath({ file })
     }
+    // setBlockstate(true)
   };
+
+
+  useEffect(() => {
+    const run = async () => {
+      // setBlockstate(true)
+      // console.log(imagepath, ' imagepath')
+      const newData = await getBlock(workspacename, foldername, filename, { data: blocks })
+
+      if (blockstate) {
+        setBlockstate(false)
+        console.log(blocks, 'blocks111')
+      }
+    }
+    run()
+  }, [blockstate])
 
   const renderBlock = (block) => {
     const blockType = blockTypes.find(t => t.id === block.type);

@@ -50,15 +50,6 @@ const Chip = styled.div`
   user-select: none;
 `;
 
-const SelectAllButton = styled.button`
-  margin: 8px 0;
-  padding: 6px 12px;
-  background-color: #7e57c2;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-`;
 
 const CategorySelector = ({ onCategoryChange }) => {
   const [mainCategory, setMainCategory] = useState('');
@@ -69,79 +60,71 @@ const categoryMap = {
   IT: {
     id: 1,
     subs: [
-      { id: 6, name: '앱 개발' },
-      { id: 7, name: '웹 개발' },
-      { id: 8, name: '개발PM' },
-      { id: 9, name: '블록체인 개발' },
-      { id: 10, name: '데이터분석가' },
-      { id: 11, name: '데이터 엔지니어' },
-      { id: 12, name: '웹 마스터' },
-      { id: 13, name: '백엔드/서버개발' },
-      { id: 14, name: '프론트엔드' },
-      { id: 15, name: '보안컨설팅' },
-    ],
-  },
-
-  기술스택: {
-    id: 2,
-    subs: [
-      { id: 16, name: 'C언어' },
-      { id: 17, name: 'C++' },
-      { id: 18, name: 'C#' },
-      { id: 19, name: 'java' },
-      { id: 20, name: 'JavaScript' },
-      { id: 21, name: 'jQuery' },
-      { id: 22, name: 'Node.js' },
-      { id: 23, name: 'MySQL' },
-      { id: 24, name: 'React' },
-      { id: 25, name: 'HTML' },
-      { id: 26, name: 'CSS' },
-      { id: 27, name: 'Python' },
-      { id: 28, name: 'PHP' },
-      { id: 29, name: 'React-Native' },
-      { id: 30, name: 'Redux' },
+      { id: 7, name: '프로그래밍' },
+      { id: 8, name: '인공지능' },
+      { id: 9, name: '클라우드' },
+      { id: 10, name: '사물인터넷' },
+      { id: 11, name: '게임' },
+      { id: 12, name: '네트워크'},
+      { id: 13, name: '보안' },
+      { id: 14, name: '기타' },
     ],
   },
 
   디자인: {
-    id: 3,
+    id: 2,
     subs: [
-      { id: 31, name: '가구디자인' },
-      { id: 32, name: '그래픽 디자인' },
-      { id: 33, name: '건축디자인' },
-      { id: 34, name: '광고디자인' },
-      { id: 35, name: '게임디자인' },
-      { id: 36, name: '공간디자인' },
-      { id: 37, name: '공공 디자인' },
-      { id: 38, name: '공예디자인' },
-      { id: 39, name: '로고 디자인' },
-      { id: 40, name: '모바일 디자인' },
+      { id: 15, name: 'UI/UX' },
+      { id: 16, name: '그래픽디자인' },
+      { id: 17, name: '건축디자인' },
+      { id: 18, name: '공간디자인' },
+      { id: 19, name: '기타' },
     ],
   },
 
-  여행: {
+  교육: {
+    id: 3,
+    subs: [
+      { id: 20, name: '예체능' },
+      { id: 21, name: '공학' },
+      { id: 22, name: '의학' },
+      { id: 23, name: '법학' },
+      { id: 24, name: '인문학' },
+      { id: 25, name: '사회과학' },
+      { id: 26, name: '자연과학' },
+      { id: 27, name: '기타' },
+    ],
+  },
+
+  금융: {
     id: 4,
     subs: [
-      { id: 41, name: '국내여행' },
-      { id: 42, name: '해외여행' },
-      { id: 43, name: '맛집 탐방' },
-      { id: 44, name: '액티비티 여행' },
-      { id: 45, name: '호캉스' },
-      { id: 46, name: '캠핑' },
-      { id: 47, name: '차박' },
-      { id: 48, name: '역사 탐방' },
-      { id: 49, name: '문화 체험' },
-      { id: 50, name: '자연 경관 여행' },
+      { id: 28, name: '주식투자' },
+      { id: 29, name: '가상화폐' },
+      { id: 30, name: '부동산' },
+      { id: 31, name: '재테크' },
+      { id: 32, name: '기타' },
+    ],
+  },
+
+  취미 : {
+    id: 5,
+    subs: [
+      { id: 33, name: '여행' },
+      { id: 34, name: '스포츠/액티비티' },
+      { id: 35, name: '예술/공예' },
+      { id: 36, name: '독서/글쓰기' },
+      { id: 37, name: '요리/음식' },
+      { id: 38, name: '음악' },
+      { id: 39, name: '게임' },
+      { id: 40, name: '자연/힐링' },
     ],
   },
 
   기타: {
-    id: 5,
-    subs: [
-      { id: 51, name: '자유 주제' },
-      { id: 52, name: 'Q&A' },
-    ],
-  },
+    id: 6,
+    subs: []
+  }
 };
 
 
@@ -152,25 +135,13 @@ const categoryMap = {
     onCategoryChange?.(category, [], categoryMap[category].id);
   };
 
-  const toggleSubCategory = (sub) => {
-  const updated = subCategories.includes(sub.id)
-    ? subCategories.filter((id) => id !== sub.id)
-    : [...subCategories, sub.id];
+ const toggleSubCategory = (sub) => {
+  const alreadySelected = subCategories.includes(sub.id);
+  const updated = alreadySelected ? [] : [sub.id];
 
   setSubCategories(updated);
-  const firstSubCategoryId = updated.length > 0 ? updated[0] : null;
-  onCategoryChange?.(mainCategory, updated, firstSubCategoryId);
+  onCategoryChange?.(mainCategory, updated, updated[0] || null);
 };
-  const areAllSelected = () =>
-    categoryMap[mainCategory]?.subs.every((sub) => subCategories.includes(sub.id));
-
-  const toggleSelectAll = () => {
-    const updated = areAllSelected()
-      ? []
-      : categoryMap[mainCategory]?.subs.map((sub) => sub.id) || [];
-    setSubCategories(updated);
-    onCategoryChange?.(mainCategory, updated, categoryMap[mainCategory].id);
-  };
 
   return (
     <Wrapper>
@@ -190,10 +161,7 @@ const categoryMap = {
 
       {mainCategory && (
         <>
-          <Text style={{ marginTop: '12px' }}>세부 카테고리 (복수 선택 가능)</Text>
-          <SelectAllButton type='button' onClick={toggleSelectAll}>
-            {areAllSelected() ? '전체 해제' : '전체 선택'}
-          </SelectAllButton>
+          <Text style={{ marginTop: '12px' }}>세부 카테고리 선택</Text>
           <ChipContainer>
             {categoryMap[mainCategory]?.subs.map((sub) => (
               <Chip
