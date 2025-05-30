@@ -96,25 +96,25 @@ const SignupTemplate = () => {
 
           <InfoBox>
             <Text>
-              <strong>Notionary</strong>는 개인 및 공동 워크스페이스를 제공하고,
-              사용자 간 게시판으로 소통할 수 있는 통합 서비스입니다.
+              <strong>Notionary</strong>는 개인 워크스페이스를 제공하고, 사용자
+              간 게시판으로 소통할 수 있는 통합 서비스입니다.
             </Text>
 
             <FeatureList>
               <FeatureItem>
+                직관적인 UI로 누구나 쉽게 사용할 수 있습니다.
+              </FeatureItem>
+              <FeatureItem>
                 개인 워크스페이스로 나만의 작업공간을 관리하세요.
               </FeatureItem>
               <FeatureItem>
-                팀원들과 함께 사용할 수 있는 공동 워크스페이스를 제공합니다.
+                커뮤니티 게시판을 통해 다른 사용자와 소통하세요.
               </FeatureItem>
               <FeatureItem>
-                커뮤니티 게시판을 통해 다양한 사용자와 소통하세요.
+                워크스페이스와 함께 자신의 작업물을 공유할 수 있습니다.
               </FeatureItem>
               <FeatureItem>
-                프로젝트 관리 기능으로 업무 효율성을 높이세요.
-              </FeatureItem>
-              <FeatureItem>
-                실시간 알림으로 중요한 업데이트를 놓치지 마세요.
+                다양한 분야의 주제로 게시글을 작성하고 공유하세요.
               </FeatureItem>
             </FeatureList>
           </InfoBox>
