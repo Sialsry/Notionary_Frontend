@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery , useQueryClient} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { SubCategoryPost , AllCategoryPost,  EtcCategoryPost } from '../../API/PostApi';
 import Sidebar from '../Templates/Sidebar';
@@ -91,51 +91,42 @@ const PostWrap = styled.div`
 `;
 
 const Main = () => {
+  const queryClient = useQueryClient();
   const { isOpen, isVisible, OpenModal, ClosedModal } = useModal();
+
   const [select, setSelect] = useState('전체');
   const [selectSubCategory, setSelectSubCategory] = useState([]);
-  const [posts, setPosts] = useState([]);
   const [showMainText, setShowMainText] = useState(true);
 
-
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowMainText(false);
-    }, 1500);
+    const timer = setTimeout(() => setShowMainText(false), 1500);
     return () => clearTimeout(timer);
   }, []);
-  
 
-  const mutation = useMutation({
-    mutationFn: SubCategoryPost,
-    onSuccess: (data) => {
-      setPosts(data.data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const allCategoryMutation = useMutation({
-    mutationFn: AllCategoryPost,
-    onSuccess: (data) => {
-      setPosts(data.data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const etcCategoryMutation = useMutation({
-  mutationFn: EtcCategoryPost,
-  onSuccess: (data) => {
-    setPosts(data.data);
+const { data, isLoading, isError } = useQuery({
+  queryKey: ['posts', select, selectSubCategory],
+  queryFn: () => {
+    if (select === '전체') return AllCategoryPost({ offset: 0, limit: 1000 });
+    if (select === '기타') return EtcCategoryPost({ offset: 0, limit: 1000 });
+    if (selectSubCategory.length > 0)
+      return SubCategoryPost({ category_name: select, SubCategory: selectSubCategory });
+    return Promise.resolve({ data: [] });
   },
-  onError: (error) => {
-    console.log(error);
-  },
+  enabled: !showMainText,
+  keepPreviousData: true,
+  staleTime: 0,
+  cacheTime: 0,
+  refetchOnWindowFocus: true,
 });
+  useEffect(() => {
+    if (showMainText) return;
 
+    const intervalId = setInterval(() => {
+      queryClient.invalidateQueries(['posts', select, selectSubCategory]);
+    }, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [queryClient, select, selectSubCategory, showMainText]);
 
   const categoryList = [
     { name: '전체', text: '전체' },
@@ -144,47 +135,40 @@ const Main = () => {
     { name: '교육', text: '교육' },
     { name: '금융', text: '금융' },
     { name: '취미', text: '취미' },
-    { name: '기타', text: '기타' }
+    { name: '기타', text: '기타' },
   ];
 
   const subCategories = {
     IT: ['프로그래밍', '인공지능', '클라우드', '사물인터넷', '게임', '네트워크', '보안', '기타'],
-    디자인 : ['UI/UX', '그래픽 디자인', '건축디자인', '공간디자인', '기타'],
-    교육 : ['예체능', '공학', '의학', '법학', '인문학', '사회과학', '자연과학', '기타'],
-    금융 : ['주식투자', '가상화폐', '부동산', '재테크', '기타'],
-    취미 : ['여행', '스포츠/액티비티', '예술/공예', '독서/글쓰기', '요리/음식', '음악', '게임', '자연/힐링'],
+    디자인: ['UI/UX', '그래픽 디자인', '건축디자인', '공간디자인', '기타'],
+    교육: ['예체능', '공학', '의학', '법학', '인문학', '사회과학', '자연과학', '기타'],
+    금융: ['주식투자', '가상화폐', '부동산', '재테크', '기타'],
+    취미: ['여행', '스포츠/액티비티', '예술/공예', '독서/글쓰기', '요리/음식', '음악', '게임', '자연/힐링'],
   };
 
-const handleCategorySelect = (category) => {
-  setSelect(category);
-  setSelectSubCategory([]);
-  setPosts([]);
+  const handleCategorySelect = (category) => {
+    setSelect(category);
+    setSelectSubCategory([]);
 
-  if (category === '전체') {
-    ClosedModal();
-    allCategoryMutation.mutate();
-  } else if (category === '기타') {
-    ClosedModal();
-    etcCategoryMutation.mutate();
-  } else {
-    OpenModal();
-  }
-};
+    if (category === '전체' || category === '기타') {
+      ClosedModal();
+    } else {
+      OpenModal();
+    }
+  };
+
   const handleSubCategorySelect = (subCategory) => {
-    setSelectSubCategory(prev =>
+    setSelectSubCategory((prev) =>
       prev.includes(subCategory)
-        ? prev.filter(item => item !== subCategory)
+        ? prev.filter((item) => item !== subCategory)
         : [...prev, subCategory]
     );
   };
 
-  const SingleSelectCategory = () => {
-    setSelectSubCategory([]);
-  };
+  const SingleSelectCategory = () => setSelectSubCategory([]);
 
-  const isAllSelected = () => {
-    return subCategories[select]?.length === selectSubCategory.length;
-  };
+  const isAllSelected = () =>
+    subCategories[select]?.length === selectSubCategory.length;
 
   return (
     <>
@@ -199,9 +183,9 @@ const handleCategorySelect = (category) => {
         <MainWrap>
           <Categories items={categoryList} onSelect={handleCategorySelect} />
           {!isVisible && (
-            <PostWrap>
-              <PostList posts={posts} />
-            </PostWrap>
+        <PostWrap>
+            <PostList posts={data?.data || []} isLoading={isLoading} isError={isError} />
+        </PostWrap>
           )}
         </MainWrap>
       )}
@@ -258,23 +242,20 @@ const handleCategorySelect = (category) => {
 
         <CompleteWrap>
           <Button
-            disabled={mutation.isLoading}
             onClick={() => {
-              mutation.mutate({
-                category_name: select,
-                SubCategory: selectSubCategory
-              });
               ClosedModal();
+              queryClient.invalidateQueries(['posts', select, selectSubCategory]);
             }}
+            disabled={isLoading}
           >
             조회
           </Button>
 
-       {(mutation.isLoading || allCategoryMutation.isLoading || etcCategoryMutation.isLoading) && (
-      <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
-        불러오는 중...
-      </Text>
-    )}
+          {isLoading && (
+            <Text fontSize="14px" style={{ marginTop: '10px', color: 'gray' }}>
+              불러오는 중...
+            </Text>
+          )}
         </CompleteWrap>
       </Modal>
     </>

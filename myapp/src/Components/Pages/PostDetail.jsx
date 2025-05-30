@@ -629,6 +629,20 @@ const PostDetail = () => {
         }
       );
 
+      console.log(response.data.data, "response.data.data");
+      console.log(response.data.data.images, "response.data.data.images");
+
+      response.data.data.images = response.data.data.images.map((imgString) => {
+        const match = imgString.match(/"(http[^"]+)"/);
+        return match ? match[1] : imgString;
+      });
+      response.data.data.videos = response.data.data.videos.map((vidString) => {
+        const match = vidString.match(/"(http[^"]+)"/);
+        return match ? match[1] : vidString;
+      });
+
+      console.log(response.data.data, "가공된 이미지들");
+
       setPost(response.data.data);
       setError(null);
     } catch (error) {
@@ -812,11 +826,19 @@ const PostDetail = () => {
     setCurrentMediaIndex((prev) => (prev - 1 + totalMedia) % totalMedia);
   };
 
+  // console.log(post.images, "post.images");
   // 전체 미디어 배열 생성
   const allMedia = [
     ...(post?.images || []).map((img) => ({ type: "image", src: img })),
     ...(post?.videos || []).map((vid) => ({ type: "video", src: vid })),
   ];
+  //const allMedia = [...post.images, ...post.videos];
+
+  //   const processedImgs = post.images.map((imgString) => {
+  //   // 따옴표로 감싸진 URL 추출
+  //   const match = imgString.match(/"(http[^"]+)"/);
+  //   return match ? match[1] : imgString;
+  // });
 
   if (loading) {
     return (
@@ -848,7 +870,7 @@ const PostDetail = () => {
         <HeaderLeft>
           <BackButton onClick={() => navigate("/mypage")}>
             <ArrowLeft size={16} />
-            마이페이지로
+            마이페이지
           </BackButton>
           <Logo
             src={logo}
@@ -905,6 +927,7 @@ const PostDetail = () => {
           </PostHeader>
 
           {/* 미디어 슬라이더 */}
+
           {allMedia.length > 0 && (
             <MediaContainer>
               <MediaSlider currentIndex={currentMediaIndex}>

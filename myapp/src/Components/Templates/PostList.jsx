@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery , useQueryClient} from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { AllCategoryPost } from "../../API/PostApi";
 import PostCard from "../Molecules/susu/PostCard";
@@ -13,12 +13,17 @@ const fadeUp = keyframes`
 `;
 
 const FeedWrapper = styled.div`
-  max-width: 600px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 32px 16px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 32px;
+
+  @media (max-width: 480px) {
+    padding: 24px 12px;
+    gap: 24px;
+  }
 `;
 
 const AnimatedCardWrapper = styled.div`
@@ -35,18 +40,27 @@ const PAGE_SIZE = 5;
 
 const PostList = ({ posts: externalPosts }) => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const queryClient = useQueryClient();
 
-  const {
-    data: allPostsData = [],
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: allPostsData = [], isLoading, isError,} = useQuery({
     queryKey: ['allPosts'],
     queryFn: async () => {
       const res = await AllCategoryPost({ offset: 0, limit: 1000 });
       return res.data;
     },
+    staleTime: 0,
+    cacheTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ['allPosts'] });
+    }, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [queryClient]);
 
   const postsToRender = externalPosts || allPostsData;
 
@@ -74,14 +88,19 @@ const PostList = ({ posts: externalPosts }) => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [visibleCount, postsToRender]);
+  
+  const flatPosts = postsToRender.flatMap((category) => category.Posts || []);
+  
+  if (!externalPosts) {
+    if (isLoading) return <LoadingText>로딩중...</LoadingText>;
+    if (isError) return <LoadingText>데이터를 불러오는 중 오류가 발생했어요.</LoadingText>;
+  }
 
-  if (!externalPosts && isLoading)
-    return <LoadingText>로딩중...</LoadingText>;
+if (!isLoading && flatPosts.length === 0) {
+  return <LoadingText>게시물이 없습니다.</LoadingText>;
+}
 
-  if (!externalPosts && isError)
-    return <LoadingText>데이터를 불러오는 중 오류가 발생했어요.</LoadingText>;
-
-  const parseImgPaths = (str) => {
+ const parseImgPaths = (str) => {
     try {
       const parsed = JSON.parse(str);
       return Array.isArray(parsed) ? parsed : [];
@@ -98,24 +117,15 @@ const PostList = ({ posts: externalPosts }) => {
       return str ? [str] : [];
     }
   };
-
-  const flatPosts = postsToRender.flatMap((category) => category.Posts || []);
-  if (flatPosts.length === 0) {
-    return <LoadingText>게시글이 없습니다.</LoadingText>;
-  }
+ 
 
   return (
     <FeedWrapper>
       {postsToRender.slice(0, visibleCount).map((category) =>
         category.Posts?.map((post, index) => {
-          const isTopEtc =
-            category.depth === 1 && category.category_name === "기타";
-          const categoryName = isTopEtc
-            ? "기타"
-            : category.ParentCategory?.category_name || "알 수 없는 카테고리";
-          const subCategoryName = isTopEtc
-            ? ""
-            : category.category_name;
+          const isTopEtc = category.depth === 1 && category.category_name === "기타";
+          const categoryName = isTopEtc? "기타" : category.ParentCategory?.category_name || "알 수 없는 카테고리";
+          const subCategoryName = isTopEtc ? "" : category.category_name;
 
           return (
             <AnimatedCardWrapper
@@ -123,7 +133,8 @@ const PostList = ({ posts: externalPosts }) => {
               style={{ animationDelay: `${index * 300}ms` }}
             >
               <PostCard
-                authorUid={post.uid || "사용자 정보 없음"}
+                authNick={post.User.nick || "사용자 닉네임 없음"}
+                authProImg={post.User.profImg || "사용자 프로필 없음"}
                 title={post.title || "제목없음"}
                 images={parseImgPaths(post.imgPaths)}
                 videos={parseVideoPaths(post.videoPaths)}
@@ -150,7 +161,8 @@ const PostList = ({ posts: externalPosts }) => {
         })
       )}
 
-      {visibleCount >= postsToRender.length && (
+      {visibleCount < flatPosts.length ? (
+    <LoadingText>불러오는 중...</LoadingText>) : (
         <p style={{ textAlign: "center" }}>마지막 게시물입니다.</p>
       )}
     </FeedWrapper>
@@ -158,4 +170,3 @@ const PostList = ({ posts: externalPosts }) => {
 };
 
 export default PostList;
-
