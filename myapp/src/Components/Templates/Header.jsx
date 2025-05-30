@@ -24,6 +24,7 @@ const LogoContainer = styled.div`
     height: 200px;
     object-fit: contain;
     margin-top: 10px;
+    cursor: pointer;
   }
 `;
 
@@ -196,7 +197,7 @@ const Header = () => {
         </ProfileWrapper>
       </UserContainer>
       <LogoContainer>
-        <img src={logo} alt="Notionary Logo" />
+        <img src={logo} alt="Notionary Logo" onClick={() => navigate('/main')} />
       </LogoContainer>
       <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
     </HeaderContainer>

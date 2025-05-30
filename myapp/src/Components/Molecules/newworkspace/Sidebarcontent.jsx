@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Subtitle } from "../../Atoms/ming/Typography";
-import { saveData, getworkspaceData } from "../../../API/Workspaceapi";
-import { folder, logo, page } from "../../../images";
+import { saveData, getworkspaceData, DelWorkspace } from "../../../API/Workspaceapi";
+import { folder, homeicon, logo, page, Pagesicon, workspaceicon } from "../../../images";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
+import { deletebtn } from "../../../images";
+
 
 const Contentwrap = styled.div`
   margin-top: 30px;
@@ -17,14 +19,20 @@ const Contentwrap = styled.div`
 `;
 const Maintitle = styled.div`
   padding: 3px 10px;
-  background-color: #e1e1fd;
+  background-color: #1E1A4D;
+  color: white;
   width: 210px;
   position: relative;
   right: 0px;
   box-sizing: border-box;
   border-radius: 7px;
 `;
-const Maintitlecontent = styled.div``;
+const Maintitlecontent = styled.div`
+  display:flex;
+  align-items: center;
+  height: 27px;
+  box-sizing: border-box;
+`;
 const Titlewrap = styled.div`
   width: 199px;
   margin-left: 10px;
@@ -39,7 +47,9 @@ const Titlecontent = styled.div`
   height: 27px;
   width: 199px;
   position: relative;
-  background-color: #e1e1fd;
+  background-color: #443080;
+  color: white;
+  display: flex;
   /* padding : 3px 10px; */
   margin: 3px 0px 3px 0px;
 
@@ -48,24 +58,33 @@ const Titlecontent = styled.div`
   .Tcontent {
     padding: 3px 10px;
     font-size: 16px;
-    width: 175px;
+    width: 130px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space:nowrap
+  }
+  .Wspaceicon {
   }
 `;
 
 const Content = styled.div`
   padding: 3px 10px;
   margin: 3px 0px 3px 12px;
-  height: 32px;
+  height: 27px;
   border-radius: 15px;
   cursor: pointer;
-  background-color: #c4c6ff;
+  background-color: #5e38b4;
+  color: white;
   /* display: inline-block; */
   box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
+  display: flex;
+  align-items: center;
+  position: relative;
+  .Pagename {
+    width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .threedots {
   }
 `;
@@ -74,20 +93,39 @@ const Btnwrap = styled.div`
   top: 0;
   right: 0px;
 `;
-const Addbtn = styled.button`
+const AddbtnOne = styled.button`
   width: 27px;
-  height: 27px;
   font-size: 26px;
+  
   border: none;
   cursor: pointer;
-  box-sizing: border-box;
+  box-sizing: border-box;             
   border-radius: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e1e1fd;
+  background-color: #1E1A4D;
+  color: #e7e7e7;
   &:hover {
-    background-color: #9b9be6;
+    background-color: #746892;
+  }
+`;
+const Addbtn = styled.button`
+  width: 27px;
+  height: 27px;
+  font-size: 26px;
+  
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;             
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #443080;
+  color: #e7e7e7;
+  &:hover {
+    background-color: #715da0;
   }
 `;
 
@@ -215,8 +253,30 @@ const Folderwrap = styled.div`
     }
   }
 `;
+const Delbtn = styled.span`
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  right: 30px;
+&:hover {
+    background-color: #715da0;
+    border-radius: 3px;
+  }
+`
+const Delbtntwo = styled.span`
+  position: absolute;
+  display: inline-block;
+  line-height: 1;
+  right: 10px;
+&:hover {
+    background-color: #715da0;
+    border-radius: 3px;
+  }
+`
 
-const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
+
+
+const Sidebarcontent = ({ contents, setState, setContent }) => {
   const [header, setHeader] = useState("");
   const [category, setCategory] = useState({});
   const [subcategory, setSubcategory] = useState({});
@@ -227,6 +287,24 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
   const [toggleindex, settoggleIndex] = useState();
   const [dispatchstate, setDispatchstate] = useState(false);
   const dispatch = useDispatch();
+  
+  
+  // const queryClient = useQueryClient();
+  // const delMutation = useMutation({
+  //   mutationFn : DelWorkspace,
+  //   onSuccess : () => {
+  //     refetch()
+  //   },
+  //   onError: () => {
+  //     console.log('error')
+  //   },
+  //   onSettled : () => {
+  //     console.log('setteled')
+  //   },
+  //   onMutate : (data) => {
+  //     console.log(onMutate)
+  //   }
+  // })
 
   const toggleSection = (key) => {
     if (isprivateopen[key])
@@ -236,11 +314,11 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
   const createFolder = async (e) => {
     e.preventDefault();
     const { value: folderName } = e.target.foldername;
-    console.log(folderName, "folderName");
+    // console.log(folderName, "folderName");
     setContent((prev) =>
       prev.map((obj) => {
         const key = Object.keys(obj)[0];
-        console.log(key, "kkkkk", folderName);
+        // console.log(key, "kkkkk", folderName);
         setCategory({ workSpace: key, folderName });
         return { ...obj, [key]: [...obj[key], { [folderName]: [] }] };
       })
@@ -251,13 +329,13 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
   const createFile = async (e) => {
     e.preventDefault();
     const { value: fileName } = e.target.filename;
-    console.log(fileName, "filename");
+    // console.log(fileName, "filename");
     setContent((prev) =>
       prev.map((obj, index) => {
         const mainkey = Object.keys(obj)[0];
         const updatedsub = obj[mainkey].map((subObj, subindex) => {
           const subkey = Object.keys(subObj)[0];
-          console.log(mainkey, subkey, "subkey", fileName);
+          // console.log(mainkey, subkey, "subkey", fileName);
           if (subcategory === subkey) {
             setSubcategory({
               workSpace: mainkey,
@@ -289,10 +367,21 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
     Run();
   }, [subcategory]);
 
+  // useEffect(() => {
+  //   // console.log(dispatchstate, 'dispatchstate')
+  //   if(dispatchstate) {
+
+  //     dispatch({ type: "True" });
+  //     setDispatchstate(false)
+  //   }
+  // }, [dispatchstate])
+
   const pagenavigate = (mainTitle, folderTitle, pageTitle, entryIndex) => {
     navigate(
       `/workspace/selectspace/${mainTitle}/${folderTitle}/${pageTitle[entryIndex]}`
     );
+    console.log(1234);
+    dispatch({ type: "True" });
   };
 
   return (
@@ -302,15 +391,12 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
         return (
           <Contentwrap>
             <Maintitle>
-              <Maintitlecontent
-                onClick={() => {
-                  navigate(`/workspace/selectspace/${mainTitle}`);
-                }}
-              >
-                {mainTitle}
+              <Maintitlecontent>
+                <div><img src={homeicon} alt="" /></div>
+                <div>{mainTitle}</div>
               </Maintitlecontent>
               <Btnwrap>
-                <Addbtn
+                <AddbtnOne
                   onClick={(e) => {
                     e.stopPropagation();
                     setPopupfolder(true);
@@ -318,56 +404,77 @@ const Sidebarcontent = ({ setPagestate, contents, setState, setContent }) => {
                   }}
                 >
                   +
-                </Addbtn>
+                </AddbtnOne>
               </Btnwrap>
             </Maintitle>
             {subContent
               ? subContent.map((subitem, subindex) => {
-                  const [folderTitle, pageTitle] = Object.entries(subitem)[0];
-                  return (
-                    <Titlewrap
-                      key={subindex}
-                      onClick={() => {
-                        toggleSection(subindex);
-                        settoggleIndex(subindex);
-                      }}
-                    >
-                      <Titlecontent>
-                        <div className="Tcontent">{folderTitle}</div>
-                        <Btnwrap>
-                          <Addbtn
-                            onClick={(e) => {
+                const [folderTitle, pageTitle] = Object.entries(subitem)[0];
+                return (
+                  <Titlewrap
+                    key={subindex}
+                    onClick={() => {
+                      toggleSection(subindex);
+                      settoggleIndex(subindex);
+                    }}
+                  >
+                    <Titlecontent>
+                      <div className="Wspaceicon">
+                        <img src={workspaceicon} alt=""
+                        
+                      /></div>
+                      <div className="Tcontent">{folderTitle}</div>
+                      <Delbtn onClick={(e) => {
+                        e.stopPropagation();
+                       
+                      }} >
+                        <img src={deletebtn} alt="" onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('asdfd')
+                             DelWorkspace(mainTitle, subContent)
+                          }}/>
+                      </Delbtn>
+                      <Btnwrap>
+                        <Addbtn
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPopupfile(true);
+                            setSubcategory(folderTitle);
+                          }}
+                        >
+                          +
+                        </Addbtn>
+                      </Btnwrap>
+                    </Titlecontent>
+                    {isprivateopen[subindex] &&
+                      pageTitle.map((entry, entryIndex) => (
+                        <Content
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            pagenavigate(
+                              mainTitle,
+                              folderTitle,
+                              pageTitle,
+                              entryIndex
+                            );
+                            // setDispatchstate(true)
+                            // dispatch({ type: "True" });
+                          }}
+                        >
+                          <div><img src={Pagesicon} alt="" /></div>
+                          <div className="Pagename">{entry}</div>
+                          <Delbtntwo>
+                            <img src={deletebtn} alt="" onClick={(e) => {
                               e.stopPropagation();
-                              setPopupfile(true);
-                              setSubcategory(folderTitle);
-                            }}
-                          >
-                            +
-                          </Addbtn>
-                        </Btnwrap>
-                      </Titlecontent>
-                      {isprivateopen[subindex] &&
-                        pageTitle.map((entry, entryIndex) => (
-                          <Content
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              pagenavigate(
-                                mainTitle,
-                                folderTitle,
-                                pageTitle,
-                                entryIndex
-                              );
-                              // setPagestate(true)
-                              dispatch({ type: "True" });
-                            }}
-                          >
-                            {entry}
-                            {/* <span className='contentdot'>⋮⋮</span> */}
-                          </Content>
-                        ))}
-                    </Titlewrap>
-                  );
-                })
+
+                            }} />
+                          </Delbtntwo>
+                          {/* <span className='contentdot'>⋮⋮</span> */}
+                        </Content>
+                      ))}
+                  </Titlewrap>
+                );
+              })
               : null}
           </Contentwrap>
         );

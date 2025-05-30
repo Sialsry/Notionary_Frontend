@@ -220,8 +220,43 @@ const getBlock2 = async (workspacename, foldername, filename) => {
   }
 };
 
+const DelWorkspace = async (workspacename, foldername) => {
+  console.log('Delworkspace')
+  const token = Cookies.get("authToken");
+  const loginAccessToken = Cookies.get("login_access_token");
+  const accessToken = token || loginAccessToken;
+  console.log("토큰이 이습니다");
+  if (!accessToken) {
+    console.log("토큰이 없습니다");
+    return;
+  }
+  const { data: workspaceData } = await axios.post(`${WORKSPACE_URL}/workspace/delworkspace`, 
+    {workspacename, foldername},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      withCredentials: true,
+    }
+  );
+  console.log(workspaceData, "workspacedata");
+  if (workspaceData.data.PageData) {
+    const newData = JSON.parse(workspaceData.data.PageData.page_content);
+    console.log(newData);
+    return newData;
+  } else {
+    return null;
+  }
+};
+  
+   
+
+
+
+
+
+
 export {
   getBlock,
+  DelWorkspace,
   saveData,
   getworkspaceDataOne,
   getworkspaceDataTwo,

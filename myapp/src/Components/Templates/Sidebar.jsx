@@ -19,9 +19,10 @@ const SidebarWrap = styled.div`
   position: fixed;
   box-sizing: border-box;
   overflow-y: scroll;
+  z-index: 1000;
 `;
 
-const Sidebar = ({ setPagestate }) => {
+const Sidebar = ( ) => {
   const navigate = useNavigate();
   const handleItemClick = (item) => {
     console.log("Clicked:", item);
@@ -31,23 +32,21 @@ const Sidebar = ({ setPagestate }) => {
   };
   const [state, setState] = useState(false);
   const [teamcontent, setTeamcontent] = useState([{ "팀 워크스페이스": [] }]);
-  const [privatecontent, setPrivatecontent] = useState([
-    { "개인 워크스페이스": [] },
-  ]);
+  const [privatecontent, setPrivatecontent] = useState([{ "개인 워크스페이스": [] },]);
   const queryClient = useQueryClient();
 
-  console.log(setPagestate, "setPage");
   useEffect(() => {
     const getworkspacedata = async () => {
       const workspaceOne = await getworkspaceDataOne();
-      const workspaceTwo = await getworkspaceDataTwo();
-      console.log(workspaceOne, workspaceTwo, "workspaceOne, workspaceTwo");
+      // const workspaceTwo = await getworkspaceDataTwo();
+      // console.log(workspaceOne, workspaceTwo, "workspaceOne, workspaceTwo");
+      console.log(workspaceOne, "workspaceOne, workspaceTwo");
       if (workspaceOne.data.length !== 0) {
         setPrivatecontent(workspaceOne.data);
       }
-      if (workspaceTwo.data.length !== 0) {
-        setTeamcontent(workspaceTwo.data);
-      }
+      // if (workspaceTwo.data.length !== 0) {
+      //   setTeamcontent(workspaceTwo.data);
+      // }
     };
     getworkspacedata();
   }, [state]);
@@ -59,14 +58,14 @@ const Sidebar = ({ setPagestate }) => {
         contents={privatecontent}
         setState={setState}
         setContent={setPrivatecontent}
-        setPagestate={setPagestate}
+     
       ></Sidebarcontent>
-      <Sidebarcontent
+      {/* <Sidebarcontent
         contents={teamcontent}
         setState={setState}
         setContent={setTeamcontent}
         setPagestate={setPagestate}
-      ></Sidebarcontent>
+      ></Sidebarcontent> */}
     </SidebarWrap>
   );
 };

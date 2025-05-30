@@ -287,7 +287,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
   const [filedata, setFiledata] = useState(false)
   const { workspacename, foldername, filename } = useParams();
   const dispatch = useDispatch()
-  const action = useSelector(state => state.pagestate)
+  const action = useSelector(state => state.Pagereducer.pagestate)
   const [imagepath, setImagepath] = useState()
 
 
@@ -309,6 +309,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
       const newData = await getBlock2(workspacename, foldername, filename) 
       console.log(newData, 'newdata',)
       console.log(action, 'setPagestate')
+      console.log(workspacename, foldername, filename, '222222');
       if (newData) {
         if (newData.length !== 0) {
           setBlocks(newData)
@@ -321,13 +322,17 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
 
       }
       else {
+        console.log(blocks)
+        setBlocks([
+    { id: 1, type: 'text', content: '', checked: false },
+  ])
         dispatch({ type: 'False' })
         return
       }
     }
 
     run()
-  }, [action])
+  }, [action, workspacename, foldername, filename])
 
   const addBlock = (type, currentId) => {
     const newBlock = {
@@ -651,7 +656,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
               contentEditable
               suppressContentEditableWarning
               onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-              onKeyDown={e => handleKeyDown(e, block.id, 'text')}
+              onKeyUp={e => handleKeyDown(e, block.id, 'text')}
             >
               {block.content}
             </TextBlock>
@@ -662,7 +667,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
               contentEditable
               suppressContentEditableWarning
               onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-              onKeyDown={e => handleKeyDown(e, block.id, 'h1')}
+              onKeyUp={e => handleKeyDown(e, block.id, 'h1')}
             >
               {block.content}
             </Heading>
@@ -674,7 +679,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-                onKeyDown={e => handleKeyDown(e, block.id, 'ul')}
+                onKeyUp={e => handleKeyDown(e, block.id, 'ul')}
               >
                 {block.content}
               </ListItem>
@@ -687,7 +692,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-                onKeyDown={e => handleKeyDown(e, block.id, 'ol')}
+                onKeyUp={e => handleKeyDown(e, block.id, 'ol')}
               >
                 {block.content}
               </ListItem>
@@ -705,7 +710,7 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-                onKeyDown={e => handleKeyDown(e, block.id, 'checkbox')}
+                onKeyUp={e => handleKeyDown(e, block.id, 'checkbox')}
               >
                 {block.content}
               </CheckboxText>

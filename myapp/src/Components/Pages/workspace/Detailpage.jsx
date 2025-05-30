@@ -14,13 +14,13 @@ const Mainwrap = styled.div`
 
 
 const Detailpage = () => {
-  const [pagestate, setPagestate] = useState(false);
-  console.log(pagestate, 'pagestate')
+  // const [pagestate, setPagestate] = useState(false);
+  // console.log(pagestate, 'pagestate')
   return (
     <Mainwrap>
       <Header/>
-      <Sidebar setPagestate={setPagestate} /> 
-      <BlockEditor pagestate={pagestate} setPagestate={setPagestate} />
+      <Sidebar /> 
+      <BlockEditor  />
     </Mainwrap>
   );
 };
