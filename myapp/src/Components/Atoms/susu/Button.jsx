@@ -2,18 +2,26 @@ import React from 'react'
 import styled from 'styled-components'
 
 const ButtonWrap = styled.button`
-  padding: ${({padding}) => padding ? padding : "10px 20px"};
+  width: 80px;
+  height: 40px;
+  padding: ${({ padding }) => padding || "10px 10px"};
   margin-top: 20px;
-  background-color: #27a2e9;
+  background-color: ${({ backgroundColor }) => backgroundColor || "#7e57c2"};
   color: white;
   border: none;
   border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
   cursor: pointer;
 `
 
-const Button = ({padding, children, onClick }) => {
+const Button = ({ padding, backgroundColor, children, onClick }) => {
   return (
-    <ButtonWrap padding={padding} onClick={onClick}>
+    <ButtonWrap padding={padding} backgroundColor={backgroundColor} onClick={onClick}>
       {children}
     </ButtonWrap>
   )

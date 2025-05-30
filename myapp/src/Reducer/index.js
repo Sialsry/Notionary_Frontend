@@ -1,6 +1,9 @@
-import axios from "axios";
+import userReducer from './userReducer'
+import { combineReducers} from 'redux';
 import { useParams } from "react-router-dom";
 import { getBlock } from "../API/Workspaceapi";
+import axios from "axios";
+export const reducer = combineReducers({user : userReducer})
 
 
 const initState = {

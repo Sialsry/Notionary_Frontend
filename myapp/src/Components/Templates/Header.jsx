@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import logo from "../../images/notionary-logo.png";
 import defaultProfile from "../../images/default_profile.png"; // 기본 프로필 이미지 필요
 
 const HeaderContainer = styled.header`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -14,6 +16,7 @@ const HeaderContainer = styled.header`
   height: 75px;
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 `;
 
 const LogoContainer = styled.div`
@@ -21,6 +24,7 @@ const LogoContainer = styled.div`
     height: 200px;
     object-fit: contain;
     margin-top: 10px;
+    cursor: pointer;
   }
 `;
 
@@ -79,9 +83,14 @@ const LogoutButton = styled.button`
 `;
 
 const Header = () => {
+  const dispatch = useDispatch();
   const [user, setUser] = useState({
     profileImage: null,
     nickname: "사용자",
+    gender: null,
+    phone: null,
+    dob: null,
+    addr: null,
   });
 
   const navigate = useNavigate();
@@ -113,6 +122,20 @@ const Header = () => {
             nickname: response.data.user.nick,
           });
           console.log("유저 정보:", response.data.user); // 유저 정보 확인
+
+          dispatch({
+          type: "LOGIN",
+            payload: {
+            uid: response.data.user.uid,
+            nick: response.data.user.nick,
+            provider: response.data.user.provider || "local",
+            gender : response.data.user.gender,
+            phone : response.data.user.phone,
+            dob : response.data.user.dob,
+            addr : response.data.user.addr,
+            profImg : response.data.user.profImg
+        },
+    });
         }
 
         if (loginAccessToken) {
@@ -124,7 +147,25 @@ const Header = () => {
           setUser({
             profileImage: response.data.user.profImg,
             nickname: response.data.user.nick,
+            gender: response.data.user.gender,
+            phone: response.data.user.phone,
+            dob: response.data.user.dob,
+            addr: response.data.user.addr,
           });
+
+            dispatch({
+            type: "LOGIN",
+            payload: {
+            uid: response.data.user.uid,
+            nick: response.data.user.nick,
+            provider: response.data.user.provider || "kakao",
+            gender : response.data.user.gender,
+            phone : response.data.user.phone,
+            dob : response.data.user.dob,
+            addr : response.data.user.addr,
+            profImg : response.data.user.profImg
+        },
+    });
         }
       } catch (error) {
         console.error(
@@ -156,7 +197,7 @@ const Header = () => {
         </ProfileWrapper>
       </UserContainer>
       <LogoContainer>
-        <img src={logo} alt="Notionary Logo" />
+        <img src={logo} alt="Notionary Logo" onClick={() => navigate('/main')} />
       </LogoContainer>
       <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
     </HeaderContainer>
