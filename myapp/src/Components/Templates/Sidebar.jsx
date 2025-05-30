@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { addicon } from "../../images";
 import Sidebarcontent from "../Molecules/newworkspace/Sidebarcontent";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
+  DelWorkspace,
   getworkspaceData,
   getworkspaceDataOne,
   getworkspaceDataTwo,
@@ -41,15 +42,51 @@ const Sidebar = ( ) => {
       // const workspaceTwo = await getworkspaceDataTwo();
       // console.log(workspaceOne, workspaceTwo, "workspaceOne, workspaceTwo");
       console.log(workspaceOne, "workspaceOne, workspaceTwo");
-      if (workspaceOne.data.length !== 0) {
+      if (workspaceOne?.data.length !== 0) {
         setPrivatecontent(workspaceOne.data);
       }
       // if (workspaceTwo.data.length !== 0) {
       //   setTeamcontent(workspaceTwo.data);
       // }
+      setState(false)
     };
     getworkspacedata();
   }, [state]);
+
+
+
+  const {data, isLoading, refetch} = useQuery({
+    queryKey : ['data'],
+    queryFn : getworkspaceDataOne,
+    refetchOnMount : true,
+    refetchOnWindowFocus : false,
+    enabled : true,
+    retry : 10
+  })
+
+  console.log(data, 'querydata')
+  
+  const delMutation = useMutation({
+    mutationFn : DelWorkspace,
+    onSuccess : () => {
+      refetch()
+    },
+    onError: () => {
+      console.log('error')
+    },
+    onSettled : () => {
+      console.log('setteled')
+    },
+    onMutate : (data) => {
+      console.log('onMutate')
+    }
+  })
+
+  // useEffect(() => {
+  //   setContent(data)
+  // }, [data])
+
+
 
   return (
     <SidebarWrap>
@@ -58,7 +95,7 @@ const Sidebar = ( ) => {
         contents={privatecontent}
         setState={setState}
         setContent={setPrivatecontent}
-     
+        delMutation={delMutation}
       ></Sidebarcontent>
       {/* <Sidebarcontent
         contents={teamcontent}
