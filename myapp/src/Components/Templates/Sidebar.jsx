@@ -19,6 +19,7 @@ const SidebarWrap = styled.div`
   position: fixed;
   box-sizing: border-box;
   overflow-y: scroll;
+  z-index: 1000;
 `;
 
 const Sidebar = ({ setPagestate }) => {
