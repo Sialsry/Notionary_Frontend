@@ -292,7 +292,7 @@ const PostForm = () => {
 
   return (
     <FormCard>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} id="postForm">
         <FormSection>
           <TitleInput
             value={title}
@@ -363,6 +363,7 @@ const PostForm = () => {
         <StyledButton
           variant="primary"
           type="submit"
+          form="postForm"
           disabled={!isFormValid || isSubmitting}
         >
           <Send size={16} />
