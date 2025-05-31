@@ -35,6 +35,7 @@ const colors = {
   gradientAccent: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
   gradientSuccess: "linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)",
   gradientInfo: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+  gradientWarning: "linear-gradient(135deg, #fde47f 0%, #f9d423 100%)",
 };
 
 // 기존 styled components들은 동일하게 유지...
@@ -50,6 +51,30 @@ const Button = styled.button`
   justify-content: center;
   gap: 6px;
   font-size: ${(props) => (props.size === "small" ? "12px" : "14px")};
+
+  // info
+  ${(props) =>
+    props.variant === "info" &&
+    `
+    background: ${colors.gradientInfo};
+    color: white;
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+    }
+    `}
+
+  // warning
+    ${(props) =>
+    props.variant === "warning" &&
+    `
+    background: ${colors.gradientWarning};
+    color: white;
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(255, 224, 102, 0.3);
+    }
+    `}
 
   ${(props) =>
     props.variant === "primary" &&
@@ -498,6 +523,7 @@ const SectionCard = styled(Card)`
   flex-direction: column;
   height: 90%;
   width: 50%;
+  margin-top: 2vh;
 `;
 
 const SectionTitle = styled.h3`
@@ -636,9 +662,7 @@ const MyPage = () => {
   const [likedPostPage, setLikedPostPage] = useState(1);
   const [commentedPostPage, setCommentedPostPage] = useState(1);
   const [workspacePage, setWorkspacePage] = useState(1);
-  const itemsPerPage = 4;
-
-  const [hoveredTeam, setHoveredTeam] = useState(null);
+  const itemsPerPage = 7;
 
   // 유저 정보 가져오기 함수
   const fetchUserData = async () => {
@@ -747,31 +771,20 @@ const MyPage = () => {
   // 프로젝트 데이터 가져오기 함수들
   const fetchMyProjects = async () => {
     try {
-      const accessToken = Cookies.get("login_access_token");
-      const response = await axios.get("http://localhost:4000/projects/my", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        withCredentials: true,
-      });
-
-      setAllMyProjects(response.data.projects || []);
+      const accessToken =
+        Cookies.get("login_access_token") || Cookies.get("authToken");
+      const response = await axios.get(
+        "http://localhost:4000/mypage/getMyWorkspace",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          withCredentials: true,
+        }
+      );
+      console.log("내 프로젝트 가져오기 성공:", response);
+      // setAllMyProjects(response.data.projects || []);
     } catch (error) {
       console.error("내 프로젝트 가져오기 실패:", error);
       setAllMyProjects([]);
-    }
-  };
-
-  const fetchTeamProjects = async () => {
-    try {
-      const accessToken = Cookies.get("login_access_token");
-      const response = await axios.get("http://localhost:4000/projects/team", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        withCredentials: true,
-      });
-
-      setAllTeamProjects(response.data.projects || []);
-    } catch (error) {
-      console.error("팀 프로젝트 가져오기 실패:", error);
-      setAllTeamProjects([]);
     }
   };
 
@@ -782,7 +795,6 @@ const MyPage = () => {
     fetchLikedPosts();
     fetchCommentedPosts();
     fetchMyProjects();
-    fetchTeamProjects();
   }, []);
 
   // 페이지네이션 계산
@@ -803,18 +815,11 @@ const MyPage = () => {
   );
 
   // 워크스페이스 탭에 따른 데이터 선택
-  const currentWorkspaceData =
-    activeWorkspaceTab === "personal" ? allMyProjects : allTeamProjects;
+  const currentWorkspaceData = allMyProjects;
   const paginatedWorkspace = getPaginatedData(
     currentWorkspaceData,
     workspacePage
   );
-
-  // 탭 변경 시 페이지 초기화
-  const handleWorkspaceTabChange = (tab) => {
-    setActiveWorkspaceTab(tab);
-    setWorkspacePage(1);
-  };
 
   // 프로필 관련 함수들은 기존과 동일
   const handleEditSubmit = async () => {
@@ -919,7 +924,9 @@ const MyPage = () => {
     posts,
     emptyMessage,
     emptyIcon,
-    showAuthor = false
+    showAuthor = false,
+    buttonMessage,
+    buttonColor
   ) => (
     <>
       {posts.length > 0 ? (
@@ -1002,6 +1009,15 @@ const MyPage = () => {
         <EmptyState>
           <div className="icon">{emptyIcon}</div>
           <div className="message">{emptyMessage}</div>
+          <Button
+            variant={`${buttonColor}`}
+            size="small"
+            onClick={() =>
+              navigate(`${buttonMessage === "게시글 작성" ? "/post" : "/main"}`)
+            }
+          >
+            <Plus size={14} /> {buttonMessage}
+          </Button>
         </EmptyState>
       )}
     </>
@@ -1087,7 +1103,9 @@ const MyPage = () => {
                   paginatedPosts.items,
                   "아직 작성한 게시글이 없습니다",
                   "📝",
-                  false // 내 게시글이므로 작성자 정보 표시 안함
+                  false, // 내 게시글이므로 작성자 정보 표시 안함
+                  "게시글 작성",
+                  "info"
                 )}
               </ScrollableContent>
               {paginatedPosts.totalPages > 1 && (
@@ -1110,7 +1128,9 @@ const MyPage = () => {
                   paginatedLikedPosts.items,
                   "좋아요를 누른 게시글이 없습니다",
                   "❤️",
-                  true // 다른 사람 게시글이므로 작성자 정보 표시
+                  true, // 다른 사람 게시글이므로 작성자 정보 표시
+                  "게시글 보러가기",
+                  "accent"
                 )}
               </ScrollableContent>
               {paginatedLikedPosts.totalPages > 1 && (
@@ -1133,7 +1153,9 @@ const MyPage = () => {
                   paginatedCommentedPosts.items,
                   "댓글을 작성한 게시글이 없습니다",
                   "💬",
-                  true // 다른 사람 게시글이므로 작성자 정보 표시
+                  true, // 다른 사람 게시글이므로 작성자 정보 표시
+                  "게시글 보러가기",
+                  "success"
                 )}
               </ScrollableContent>
               {paginatedCommentedPosts.totalPages > 1 && (
@@ -1147,7 +1169,7 @@ const MyPage = () => {
           </div>
 
           {/* 통합 워크스페이스 - 전체 너비 */}
-          <div>
+          {/* <div>
             <FullWidthCard>
               <div
                 style={{
@@ -1168,14 +1190,14 @@ const MyPage = () => {
                       color: "#212529",
                     }}
                   >
-                    워크스페이스
+                    내 워크스페이스
                   </span>
                 </div>
-              </div>
+              </div> */}
 
-              {/* 탭 메뉴 */}
-              <TabContainer>
-                <TabButton
+          {/* 탭 메뉴 */}
+          {/* <TabContainer> */}
+          {/* <TabButton
                   active={activeWorkspaceTab === "personal"}
                   onClick={() => handleWorkspaceTabChange("personal")}
                 >
@@ -1187,10 +1209,10 @@ const MyPage = () => {
                   onClick={() => handleWorkspaceTabChange("team")}
                 >
                   <Users size={14} />팀 워크스페이스 ({allTeamProjects.length})
-                </TabButton>
-              </TabContainer>
+                </TabButton> */}
+          {/* </TabContainer> */}
 
-              <ScrollableContent>
+          {/* <ScrollableContent>
                 {paginatedWorkspace.items.length > 0 ? (
                   <div
                     style={{
@@ -1210,9 +1232,9 @@ const MyPage = () => {
                           setHoveredTeam(project.project_id)
                         }
                         onMouseLeave={() => setHoveredTeam(null)}
-                      >
-                        {/* 팀 프로젝트인 경우 툴팁 표시 */}
-                        {activeWorkspaceTab === "team" && project.members && (
+                      > */}
+          {/* 팀 프로젝트인 경우 툴팁 표시 */}
+          {/* {activeWorkspaceTab === "team" && project.members && (
                           <div
                             style={{
                               position: "absolute",
@@ -1260,9 +1282,9 @@ const MyPage = () => {
                               }}
                             />
                           </div>
-                        )}
+                        )} */}
 
-                        <h4
+          {/* <h4
                           style={{
                             margin: "0 0 8px 0",
                             fontSize: "14px",
@@ -1314,13 +1336,13 @@ const MyPage = () => {
                     </div>
                     <div className="message">
                       {activeWorkspaceTab === "personal"
-                        ? "개인 워크스페이스를 만들어보세요"
+                        ? "워크스페이스가 없습니다"
                         : "참여중인 팀 워크스페이스가 없습니다"}
-                    </div>
-                    <Button
+                    </div> */}
+          {/* <Button
                       variant={
                         activeWorkspaceTab === "personal"
-                          ? "success"
+                          ? "warning"
                           : "primary"
                       }
                       size="small"
@@ -1329,12 +1351,12 @@ const MyPage = () => {
                       {activeWorkspaceTab === "personal"
                         ? "새 워크스페이스"
                         : "팀 만들기"}
-                    </Button>
-                  </EmptyState>
+                    </Button> */}
+          {/* </EmptyState>
                 )}
-              </ScrollableContent>
+              </ScrollableContent> */}
 
-              {paginatedWorkspace.totalPages > 1 && (
+          {/* {paginatedWorkspace.totalPages > 1 && (
                 <Pagination
                   currentPage={workspacePage}
                   totalPages={paginatedWorkspace.totalPages}
@@ -1342,7 +1364,7 @@ const MyPage = () => {
                 />
               )}
             </FullWidthCard>
-          </div>
+          </div> */}
         </ContentGrid>
       </RightPanel>
 

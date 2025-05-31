@@ -15,9 +15,7 @@ const PageContainer = styled.div`
 
 const LoginPage = () => {
   // 로그인 페이지로 돌아오면 쿠키 삭제
-
-  // useEffect(() => {});
-
+  // clearCookies();
   return (
     <div>
       <PageContainer>
