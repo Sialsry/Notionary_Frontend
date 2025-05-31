@@ -18,8 +18,8 @@ const Detailpage = () => {
   // console.log(pagestate, 'pagestate')
   return (
     <Mainwrap>
-      <Header/>
-      <Sidebar /> 
+      {/* <Header/> */}
+      
       <BlockEditor  />
     </Mainwrap>
   );

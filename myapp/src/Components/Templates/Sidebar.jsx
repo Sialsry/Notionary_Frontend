@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SidebarItem from "../Molecules/susu/SidearItem";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -15,15 +15,17 @@ import {
 const SidebarWrap = styled.div`
   width: 300px;
   background: rgb(248, 248, 247);
-  height: 100vh;
+  height: calc(100vh - 75px);
   padding: 0px 0px 100px 40px;
   position: fixed;
   box-sizing: border-box;
   overflow-y: scroll;
   z-index: 1000;
+  bottom: 0;
 `;
 
 const Sidebar = ( ) => {
+  const location = useLocation()
   const navigate = useNavigate();
   const handleItemClick = (item) => {
     console.log("Clicked:", item);
@@ -42,52 +44,58 @@ const Sidebar = ( ) => {
       // const workspaceTwo = await getworkspaceDataTwo();
       // console.log(workspaceOne, workspaceTwo, "workspaceOne, workspaceTwo");
       console.log(workspaceOne, "workspaceOne, workspaceTwo");
-      if (workspaceOne?.data.length !== 0) {
-        setPrivatecontent(workspaceOne.data);
+      try {
+        
+        if (workspaceOne?.data.length !== 0) {
+          setPrivatecontent(workspaceOne.data);
+        }
+        // if (workspaceTwo.data.length !== 0) {
+        //   setTeamcontent(workspaceTwo.data);
+        // }
+        setState(false)
+      } catch (error) {
+        setState(false)
+        
       }
-      // if (workspaceTwo.data.length !== 0) {
-      //   setTeamcontent(workspaceTwo.data);
-      // }
-      setState(false)
     };
     getworkspacedata();
   }, [state]);
 
 
 
-  const {data, isLoading, refetch} = useQuery({
-    queryKey : ['data'],
-    queryFn : getworkspaceDataOne,
-    refetchOnMount : true,
-    refetchOnWindowFocus : false,
-    enabled : true,
-    retry : 10
-  })
+  // const {data, isLoading, refetch} = useQuery({
+  //   queryKey : ['data'],
+  //   queryFn : getworkspaceDataOne,
+  //   refetchOnMount : true,
+  //   refetchOnWindowFocus : false,
+  //   enabled : true,
+  //   retry : 10
+  // })
 
-  console.log(data, 'querydata')
+  // console.log(data, 'querydata')
   
-  const delMutation = useMutation({
-    mutationFn : DelWorkspace,
-    onSuccess : () => {
-      refetch()
-    },
-    onError: () => {
-      console.log('error')
-    },
-    onSettled : () => {
-      console.log('setteled')
-    },
-    onMutate : (data) => {
-      console.log('onMutate')
-    }
-  })
+  // const delMutation = useMutation({
+  //   mutationFn : DelWorkspace,
+  //   onSuccess : () => {
+  //     refetch()
+  //   },
+  //   onError: () => {
+  //     console.log('error')
+  //   },
+  //   onSettled : () => {
+  //     console.log('setteled')
+  //   },
+  //   onMutate : (data) => {
+  //     console.log('onMutate')
+  //   }
+  // })
 
   // useEffect(() => {
   //   setContent(data)
   // }, [data])
+  console.log(location.pathname, ' locationpathname')
 
-
-
+  if(location.pathname.startsWith('/workspace') || location.pathname === '/main'){
   return (
     <SidebarWrap>
       <SidebarItem items={["홈", "글 추가"]} onClick={handleItemClick} />
@@ -95,7 +103,6 @@ const Sidebar = ( ) => {
         contents={privatecontent}
         setState={setState}
         setContent={setPrivatecontent}
-        delMutation={delMutation}
       ></Sidebarcontent>
       {/* <Sidebarcontent
         contents={teamcontent}
@@ -106,5 +113,5 @@ const Sidebar = ( ) => {
     </SidebarWrap>
   );
 };
-
+}
 export default Sidebar;

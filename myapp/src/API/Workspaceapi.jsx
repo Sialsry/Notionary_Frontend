@@ -221,7 +221,7 @@ const getBlock2 = async (workspacename, foldername, filename) => {
 };
 
 const DelWorkspace = async (workspacename, foldername) => {
-  console.log('Delworkspace')
+  console.log('Delworkspace',workspacename, foldername)
   const token = Cookies.get("authToken");
   const loginAccessToken = Cookies.get("login_access_token");
   const accessToken = token || loginAccessToken;
@@ -242,7 +242,7 @@ const DelWorkspace = async (workspacename, foldername) => {
   
 
 const DelWorkspacepage = async (workspacename, foldername, filename) => {
-  console.log('Delworkspace')
+  console.log('Delworkspacepage',workspacename, foldername, filename)
   const token = Cookies.get("authToken");
   const loginAccessToken = Cookies.get("login_access_token");
   const accessToken = token || loginAccessToken;
