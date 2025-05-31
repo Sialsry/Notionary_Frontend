@@ -172,8 +172,8 @@ const { data, isLoading, isError } = useQuery({
 
   return (
     <>
-      {!showMainText && <Header />}
-      {!showMainText && <Sidebar />}
+      {/* {!showMainText && <Header />} */}
+      {/* {!showMainText && <Sidebar />} */}
 
       {showMainText ? (
         <div className="fade-in">

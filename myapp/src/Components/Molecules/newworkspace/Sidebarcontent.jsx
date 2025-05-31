@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Subtitle } from "../../Atoms/ming/Typography";
-import { saveData, getworkspaceData, DelWorkspace } from "../../../API/Workspaceapi";
+import { saveData, getworkspaceData, DelWorkspace, DelWorkspacepage } from "../../../API/Workspaceapi";
 import { folder, homeicon, logo, page, Pagesicon, workspaceicon } from "../../../images";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { deletebtn } from "../../../images";
+import Popup from "./Popup";
 
 
 const Contentwrap = styled.div`
@@ -58,7 +59,7 @@ const Titlecontent = styled.div`
   .Tcontent {
     padding: 3px 10px;
     font-size: 16px;
-    width: 130px;
+    width: 110px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space:nowrap
@@ -81,7 +82,7 @@ const Content = styled.div`
   align-items: center;
   position: relative;
   .Pagename {
-    width: 130px;
+    width: 110px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -274,6 +275,102 @@ const Delbtntwo = styled.span`
   }
 `
 
+const Popwrap = styled.div`
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    `
+
+const Popupbodyone = styled.div`
+  border: 1px solid #b4b4b4;
+  width: 500px;
+  height : 300px;
+  background-color: white;
+  color: black;
+  box-shadow: 0 0 18px -10px;
+  border-radius: 10px;
+  padding: 50px;
+  gap: 80px;
+  font-size: 22px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    width : 170px;
+    height: 50px;
+    margin: 0 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+  .submitbtn{
+    background-color: green;
+    color: white;
+  }
+  .submitbtn:hover{
+     background-color: #079107;
+  }
+  .cancelbtn:hover{
+     background-color: #da3636;
+  }
+  .cancelbtn{
+    background-color: #c41b1b;
+  }
+`
+
+const Popupbody = styled.div`
+  border: 1px solid #b4b4b4;
+  width: 500px;
+  height : 300px;
+  background-color: white;
+  color: black;
+  box-shadow: 0 0 18px -10px;
+  border-radius: 10px;
+  padding: 50px;
+  gap: 80px;
+  font-size: 22px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    width : 170px;
+    height: 50px;
+    margin: 0 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+  .submitbtn{
+    background-color: green;
+    color: white;
+  }
+  .submitbtn:hover{
+     background-color: #079107;
+  }
+  .cancelbtn:hover{
+     background-color: #da3636;
+  }
+  .cancelbtn{
+    background-color: #c41b1b;
+  }
+`
+
 
 
 const Sidebarcontent = ({ contents, setState, setContent }) => {
@@ -286,25 +383,14 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
   const [isprivateopen, setIsprivateopen] = useState({});
   const [toggleindex, settoggleIndex] = useState();
   const [dispatchstate, setDispatchstate] = useState(false);
+  const [popupwrap, setPopupwrap] = useState(false)
+  const [popupwrapfolder, setPopupwrapfolder] = useState(false)
+  const [delfolder, setDelfolder] = useState()
+  const [delfile, setDelfile] = useState()
   const dispatch = useDispatch();
-  
-  
-  // const queryClient = useQueryClient();
-  // const delMutation = useMutation({
-  //   mutationFn : DelWorkspace,
-  //   onSuccess : () => {
-  //     refetch()
-  //   },
-  //   onError: () => {
-  //     console.log('error')
-  //   },
-  //   onSettled : () => {
-  //     console.log('setteled')
-  //   },
-  //   onMutate : (data) => {
-  //     console.log(onMutate)
-  //   }
-  // })
+
+  console.log(delfolder, 'delfolder')
+  console.log(delfile, 'delfile')
 
   const toggleSection = (key) => {
     if (isprivateopen[key])
@@ -324,8 +410,13 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
       })
     );
     setPopupfolder(false);
-    alert("successful");
+    // alert("successful");
   };
+
+  useEffect(() => {
+    console.log(contents, 'contents')
+  }, [popupfolder])
+
   const createFile = async (e) => {
     e.preventDefault();
     const { value: fileName } = e.target.filename;
@@ -335,7 +426,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
         const mainkey = Object.keys(obj)[0];
         const updatedsub = obj[mainkey].map((subObj, subindex) => {
           const subkey = Object.keys(subObj)[0];
-          // console.log(mainkey, subkey, "subkey", fileName);
+          console.log(mainkey, subkey, "subkey", fileName);
           if (subcategory === subkey) {
             setSubcategory({
               workSpace: mainkey,
@@ -349,10 +440,20 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
           // else {return}
         });
         setPopupfile(false);
+        setIsprivateopen(prev => prev)
         return { ...obj, [mainkey]: updatedsub };
       })
     );
   };
+
+  const deleteFolder = (foldername) => {
+    setContent((prev) =>
+      prev.map((obj, index) => {
+        const mainkey = Object.keys(obj)[0];
+        const deletedsub = obj
+      })
+    )
+  }
   useEffect(() => {
     const Run = async () => {
       const data = await saveData("workSpace/newFolder", { data: category });
@@ -401,8 +502,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                     e.stopPropagation();
                     setPopupfolder(true);
                     setHeader(mainTitle);
-                  }}
-                >
+                  }}>
                   +
                 </AddbtnOne>
               </Btnwrap>
@@ -421,19 +521,44 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                     <Titlecontent>
                       <div className="Wspaceicon">
                         <img src={workspaceicon} alt=""
-                        
-                      /></div>
+
+                        /></div>
                       <div className="Tcontent">{folderTitle}</div>
                       <Delbtn onClick={(e) => {
                         e.stopPropagation();
-                       
+
                       }} >
                         <img src={deletebtn} alt="" onClick={(e) => {
-                            e.stopPropagation();
-                            console.log('asdfd')
-                             DelWorkspace(mainTitle, subContent)
-                          }}/>
+                          e.stopPropagation();
+                          setDelfolder({...delfolder, mainTitle, folderTitle})
+                          setPopupwrapfolder(true)
+
+                        }} />
                       </Delbtn>
+                      {popupwrapfolder ? (
+                        <Popwrap>
+                          <Popupbody>
+                            <div>삭체하세겠습니까 ??</div>
+                            <div>
+                              <button className='cancelbtn'
+                                onClick={(e) => {
+                                  setPopupwrap(false)
+                                }}
+                              >취소</button>
+                              <button className='submitbtn'
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  DelWorkspace(delfolder.mainTitle, delfolder.folderTitle)
+                                  setState(true)
+                                  setPopupwrapfolder(false)
+                                  navigate('/main')
+                                }}
+                              >완료</button>
+                            </div>
+                          </Popupbody>
+                        </Popwrap>
+                      ) : null}
+
                       <Btnwrap>
                         <Addbtn
                           onClick={(e) => {
@@ -457,8 +582,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                               pageTitle,
                               entryIndex
                             );
-                            // setDispatchstate(true)
-                            // dispatch({ type: "True" });
+                            setIsprivateopen(prev => prev)
                           }}
                         >
                           <div><img src={Pagesicon} alt="" /></div>
@@ -466,10 +590,33 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                           <Delbtntwo>
                             <img src={deletebtn} alt="" onClick={(e) => {
                               e.stopPropagation();
-
+                              setDelfile({...delfile, mainTitle, folderTitle, entry})
+                              setPopupwrap(true)
                             }} />
                           </Delbtntwo>
-                          {/* <span className='contentdot'>⋮⋮</span> */}
+                          {popupwrap ? (
+                        <Popwrap>
+                          <Popupbodyone>
+                            <div>삭체하세겠습니까 ??</div>
+                            <div>
+                              <button className='cancelbtn'
+                                onClick={(e) => {
+                                  setPopupwrap(false)
+                                }}
+                              >취소</button>
+                              <button className='submitbtn'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  DelWorkspacepage(delfile.mainTitle, delfile.folderTitle, delfile.entry)
+                                  setState(true)
+                                  setPopupwrap(false)
+                                  navigate('/main')
+                                }}
+                              >완료</button>
+                            </div>
+                          </Popupbodyone>
+                        </Popwrap>
+                      ) : null}
                         </Content>
                       ))}
                   </Titlewrap>
@@ -494,7 +641,10 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
             <div className="imgdiv">
               <img src={logo} alt="" />
             </div>
-            <form action="" onSubmit={(e) => createFolder(e)}>
+            <form action="" onSubmit={(e) => {
+              createFolder(e)
+              setState(true);
+            }}>
               <div className="headerContent">
                 <h2>{header} </h2>
                 <div className="folderTitle">
@@ -530,6 +680,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
               action=""
               onSubmit={(e) => {
                 createFile(e);
+                setState(true);
+                
               }}
             >
               <div className="headerContent">
@@ -549,6 +701,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
           </Folderwrap>
         </Addfolder>
       ) : null}
+
+
     </>
   );
 };

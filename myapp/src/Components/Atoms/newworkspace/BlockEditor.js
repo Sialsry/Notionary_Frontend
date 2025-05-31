@@ -10,7 +10,7 @@ const BlockEditorContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  padding-top: 50px;
+  padding-top: 70px;
 `;
 
 const Block = styled.div`
