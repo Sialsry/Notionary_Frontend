@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:4000';
 
 const AllCategoryPost = async () => {
   const { data } = await axios.get(`${API_BASE_URL}/main`);
-  console.log("API 응답 데이터:", data);
+  // console.log("API 응답 데이터:", data);
   return data;
 }
 
@@ -29,4 +29,13 @@ const CreatePost = async (formData) => {
   return data;
 }
 
-export {AllCategoryPost, SubCategoryPost, EtcCategoryPost, CreatePost}
+const GetWorkSpace = async (uid) => {
+  const {data} = await axios.post(`${API_BASE_URL}/post/getWorkspace`, {
+    uid : uid
+  })
+  // console.log("워크스페이스 조회 데이터 한번만 ", data)
+  return data;
+}
+
+
+export {AllCategoryPost, SubCategoryPost, EtcCategoryPost, CreatePost, GetWorkSpace}
