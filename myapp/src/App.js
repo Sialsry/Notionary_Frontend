@@ -9,6 +9,8 @@ import MyPage from "./Components/Pages/MyPage";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PostDetail from "./Components/Pages/PostDetail";
+import Sidebar from "./Components/Templates/Sidebar";
+import Header from "./Components/Templates/Header";
 
 function App() {
   const select = useSelector((state) => state);
@@ -18,6 +20,8 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      <Header />
+      <Sidebar /> 
         <Routes>
           <Route
             path="/workspace/selectspace/:workspacename/:foldername/:filename"

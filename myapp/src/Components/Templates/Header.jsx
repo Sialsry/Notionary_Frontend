@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/notionary-logo.png";
 import defaultProfile from "../../images/default_profile.png"; // 기본 프로필 이미지 필요
 
@@ -17,6 +17,8 @@ const HeaderContainer = styled.header`
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  position: fixed;
+  z-index: 100;
 `;
 
 const LogoContainer = styled.div`
@@ -24,6 +26,7 @@ const LogoContainer = styled.div`
     height: 200px;
     object-fit: contain;
     margin-top: 10px;
+    cursor: pointer;
   }
 `;
 
@@ -82,6 +85,7 @@ const LogoutButton = styled.button`
 `;
 
 const Header = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const [user, setUser] = useState({
     profileImage: null,
@@ -186,7 +190,7 @@ const Header = () => {
     // 로그인 페이지로 이동
     navigate("/");
   };
-
+  if(location.pathname.startsWith('/workspace') || location.pathname === '/main' || location.pathname === '/post' || location.pathname.startsWith('/detail')){
   return (
     <HeaderContainer>
       <UserContainer>
@@ -196,11 +200,11 @@ const Header = () => {
         </ProfileWrapper>
       </UserContainer>
       <LogoContainer>
-        <img src={logo} alt="Notionary Logo" />
+        <img src={logo} alt="Notionary Logo" onClick={() => navigate('/main')} />
       </LogoContainer>
       <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
     </HeaderContainer>
   );
 };
-
+}
 export default Header;

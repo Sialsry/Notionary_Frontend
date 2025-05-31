@@ -14,9 +14,11 @@ import image from "./icons/image.png"
 import logo from "./notionary-logo.png"
 import page from "./icons/page.png"
 import folder from "./icons/folder.png"
-
+import deletebtn from "./icons/delete.png"
+import homeicon from "./icons/home.png"
+import workspaceicon from "./icons/workspace.png"
+import Pagesicon from "./icons/pages.png"
 
 export {addicon, bulletlist, calendar, databasetable, doticon, header,
     numberlist, table, todolist, toggle, togglelist,  cute, image, logo,
-    folder, page
-}
+    folder, page, deletebtn,homeicon,workspaceicon,Pagesicon}
