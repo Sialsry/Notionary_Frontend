@@ -25,6 +25,7 @@ const Container = styled.div`
 `;
 
 const HeaderCard = styled.div`
+  margin-top: 75px;
   background: white;
   border-radius: 16px;
   padding: 32px;

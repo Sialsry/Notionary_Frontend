@@ -64,7 +64,7 @@ const Input = styled.input`
 function CommentList({ postId, category_id }) {
   const [commentText, setCommentText] = useState('');
   const queryClient = useQueryClient();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
 
   const { data, isLoading, isError } = useQuery({

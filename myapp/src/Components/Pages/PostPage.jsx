@@ -27,7 +27,7 @@ const Container = styled.div`
 const PostPage = () => {
   return (
     <Container>
-      <Header />
+      {/* <Header /> */}
       <PostTemplate />
     </Container>
   );

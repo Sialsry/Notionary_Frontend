@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Button from '../../Atoms/susu/Button';
 
 const CategoriesWrap = styled.div`
+    margin-top: 100px;
     display: flex;
     justify-content: center;
     gap: 20px;

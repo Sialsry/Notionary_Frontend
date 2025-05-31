@@ -180,7 +180,7 @@ const ValidationMessage = styled.div`
 const PostForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
 
   const [title, setTitle] = useState("");
@@ -208,6 +208,7 @@ const PostForm = () => {
   const { mutate, isLoading: isSubmitting } = useMutation({
     mutationFn: CreatePost,
     onSuccess: (data) => {
+      console.log("성공",data);
       queryClient.invalidateQueries(["posts"]);
       navigate("/main");
     },

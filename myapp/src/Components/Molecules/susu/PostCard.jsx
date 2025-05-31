@@ -215,7 +215,7 @@ useEffect(() => {
 
 
   const queryClient = useQueryClient();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
   const nick = userInfo?.nick;
 

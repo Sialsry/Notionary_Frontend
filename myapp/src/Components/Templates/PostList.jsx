@@ -45,7 +45,9 @@ const PostList = ({ posts: externalPosts }) => {
   const { data: allPostsData = [], isLoading, isError,} = useQuery({
     queryKey: ['allPosts'],
     queryFn: async () => {
+      console.log("누가 찍히냐")
       const res = await AllCategoryPost({ offset: 0, limit: 1000 });
+      console.log("누가 찍히냐",res)
       return res.data;
     },
     staleTime: 0,
