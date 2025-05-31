@@ -523,6 +523,7 @@ const SectionCard = styled(Card)`
   flex-direction: column;
   height: 90%;
   width: 50%;
+  margin-top: 2vh;
 `;
 
 const SectionTitle = styled.h3`
@@ -661,9 +662,7 @@ const MyPage = () => {
   const [likedPostPage, setLikedPostPage] = useState(1);
   const [commentedPostPage, setCommentedPostPage] = useState(1);
   const [workspacePage, setWorkspacePage] = useState(1);
-  const itemsPerPage = 4;
-
-  const [hoveredTeam, setHoveredTeam] = useState(null);
+  const itemsPerPage = 7;
 
   // 유저 정보 가져오기 함수
   const fetchUserData = async () => {
@@ -789,21 +788,6 @@ const MyPage = () => {
     }
   };
 
-  // const fetchTeamProjects = async () => {
-  //   try {
-  //     const accessToken = Cookies.get("login_access_token");
-  //     const response = await axios.get("http://localhost:4000/projects/team", {
-  //       headers: { Authorization: `Bearer ${accessToken}` },
-  //       withCredentials: true,
-  //     });
-
-  //     setAllTeamProjects(response.data.projects || []);
-  //   } catch (error) {
-  //     console.error("팀 프로젝트 가져오기 실패:", error);
-  //     setAllTeamProjects([]);
-  //   }
-  // };
-
   // useEffect에서 모든 데이터 가져오기
   useEffect(() => {
     fetchUserData();
@@ -836,12 +820,6 @@ const MyPage = () => {
     currentWorkspaceData,
     workspacePage
   );
-
-  // 탭 변경 시 페이지 초기화
-  // const handleWorkspaceTabChange = (tab) => {
-  //   setActiveWorkspaceTab(tab);
-  //   setWorkspacePage(1);
-  // };
 
   // 프로필 관련 함수들은 기존과 동일
   const handleEditSubmit = async () => {
@@ -1191,7 +1169,7 @@ const MyPage = () => {
           </div>
 
           {/* 통합 워크스페이스 - 전체 너비 */}
-          <div>
+          {/* <div>
             <FullWidthCard>
               <div
                 style={{
@@ -1215,11 +1193,11 @@ const MyPage = () => {
                     내 워크스페이스
                   </span>
                 </div>
-              </div>
+              </div> */}
 
-              {/* 탭 메뉴 */}
-              <TabContainer>
-                {/* <TabButton
+          {/* 탭 메뉴 */}
+          {/* <TabContainer> */}
+          {/* <TabButton
                   active={activeWorkspaceTab === "personal"}
                   onClick={() => handleWorkspaceTabChange("personal")}
                 >
@@ -1232,9 +1210,9 @@ const MyPage = () => {
                 >
                   <Users size={14} />팀 워크스페이스 ({allTeamProjects.length})
                 </TabButton> */}
-              </TabContainer>
+          {/* </TabContainer> */}
 
-              <ScrollableContent>
+          {/* <ScrollableContent>
                 {paginatedWorkspace.items.length > 0 ? (
                   <div
                     style={{
@@ -1254,9 +1232,9 @@ const MyPage = () => {
                           setHoveredTeam(project.project_id)
                         }
                         onMouseLeave={() => setHoveredTeam(null)}
-                      >
-                        {/* 팀 프로젝트인 경우 툴팁 표시 */}
-                        {/* {activeWorkspaceTab === "team" && project.members && (
+                      > */}
+          {/* 팀 프로젝트인 경우 툴팁 표시 */}
+          {/* {activeWorkspaceTab === "team" && project.members && (
                           <div
                             style={{
                               position: "absolute",
@@ -1306,7 +1284,7 @@ const MyPage = () => {
                           </div>
                         )} */}
 
-                        <h4
+          {/* <h4
                           style={{
                             margin: "0 0 8px 0",
                             fontSize: "14px",
@@ -1360,8 +1338,8 @@ const MyPage = () => {
                       {activeWorkspaceTab === "personal"
                         ? "워크스페이스가 없습니다"
                         : "참여중인 팀 워크스페이스가 없습니다"}
-                    </div>
-                    {/* <Button
+                    </div> */}
+          {/* <Button
                       variant={
                         activeWorkspaceTab === "personal"
                           ? "warning"
@@ -1374,11 +1352,11 @@ const MyPage = () => {
                         ? "새 워크스페이스"
                         : "팀 만들기"}
                     </Button> */}
-                  </EmptyState>
+          {/* </EmptyState>
                 )}
-              </ScrollableContent>
+              </ScrollableContent> */}
 
-              {paginatedWorkspace.totalPages > 1 && (
+          {/* {paginatedWorkspace.totalPages > 1 && (
                 <Pagination
                   currentPage={workspacePage}
                   totalPages={paginatedWorkspace.totalPages}
@@ -1386,7 +1364,7 @@ const MyPage = () => {
                 />
               )}
             </FullWidthCard>
-          </div>
+          </div> */}
         </ContentGrid>
       </RightPanel>
 
