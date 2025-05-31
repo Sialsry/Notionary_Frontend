@@ -61,6 +61,54 @@ const CategoryText = styled.p`
   margin-bottom: 12px;
 `;
 
+const CollapsibleText = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})`
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  ${({ expanded }) =>
+    expanded
+      ? `
+        display: block;
+        overflow: visible;
+        max-height: none;
+      `
+      : `
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+      `}
+`;
+
+const WorkspaceWrap = styled.div`
+  padding: 12px 16px;
+  margin: 0 16px 16px;
+  background-color: #f5f5fa;
+  border-left: 4px solid #7e57c2;
+  border-radius: 6px;
+`;
+
+const WorkspaceTitle = styled.div`
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #5a39a3;
+  font-size: 14px;
+`;
+
+const WorkspaceToggleButton = styled.button`
+  font-size: 13px;
+  color: #7e57c2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+  padding: 0;
+`;
+
 const heartBeat = keyframes`
   0% { transform: scale(1); }
   25% { transform: scale(1.3); }
@@ -142,10 +190,29 @@ function PostCard({
   post_id,
   authNick,
   hearts = [],
+  parent_id,
+  workspaceCtgrName,
+  workspaceSubCtgrName,
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
   const contentRef = useRef(null);
+const [showFullWorkspace, setShowFullWorkspace] = useState(false);
+const [showWorkspaceToggle, setShowWorkspaceToggle] = useState(false);
+const workspaceRef = useRef(null);
+
+useEffect(() => {
+  const el = workspaceRef.current;
+  if (!el) return;
+
+  const frame = requestAnimationFrame(() => {
+    const isOverflowing = el.scrollHeight > el.offsetHeight;
+    setShowWorkspaceToggle(isOverflowing);
+  });
+
+  return () => cancelAnimationFrame(frame);
+}, [parent_id, workspaceCtgrName, workspaceSubCtgrName]);
+
 
   const queryClient = useQueryClient();
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -252,6 +319,25 @@ useEffect(() => {
         <CategoryText>
           카테고리: {categoryName} {subCategoryName && ` > ${subCategoryName}`}
         </CategoryText>
+
+        
+      {parent_id && (
+  <WorkspaceWrap>
+    <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
+    <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
+      {parent_id}
+      {workspaceCtgrName && ` > ${workspaceCtgrName}`}
+      {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
+    </CollapsibleText>
+    {showWorkspaceToggle && (
+      <WorkspaceToggleButton
+        onClick={() => setShowFullWorkspace((prev) => !prev)}
+      >
+        {showFullWorkspace ? '접기' : '더보기'}
+      </WorkspaceToggleButton>
+    )}
+  </WorkspaceWrap>
+)}
 
         <MediaSlider images={images} videos={videos} />
 

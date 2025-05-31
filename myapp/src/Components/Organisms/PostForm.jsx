@@ -179,10 +179,10 @@ const handleSubmit = (e) => {
           workspaces={workspaces}
           value={selectedPageId}
             onChange={(pageId, workspaceId) => {
-          console.log('onChange workspaceId:', workspaceId);
-          setSelectedPageId(pageId);
-          setSelectedWorkspaceId(workspaceId ? Number(workspaceId) : null);
-          setWorkSpaceId(workspaceId ? Number(workspaceId) : null);
+        console.log('onChange workspaceId:', workspaceId);
+        setSelectedPageId(pageId);
+        setSelectedWorkspaceId(workspaceId ? Number(workspaceId) : null);
+        setWorkSpaceId(workspaceId ? Number(workspaceId) : null);
       }}
         />
       )}

@@ -132,20 +132,23 @@ if (!isLoading && flatPosts.length === 0) {
               key={post.post_id}
               style={{ animationDelay: `${index * 300}ms` }}
             >
-              <PostCard
-                authNick={post.User.nick || "사용자 닉네임 없음"}
-                authProImg={post.User.profImg || "사용자 프로필 없음"}
-                title={post.title || "제목없음"}
-                images={parseImgPaths(post.imgPaths)}
-                videos={parseVideoPaths(post.videoPaths)}
-                imageAlt={post.title || "제목없음"}
-                content={post.content || "내용이 없습니다."}
-                categoryName={categoryName}
-                subCategoryName={subCategoryName}
-                post_id={post.post_id}
-                category_id={category.category_id}
-                hearts={post.Hearts || []}
-              />
+          <PostCard
+            authNick={post.User?.nick || "사용자 닉네임 없음"}
+            authProImg={post.User?.profImg || "/images/default_profile.png"}
+            title={post.title || "제목없음"}
+            images={parseImgPaths(post.imgPaths)}
+            videos={parseVideoPaths(post.videoPaths)}
+            imageAlt={post.title || "제목없음"}
+            content={post.content || "내용이 없습니다."}
+            categoryName={categoryName}
+            subCategoryName={subCategoryName}
+            post_id={post.post_id}
+            category_id={category.category_id}
+            hearts={post.Hearts || []}
+            parent_id={post.Workspacectgr?.parent_id || "보이니?"}
+            workspaceCtgrName={post.Workspacectgr?.workspacectgrs_name || "워크 스페이스 없음"}
+            workspaceSubCtgrName={post.Workspacectgr?.workspacesubctgrs_name || "페이지 없음"}
+          />
               <CommentList
                 postId={post.post_id}
                 category_id={category.category_id}
