@@ -321,8 +321,8 @@ useEffect(() => {
         </CategoryText>
 
         
-      {parent_id && (
-  <WorkspaceWrap>
+        {parent_id && (
+    <WorkspaceWrap>
     <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
     <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
       {parent_id}

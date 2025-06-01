@@ -13,19 +13,22 @@ const fadeUp = keyframes`
 `;
 
 const FeedWrapper = styled.div`
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 32px 16px;
+  max-width: 1050px;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: 30px;
   gap: 32px;
+  min-height: 400px;
+  align-items: center;
+  justify-content: center;
 
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
+    max-width: 100%;
     padding: 24px 12px;
     gap: 24px;
   }
 `;
-
 const AnimatedCardWrapper = styled.div`
   animation: ${fadeUp} 0.4s ease forwards;
 `;
@@ -45,9 +48,7 @@ const PostList = ({ posts: externalPosts }) => {
   const { data: allPostsData = [], isLoading, isError,} = useQuery({
     queryKey: ['allPosts'],
     queryFn: async () => {
-      console.log("누가 찍히냐")
       const res = await AllCategoryPost({ offset: 0, limit: 1000 });
-      console.log("누가 찍히냐",res)
       return res.data;
     },
     staleTime: 0,

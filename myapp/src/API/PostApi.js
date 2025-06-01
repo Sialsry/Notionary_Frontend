@@ -29,6 +29,19 @@ const CreatePost = async (formData) => {
   return data;
 };
 
+
+const UpdatePost = async ({post_id, formData}) => {
+  const { data } = await axios.put(`${API_BASE_URL}/post/edit/${post_id}`, formData);
+  console.log("업데이트 결과 데이터:", data);
+  return data;
+};
+
+const GetPostById = async (post_id) => {
+  const { data } = await axios.get(`${API_BASE_URL}/post/${post_id}`);
+  console.log("수정할 게시글 ID  데이터" , data)
+  return data;
+};
+
 const GetWorkSpace = async (uid) => {
   const { data } = await axios.post(`${API_BASE_URL}/post/getWorkspace`, {
     uid: uid,
@@ -42,5 +55,7 @@ export {
   SubCategoryPost,
   EtcCategoryPost,
   CreatePost,
+  UpdatePost,
   GetWorkSpace,
+  GetPostById
 };

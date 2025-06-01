@@ -16,13 +16,12 @@ import MainText from '../Atoms/susu/MainText';
 const MainWrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; 
   align-items: center;
   width: 100%;
-  min-height: max-content;
+  min-height: 100vh;
   background-color: #fff;
 `;
-
 const CategoryTitle = styled.div`
   display: flex;
   justify-content: center;
