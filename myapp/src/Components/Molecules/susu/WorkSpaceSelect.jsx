@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
 
@@ -178,6 +178,7 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
   });
 
   const handleWorkspaceSelect = (workspaceId) => {
+    console.log(workspaceId, 'workspaceid')
     setSelectedWorkspace(workspaceId);
     setSelectedPageIds([]);
     setShowDropdown(false);
@@ -203,7 +204,10 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
     setSelectedPageIds(allIds);
     onChange(allIds, selectedWorkspace);
   };
-
+  useEffect(() => {
+    
+  console.log(grouped, ' grouped', selectedPageIds)
+  }, [grouped])
   return (
     <Wrapper>
       <Label>

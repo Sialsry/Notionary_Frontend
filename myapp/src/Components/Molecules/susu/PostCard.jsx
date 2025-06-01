@@ -7,6 +7,7 @@ import Title from '../../Molecules/susu/Title';
 import MediaSlider from '../../Atoms/susu/MediaSlider';
 import hearticon from '../../../images/icons/hearticon.png';
 import fullheart from '../../../images/icons/fullheart.png';
+import { redirect } from 'react-router-dom';
 
 const CardBlock = styled.div`
   width: 100%;
@@ -193,25 +194,26 @@ function PostCard({
   parent_id,
   workspaceCtgrName,
   workspaceSubCtgrName,
+  result_id
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
   const contentRef = useRef(null);
-const [showFullWorkspace, setShowFullWorkspace] = useState(false);
-const [showWorkspaceToggle, setShowWorkspaceToggle] = useState(false);
-const workspaceRef = useRef(null);
+  const [showFullWorkspace, setShowFullWorkspace] = useState(false);
+  const [showWorkspaceToggle, setShowWorkspaceToggle] = useState(false);
+  const workspaceRef = useRef(null);
 
-useEffect(() => {
-  const el = workspaceRef.current;
-  if (!el) return;
+  useEffect(() => {
+    const el = workspaceRef.current;
+    if (!el) return;
 
-  const frame = requestAnimationFrame(() => {
-    const isOverflowing = el.scrollHeight > el.offsetHeight;
-    setShowWorkspaceToggle(isOverflowing);
-  });
+    const frame = requestAnimationFrame(() => {
+      const isOverflowing = el.scrollHeight > el.offsetHeight;
+      setShowWorkspaceToggle(isOverflowing);
+    });
 
-  return () => cancelAnimationFrame(frame);
-}, [parent_id, workspaceCtgrName, workspaceSubCtgrName]);
+    return () => cancelAnimationFrame(frame);
+  }, [parent_id, workspaceCtgrName, workspaceSubCtgrName]);
 
 
   const queryClient = useQueryClient();
@@ -226,6 +228,15 @@ useEffect(() => {
   );
 
   const [likeCount, setLikeCount] = useState(hearts.length);
+
+  //   const {
+  //   data: workspacedata,
+  //   isLoading: isWorkspacesLoading,
+  //   isError: isWorkspacesError,
+  // } = useQuery({
+  //   queryKey: ["workspaces", uid],
+  //   queryFn: () => GetWorkSpace(uid),
+  // });
 
   useEffect(() => {
     setLocalHearts(hearts);
@@ -291,17 +302,17 @@ useEffect(() => {
     }
   };
 
-useEffect(() => {
-  const el = contentRef.current;
-  if (!el) return;
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
 
-  const frame = requestAnimationFrame(() => {
-    const isOverflowing = el.scrollHeight > el.offsetHeight;
-    setShowMoreButton(isOverflowing);
-  });
+    const frame = requestAnimationFrame(() => {
+      const isOverflowing = el.scrollHeight > el.offsetHeight;
+      setShowMoreButton(isOverflowing);
+    });
 
-  return () => cancelAnimationFrame(frame);
-}, [content]);
+    return () => cancelAnimationFrame(frame);
+  }, [content]);
 
 
   return (
@@ -320,26 +331,26 @@ useEffect(() => {
           카테고리: {categoryName} {subCategoryName && ` > ${subCategoryName}`}
         </CategoryText>
 
-        
-      {parent_id && (
-  <WorkspaceWrap>
-    <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
-    <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
-      {parent_id}
-      {workspaceCtgrName && ` > ${workspaceCtgrName}`}
-      {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
-    </CollapsibleText>
-    {showWorkspaceToggle && (
-      <WorkspaceToggleButton
-        onClick={() => setShowFullWorkspace((prev) => !prev)}
-      >
-        {showFullWorkspace ? '접기' : '더보기'}
-      </WorkspaceToggleButton>
-    )}
-  </WorkspaceWrap>
-)}
 
-        <MediaSlider images={images} videos={videos} />
+        {parent_id && (
+          <WorkspaceWrap>
+            <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
+            <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
+              {parent_id}
+              {workspaceCtgrName && ` > ${workspaceCtgrName}`}
+              {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
+            </CollapsibleText>
+            {showWorkspaceToggle && (
+              <WorkspaceToggleButton
+                onClick={() => setShowFullWorkspace((prev) => !prev)}
+              >
+                {showFullWorkspace ? '접기' : '더보기'}
+              </WorkspaceToggleButton>
+            )}
+          </WorkspaceWrap>
+        )}
+
+        <MediaSlider images={images} videos={videos} result_id={result_id} />
 
         <ContentWrap>
           <PostText ref={contentRef} expanded={expanded}>

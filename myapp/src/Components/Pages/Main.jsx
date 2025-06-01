@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery , useQueryClient} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { SubCategoryPost , AllCategoryPost,  EtcCategoryPost } from '../../API/PostApi';
+import { SubCategoryPost , AllCategoryPost,  EtcCategoryPost, GetWorkSpace } from '../../API/PostApi';
 import Sidebar from '../Templates/Sidebar';
 import styled from 'styled-components';
 import Categories from '../Molecules/susu/Categories';
@@ -12,6 +12,7 @@ import Button from '../Atoms/susu/Button';
 import PostList from '../Templates/PostList';
 import Header from '../Templates/Header';
 import MainText from '../Atoms/susu/MainText';
+import { useSelector } from 'react-redux';
 
 const MainWrap = styled.div`
   display: flex;
@@ -97,7 +98,8 @@ const Main = () => {
   const [select, setSelect] = useState('전체');
   const [selectSubCategory, setSelectSubCategory] = useState([]);
   const [showMainText, setShowMainText] = useState(true);
-
+  
+  
   useEffect(() => {
     const timer = setTimeout(() => setShowMainText(false), 1500);
     return () => clearTimeout(timer);

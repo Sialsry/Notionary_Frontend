@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { PostBlockcontent, getBlockcontent, saveData } from '../../../API/Workspaceapi';
+import { PostBlockcontent, getBlockcontent, getBlockIdcontent, saveData } from '../../../API/Workspaceapi';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 
 
 
@@ -11,6 +12,11 @@ const BlockEditorContainer = styled.div`
   margin: 0 auto;
   padding: 20px;
   padding-top: 70px;
+
+  .workspacename{
+    font-size : 20px;
+    font-weight: 500;
+  }
 `;
 
 const Block = styled.div`
@@ -273,7 +279,7 @@ const RemoveImageButton = styled.button`
   }
 `;
 
-const BlockEditor = ({ setPagestate, pagestate }) => {
+const BlockEditorcopy = ({el}) => {
   const [blocks, setBlocks] = useState([
     { id: 1, type: 'text', content: '', checked: false },
   ]);
@@ -284,15 +290,10 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
   const blockRefs = useRef({});
   const fileInputRef = useRef(null);
   const [blockstate, setBlockstate] = useState(true)
-  const [filedata, setFiledata] = useState(false)
   const { workspacename, foldername, filename } = useParams();
-  const dispatch = useDispatch()
   const action = useSelector(state => state.Pagereducer.pagestate)
-  const [imagepath, setImagepath] = useState()
 
 
-  console.log(action, 'setPagestate')
-  console.log(workspacename, foldername, filename, 'params')
   const blockTypes = [
     { id: 'text', label: 'T 텍스트' },
     { id: 'h1', label: 'H1 제목' },
@@ -306,28 +307,43 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
 
   useEffect(() => {
     const run = async () => {
-      const newData = await getBlockcontent(workspacename, foldername, filename)
-      if (newData) {
-        if (newData.length !== 0) {
-          setBlocks(newData)
+      if (el) {
+        console.log('blocksdd',el,el.page_content,'ddddd', el.page_name)
+          setBlocks(JSON.parse(el.page_content))
           // setBlockstate(true)
           // setBlockstate(false)
           // setPagestate(false)
-          dispatch({ type: 'False' })
-          console.log(blocks, 'blocks111')
-        }
+          console.log(Array.isArray(blocks), blocks, 'blo23231', Array.isArray(el), 'asds', el)
       }
       else {
+        console.log('sss')
         setBlocks([
           { id: 1, type: 'text', content: '', checked: false },
         ])
-        dispatch({ type: 'False' })
-        return
+       
       }
     }
 
     run()
-  }, [action, workspacename, foldername, filename])
+  }, [])
+
+
+  // const {data , isLoading} = useQuery({
+  //   queryKey : ["workspacePageData", result_id],
+  //   queryFn: async () => {
+  //     return await getBlockIdcontent(result_id)
+  //     // const newPageBLocks = pageBlocks.reduce((acc,el) => {
+  //       //   acc[el.id] = el
+  //       //   return acc
+  //       // })
+  //       // setBlocks({...blocks, ...newPageBLocks})
+  //     }
+  //   })
+  //   useEffect(() => {
+      
+  //     console.log(data, 'fffffffffffff`')
+  
+  //   }, [data])
 
   const addBlock = (type, currentId) => {
     const newBlock = {
@@ -535,37 +551,37 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
   };
 
   const handleImageUpload = (e, blockId) => {
-    const imagefile = e.target.files[0];
-    console.log(imagefile.name, 'imagefile')
-    if (imagefile) {
+    const file = e.target.files[0];
+    console.log(file.name, 'file')
+    if (file) {
       const reader = new FileReader();
       reader.onload = async (event) => {
 
         console.log("12312312eventevent", event)
         setBlocks(blocks.map(block => block.id === blockId ? { ...block, content: event.target.result } : block
         ));
-        await PostBlockcontent(workspacename, foldername, filename, { data: blocks }, imagefile, blockId);
+        await PostBlockcontent(workspacename, foldername, filename, { data: blocks }, file, blockId);
       };
-      reader.readAsDataURL(imagefile);
+      reader.readAsDataURL(file);
       // setImagepath({ file })
     }
     // setBlockstate(true)
   };
 
 
-  useEffect(() => {
-    const run = async () => {
-      // setBlockstate(true)
-      // console.log(imagepath, ' imagepath')
-      const newData = await PostBlockcontent(workspacename, foldername, filename, { data: blocks })
+  // useEffect(() => {
+  //   const run = async () => {
+  //     // setBlockstate(true)
+  //     // console.log(imagepath, ' imagepath')
+  //     const newData = await PostBlockcontent(workspacename, foldername, filename, { data: blocks })
 
-      if (blockstate) {
-        setBlockstate(false)
-        console.log(blocks, 'blocks111')
-      }
-    }
-    run()
-  }, [blockstate])
+  //     if (blockstate) {
+  //       setBlockstate(false)
+  //       console.log(blocks, 'blocks111')
+  //     }
+  //   }
+  //   run()
+  // }, [blockstate])
 
   const renderBlock = (block) => {
     const blockType = blockTypes.find(t => t.id === block.type);
@@ -747,9 +763,13 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
   };
 
   return (
-    <BlockEditorContainer>
+    <BlockEditorContainer >
+      <div className='workspacename'>
+      워크스페이스 이름: {el?.Page_name}
+      </div>
+      
       {blocks.map(block => (
-        <Block key={block.id} >
+        <Block key={block.id} disabled >
           {/* <Block key={block.id} onChange={dispatch({type : 'POST',payload : {workspacename, foldername, filename, data : blocks}})}> */}
           {renderBlock(block)}
         </Block>
@@ -758,4 +778,4 @@ const BlockEditor = ({ setPagestate, pagestate }) => {
   );
 };
 
-export default BlockEditor;
+export default BlockEditorcopy;

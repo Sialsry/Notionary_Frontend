@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import { useQuery , useQueryClient} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { AllCategoryPost } from "../../API/PostApi";
+import { AllCategoryPost, GetWorkSpace } from "../../API/PostApi";
 import PostCard from "../Molecules/susu/PostCard";
 import CommentList from "../Molecules/susu/CommentList";
 
@@ -41,13 +41,16 @@ const PAGE_SIZE = 5;
 const PostList = ({ posts: externalPosts }) => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const queryClient = useQueryClient();
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
+  const uid = userInfo?.uid;
 
-  const { data: allPostsData = [], isLoading, isError,} = useQuery({
+
+  const { data: allPostsData = [], isLoading, isError, } = useQuery({
     queryKey: ['allPosts'],
     queryFn: async () => {
       console.log("누가 찍히냐")
       const res = await AllCategoryPost({ offset: 0, limit: 1000 });
-      console.log("누가 찍히냐",res)
+      console.log("누가 찍히냐", res)
       return res.data;
     },
     staleTime: 0,
@@ -55,6 +58,23 @@ const PostList = ({ posts: externalPosts }) => {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
+
+  const {
+    data: workspacedata,
+    isLoading: isWorkspacesLoading,
+    isError: isWorkspacesError,
+  } = useQuery({
+    queryKey: ["workspaces", uid],
+    queryFn: () => GetWorkSpace(uid),
+  });
+
+  const workspaceDatas = workspacedata?.data || [];
+
+
+  useEffect(() => {
+    console.log(workspaceDatas, 'workspaceDatas')
+  }, [workspaceDatas]);
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -90,19 +110,19 @@ const PostList = ({ posts: externalPosts }) => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [visibleCount, postsToRender]);
-  
+
   const flatPosts = postsToRender.flatMap((category) => category.Posts || []);
-  
+
   if (!externalPosts) {
     if (isLoading) return <LoadingText>로딩중...</LoadingText>;
     if (isError) return <LoadingText>데이터를 불러오는 중 오류가 발생했어요.</LoadingText>;
   }
 
-if (!isLoading && flatPosts.length === 0) {
-  return <LoadingText>게시물이 없습니다.</LoadingText>;
-}
+  if (!isLoading && flatPosts.length === 0) {
+    return <LoadingText>게시물이 없습니다.</LoadingText>;
+  }
 
- const parseImgPaths = (str) => {
+  const parseImgPaths = (str) => {
     try {
       const parsed = JSON.parse(str);
       return Array.isArray(parsed) ? parsed : [];
@@ -119,38 +139,44 @@ if (!isLoading && flatPosts.length === 0) {
       return str ? [str] : [];
     }
   };
- 
+
 
   return (
     <FeedWrapper>
       {postsToRender.slice(0, visibleCount).map((category) =>
         category.Posts?.map((post, index) => {
           const isTopEtc = category.depth === 1 && category.category_name === "기타";
-          const categoryName = isTopEtc? "기타" : category.ParentCategory?.category_name || "알 수 없는 카테고리";
+          const categoryName = isTopEtc ? "기타" : category.ParentCategory?.category_name || "알 수 없는 카테고리";
           const subCategoryName = isTopEtc ? "" : category.category_name;
-
+          const workspacePages = JSON.parse(post.workspace_pages)
+          const result = workspaceDatas
+            .filter(item => workspacePages.includes(item.workspace_id))
+            .map(item => item.workspacesubctgrs_name);
+          console.log('type11', result, 'sdfd', workspacePages)
           return (
             <AnimatedCardWrapper
               key={post.post_id}
               style={{ animationDelay: `${index * 300}ms` }}
             >
-          <PostCard
-            authNick={post.User?.nick || "사용자 닉네임 없음"}
-            authProImg={post.User?.profImg || "/images/default_profile.png"}
-            title={post.title || "제목없음"}
-            images={parseImgPaths(post.imgPaths)}
-            videos={parseVideoPaths(post.videoPaths)}
-            imageAlt={post.title || "제목없음"}
-            content={post.content || "내용이 없습니다."}
-            categoryName={categoryName}
-            subCategoryName={subCategoryName}
-            post_id={post.post_id}
-            category_id={category.category_id}
-            hearts={post.Hearts || []}
-            parent_id={post.Workspacectgr?.parent_id || "보이니?"}
-            workspaceCtgrName={post.Workspacectgr?.workspacectgrs_name || "워크 스페이스 없음"}
-            workspaceSubCtgrName={post.Workspacectgr?.workspacesubctgrs_name || "페이지 없음"}
-          />
+              <PostCard
+                authNick={post.User?.nick || "사용자 닉네임 없음"}
+                authProImg={post.User?.profImg || "/images/default_profile.png"}
+                titleㅈㅈ={post.title || "제목없음"}
+                images={parseImgPaths(post.imgPaths)}
+                videos={parseVideoPaths(post.videoPaths)}
+                imageAlt={post.title || "제목없음"}
+                content={post.content || "내용이 없습니다."}
+                categoryName={categoryName}
+                subCategoryName={subCategoryName}
+                post_id={post.post_id}
+                category_id={category.category_id}
+                hearts={post.Hearts || []}
+                parent_id={post.Workspacectgr?.parent_id || "보이니?"}
+                workspaceCtgrName={post.Workspacectgr?.workspacectgrs_name || "워크 스페이스 없음"}
+                // workspaceSubCtgrName={post.Workspacectgr?.workspacesubctgrs_name || "페이지 없음"}
+                workspaceSubCtgrName={result || "페이지 없음"}
+                result_id = {workspacePages}
+              />
               <CommentList
                 postId={post.post_id}
                 category_id={category.category_id}
@@ -167,7 +193,7 @@ if (!isLoading && flatPosts.length === 0) {
       )}
 
       {visibleCount < flatPosts.length ? (
-    <LoadingText>불러오는 중...</LoadingText>) : (
+        <LoadingText>불러오는 중...</LoadingText>) : (
         <p style={{ textAlign: "center" }}>마지막 게시물입니다.</p>
       )}
     </FeedWrapper>

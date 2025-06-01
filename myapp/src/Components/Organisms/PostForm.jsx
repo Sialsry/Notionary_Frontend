@@ -186,12 +186,12 @@ const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [fk_workspace_id, setWorkSpaceId] = useState(null);
+  const [fk_workspace_id, setWorkSpaceId] = useState([]);
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
   const [files, setFiles] = useState([]);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
-  const [selectedPageId, setSelectedPageId] = useState(null);
+  const [selectedPageId, setSelectedPageId] = useState([]);
   const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
 
   const {
@@ -268,12 +268,13 @@ const PostForm = () => {
 
     if (isWorkspaceShared) {
       formData.append("fk_workspace_id", fk_workspace_id);
-      formData.append(
-        "selectedPageIds",
-        Array.isArray(selectedPageId)
-          ? selectedPageId.join(",")
-          : selectedPageId
-      );
+      formData.append("workSpace_pages", selectedPageId);
+      // formData.append(
+      //   "selectedPageIds",
+      //   Array.isArray(selectedPageId)
+      //     ? selectedPageId.join(",")
+      //     : selectedPageId
+      // );
     } else {
       formData.append("fk_workspace_id", "");
       formData.append("selectedPageIds", "");
