@@ -373,20 +373,18 @@ function PostCard({
           <ProfileImage src={authProImg} alt="작성자 프로필 사진" />
           <AuthorInfo>
             <AuthorName>{authNick}</AuthorName>
-            <PostTime>방금 전</PostTime>
           </AuthorInfo>
+          <CategoryWrapper>
+            <CategoryBadge>{categoryName}</CategoryBadge>
+            {subCategoryName && (
+              <SubCategoryBadge>{subCategoryName}</SubCategoryBadge>
+            )}
+          </CategoryWrapper>
         </AuthorRow>
 
         <TitleWrapper>
           <TitleText>{title}</TitleText>
         </TitleWrapper>
-
-        <CategoryWrapper>
-          <CategoryBadge>{categoryName}</CategoryBadge>
-          {subCategoryName && (
-            <SubCategoryBadge>{subCategoryName}</SubCategoryBadge>
-          )}
-        </CategoryWrapper>
 
         {parent_id && (
           <WorkspaceWrap>
@@ -423,11 +421,6 @@ function PostCard({
               <img src={liked ? fullheart : hearticon} alt="좋아요" />
               <span>{likeCount}</span>
             </LikeButton>
-
-            <Stats>
-              <span>댓글 {hearts.length}</span>
-              <span>조회 128</span>
-            </Stats>
           </InteractionBar>
         </ContentWrap>
       </Card>

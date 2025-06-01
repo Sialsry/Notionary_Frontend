@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Subtitle } from "../../Atoms/ming/Typography";
-import { saveData, getworkspaceData, DelWorkspace, DelWorkspacepage } from "../../../API/Workspaceapi";
-import { folder, homeicon, logo, page, Pagesicon, workspaceicon } from "../../../images";
+import {
+  saveData,
+  getworkspaceData,
+  DelWorkspace,
+  DelWorkspacepage,
+} from "../../../API/Workspaceapi";
+import {
+  folder,
+  homeicon,
+  logo,
+  page,
+  Pagesicon,
+  workspaceicon,
+} from "../../../images";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { deletebtn } from "../../../images";
 import Popup from "./Popup";
-
 
 const Contentwrap = styled.div`
   margin-top: 30px;
@@ -20,7 +31,7 @@ const Contentwrap = styled.div`
 `;
 const Maintitle = styled.div`
   padding: 3px 10px;
-  background-color: #1E1A4D;
+  background-color: #1e1a4d;
   color: white;
   width: 210px;
   position: relative;
@@ -29,7 +40,7 @@ const Maintitle = styled.div`
   border-radius: 7px;
 `;
 const Maintitlecontent = styled.div`
-  display:flex;
+  display: flex;
   align-items: center;
   height: 27px;
   box-sizing: border-box;
@@ -62,7 +73,7 @@ const Titlecontent = styled.div`
     width: 110px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space:nowrap
+    white-space: nowrap;
   }
   .Wspaceicon {
   }
@@ -97,15 +108,15 @@ const Btnwrap = styled.div`
 const AddbtnOne = styled.button`
   width: 27px;
   font-size: 26px;
-  
+
   border: none;
   cursor: pointer;
-  box-sizing: border-box;             
+  box-sizing: border-box;
   border-radius: 3px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #1E1A4D;
+  background-color: #1e1a4d;
   color: #e7e7e7;
   &:hover {
     background-color: #746892;
@@ -115,10 +126,10 @@ const Addbtn = styled.button`
   width: 27px;
   height: 27px;
   font-size: 26px;
-  
+
   border: none;
   cursor: pointer;
-  box-sizing: border-box;             
+  box-sizing: border-box;
   border-radius: 3px;
   display: flex;
   justify-content: center;
@@ -259,40 +270,40 @@ const Delbtn = styled.span`
   display: inline-block;
   top: 0;
   right: 30px;
-&:hover {
+  &:hover {
     background-color: #715da0;
     border-radius: 3px;
   }
-`
+`;
 const Delbtntwo = styled.span`
   position: absolute;
   display: inline-block;
   line-height: 1;
   right: 10px;
-&:hover {
+  &:hover {
     background-color: #715da0;
     border-radius: 3px;
   }
-`
+`;
 
 const Popwrap = styled.div`
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: 1000;
-    backdrop-filter: blur(3px);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
 
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    `
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Popupbodyone = styled.div`
   border: 1px solid #b4b4b4;
   width: 500px;
-  height : 300px;
+  height: 300px;
   background-color: white;
   color: black;
   box-shadow: 0 0 18px -10px;
@@ -307,7 +318,7 @@ const Popupbodyone = styled.div`
   justify-content: center;
 
   button {
-    width : 170px;
+    width: 170px;
     height: 50px;
     margin: 0 10px;
     font-size: 18px;
@@ -315,25 +326,25 @@ const Popupbodyone = styled.div`
     color: white;
     cursor: pointer;
   }
-  .submitbtn{
+  .submitbtn {
     background-color: green;
     color: white;
   }
-  .submitbtn:hover{
-     background-color: #079107;
+  .submitbtn:hover {
+    background-color: #079107;
   }
-  .cancelbtn:hover{
-     background-color: #da3636;
+  .cancelbtn:hover {
+    background-color: #da3636;
   }
-  .cancelbtn{
+  .cancelbtn {
     background-color: #c41b1b;
   }
-`
+`;
 
 const Popupbody = styled.div`
   border: 1px solid #b4b4b4;
   width: 500px;
-  height : 300px;
+  height: 300px;
   background-color: white;
   color: black;
   box-shadow: 0 0 18px -10px;
@@ -348,7 +359,7 @@ const Popupbody = styled.div`
   justify-content: center;
 
   button {
-    width : 170px;
+    width: 170px;
     height: 50px;
     margin: 0 10px;
     font-size: 18px;
@@ -356,22 +367,20 @@ const Popupbody = styled.div`
     color: white;
     cursor: pointer;
   }
-  .submitbtn{
+  .submitbtn {
     background-color: green;
     color: white;
   }
-  .submitbtn:hover{
-     background-color: #079107;
+  .submitbtn:hover {
+    background-color: #079107;
   }
-  .cancelbtn:hover{
-     background-color: #da3636;
+  .cancelbtn:hover {
+    background-color: #da3636;
   }
-  .cancelbtn{
+  .cancelbtn {
     background-color: #c41b1b;
   }
-`
-
-
+`;
 
 const Sidebarcontent = ({ contents, setState, setContent }) => {
   const [header, setHeader] = useState("");
@@ -383,14 +392,14 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
   const [isprivateopen, setIsprivateopen] = useState({});
   const [toggleindex, settoggleIndex] = useState();
   const [dispatchstate, setDispatchstate] = useState(false);
-  const [popupwrap, setPopupwrap] = useState(false)
-  const [popupwrapfolder, setPopupwrapfolder] = useState(false)
-  const [delfolder, setDelfolder] = useState()
-  const [delfile, setDelfile] = useState()
+  const [popupwrap, setPopupwrap] = useState(false);
+  const [popupwrapfolder, setPopupwrapfolder] = useState(false);
+  const [delfolder, setDelfolder] = useState();
+  const [delfile, setDelfile] = useState();
   const dispatch = useDispatch();
 
-  console.log(delfolder, 'delfolder')
-  console.log(delfile, 'delfile')
+  console.log(delfolder, "delfolder");
+  console.log(delfile, "delfile");
 
   const toggleSection = (key) => {
     if (isprivateopen[key])
@@ -414,8 +423,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
   };
 
   useEffect(() => {
-    console.log(contents, 'contents')
-  }, [popupfolder])
+    console.log(contents, "contents");
+  }, [popupfolder]);
 
   const createFile = async (e) => {
     e.preventDefault();
@@ -440,7 +449,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
           // else {return}
         });
         setPopupfile(false);
-        setIsprivateopen(prev => prev)
+        setIsprivateopen((prev) => prev);
         return { ...obj, [mainkey]: updatedsub };
       })
     );
@@ -450,10 +459,10 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
     setContent((prev) =>
       prev.map((obj, index) => {
         const mainkey = Object.keys(obj)[0];
-        const deletedsub = obj
+        const deletedsub = obj;
       })
-    )
-  }
+    );
+  };
   useEffect(() => {
     const Run = async () => {
       const data = await saveData("workSpace/newFolder", { data: category });
@@ -493,7 +502,9 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
           <Contentwrap>
             <Maintitle>
               <Maintitlecontent>
-                <div><img src={homeicon} alt="" /></div>
+                <div>
+                  <img src={homeicon} alt="" />
+                </div>
                 <div>{mainTitle}</div>
               </Maintitlecontent>
               <Btnwrap>
@@ -502,126 +513,164 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                     e.stopPropagation();
                     setPopupfolder(true);
                     setHeader(mainTitle);
-                  }}>
+                  }}
+                >
                   +
                 </AddbtnOne>
               </Btnwrap>
             </Maintitle>
             {subContent
               ? subContent.map((subitem, subindex) => {
-                const [folderTitle, pageTitle] = Object.entries(subitem)[0];
-                return (
-                  <Titlewrap
-                    key={subindex}
-                    onClick={() => {
-                      toggleSection(subindex);
-                      settoggleIndex(subindex);
-                    }}
-                  >
-                    <Titlecontent>
-                      <div className="Wspaceicon">
-                        <img src={workspaceicon} alt=""
-
-                        /></div>
-                      <div className="Tcontent">{folderTitle}</div>
-                      <Delbtn onClick={(e) => {
-                        e.stopPropagation();
-
-                      }} >
-                        <img src={deletebtn} alt="" onClick={(e) => {
-                          e.stopPropagation();
-                          setDelfolder({...delfolder, mainTitle, folderTitle})
-                          setPopupwrapfolder(true)
-
-                        }} />
-                      </Delbtn>
-                      {popupwrapfolder ? (
-                        <Popwrap>
-                          <Popupbody>
-                            <div>삭체하세겠습니까 ??</div>
-                            <div>
-                              <button className='cancelbtn'
-                                onClick={(e) => {
-                                  setPopupwrap(false)
-                                }}
-                              >취소</button>
-                              <button className='submitbtn'
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  DelWorkspace(delfolder.mainTitle, delfolder.folderTitle)
-                                  setState(true)
-                                  setPopupwrapfolder(false)
-                                  navigate('/main')
-                                }}
-                              >완료</button>
-                            </div>
-                          </Popupbody>
-                        </Popwrap>
-                      ) : null}
-
-                      <Btnwrap>
-                        <Addbtn
+                  const [folderTitle, pageTitle] = Object.entries(subitem)[0];
+                  return (
+                    <Titlewrap
+                      key={subindex}
+                      onClick={() => {
+                        toggleSection(subindex);
+                        settoggleIndex(subindex);
+                      }}
+                    >
+                      <Titlecontent>
+                        <div className="Wspaceicon">
+                          <img src={workspaceicon} alt="" />
+                        </div>
+                        <div className="Tcontent">{folderTitle}</div>
+                        <Delbtn
                           onClick={(e) => {
                             e.stopPropagation();
-                            setPopupfile(true);
-                            setSubcategory(folderTitle);
                           }}
                         >
-                          +
-                        </Addbtn>
-                      </Btnwrap>
-                    </Titlecontent>
-                    {isprivateopen[subindex] &&
-                      pageTitle.map((entry, entryIndex) => (
-                        <Content
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            pagenavigate(
-                              mainTitle,
-                              folderTitle,
-                              pageTitle,
-                              entryIndex
-                            );
-                            setIsprivateopen(prev => prev)
-                          }}
-                        >
-                          <div><img src={Pagesicon} alt="" /></div>
-                          <div className="Pagename">{entry}</div>
-                          <Delbtntwo>
-                            <img src={deletebtn} alt="" onClick={(e) => {
+                          <img
+                            src={deletebtn}
+                            alt=""
+                            onClick={(e) => {
                               e.stopPropagation();
-                              setDelfile({...delfile, mainTitle, folderTitle, entry})
-                              setPopupwrap(true)
-                            }} />
-                          </Delbtntwo>
-                          {popupwrap ? (
-                        <Popwrap>
-                          <Popupbodyone>
-                            <div>삭체하세겠습니까 ??</div>
+                              setDelfolder({
+                                ...delfolder,
+                                mainTitle,
+                                folderTitle,
+                              });
+                              setPopupwrapfolder(true);
+                            }}
+                          />
+                        </Delbtn>
+                        {popupwrapfolder ? (
+                          <Popwrap>
+                            <Popupbody>
+                              <div>삭제하시겠습니까 ?</div>
+                              <div>
+                                <button
+                                  className="cancelbtn"
+                                  onClick={(e) => {
+                                    setPopupwrap(false);
+                                  }}
+                                >
+                                  취소
+                                </button>
+                                <button
+                                  className="submitbtn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    DelWorkspace(
+                                      delfolder.mainTitle,
+                                      delfolder.folderTitle
+                                    );
+                                    setState(true);
+                                    setPopupwrapfolder(false);
+                                    navigate("/main");
+                                  }}
+                                >
+                                  완료
+                                </button>
+                              </div>
+                            </Popupbody>
+                          </Popwrap>
+                        ) : null}
+
+                        <Btnwrap>
+                          <Addbtn
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPopupfile(true);
+                              setSubcategory(folderTitle);
+                            }}
+                          >
+                            +
+                          </Addbtn>
+                        </Btnwrap>
+                      </Titlecontent>
+                      {isprivateopen[subindex] &&
+                        pageTitle.map((entry, entryIndex) => (
+                          <Content
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              pagenavigate(
+                                mainTitle,
+                                folderTitle,
+                                pageTitle,
+                                entryIndex
+                              );
+                              setIsprivateopen((prev) => prev);
+                            }}
+                          >
                             <div>
-                              <button className='cancelbtn'
-                                onClick={(e) => {
-                                  setPopupwrap(false)
-                                }}
-                              >취소</button>
-                              <button className='submitbtn'
+                              <img src={Pagesicon} alt="" />
+                            </div>
+                            <div className="Pagename">{entry}</div>
+                            <Delbtntwo>
+                              <img
+                                src={deletebtn}
+                                alt=""
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  DelWorkspacepage(delfile.mainTitle, delfile.folderTitle, delfile.entry)
-                                  setState(true)
-                                  setPopupwrap(false)
-                                  navigate('/main')
+                                  setDelfile({
+                                    ...delfile,
+                                    mainTitle,
+                                    folderTitle,
+                                    entry,
+                                  });
+                                  setPopupwrap(true);
                                 }}
-                              >완료</button>
-                            </div>
-                          </Popupbodyone>
-                        </Popwrap>
-                      ) : null}
-                        </Content>
-                      ))}
-                  </Titlewrap>
-                );
-              })
+                              />
+                            </Delbtntwo>
+                            {popupwrap ? (
+                              <Popwrap>
+                                <Popupbodyone>
+                                  <div>삭제하시겠습니까 ?</div>
+                                  <div>
+                                    <button
+                                      className="cancelbtn"
+                                      onClick={(e) => {
+                                        setPopupwrap(false);
+                                      }}
+                                    >
+                                      취소
+                                    </button>
+                                    <button
+                                      className="submitbtn"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        DelWorkspacepage(
+                                          delfile.mainTitle,
+                                          delfile.folderTitle,
+                                          delfile.entry
+                                        );
+                                        setState(true);
+                                        setPopupwrap(false);
+                                        navigate("/main");
+                                      }}
+                                    >
+                                      완료
+                                    </button>
+                                  </div>
+                                </Popupbodyone>
+                              </Popwrap>
+                            ) : null}
+                          </Content>
+                        ))}
+                    </Titlewrap>
+                  );
+                })
               : null}
           </Contentwrap>
         );
@@ -641,14 +690,17 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
             <div className="imgdiv">
               <img src={logo} alt="" />
             </div>
-            <form action="" onSubmit={(e) => {
-              createFolder(e)
-              setState(true);
-            }}>
+            <form
+              action=""
+              onSubmit={(e) => {
+                createFolder(e);
+                setState(true);
+              }}
+            >
               <div className="headerContent">
                 <h2>{header} </h2>
                 <div className="folderTitle">
-                  <label htmlFor="">워크이스페이스 이름 : </label>
+                  <label htmlFor="">워크스페이스 이름 : </label>
                   <input type="text" name="foldername" required />
                 </div>
               </div>
@@ -656,7 +708,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                 <img src={folder} alt="" />
                 <div>New Workspace</div>
               </div>
-              <button>워크스페이스 생성하기</button>
+              <button>워크스페이스 생성</button>
             </form>
           </Folderwrap>
         </Addfolder>
@@ -681,7 +733,6 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
               onSubmit={(e) => {
                 createFile(e);
                 setState(true);
-                
               }}
             >
               <div className="headerContent">
@@ -696,13 +747,11 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                 <img src={page} alt="" />
                 <div>New Page</div>
               </div>
-              <button>페이지 생성성기</button>
+              <button>페이지 생성</button>
             </form>
           </Folderwrap>
         </Addfolder>
       ) : null}
-
-
     </>
   );
 };
