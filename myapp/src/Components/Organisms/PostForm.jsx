@@ -8,7 +8,14 @@ import TitleInput from "../Molecules/susu/TitleInput";
 import MediaUpload from "../Molecules/susu/MideaUpload";
 import CategorySelect from "../Molecules/susu/CategorySelect";
 import ContentEdit from "../Molecules/susu/ContentEdit";
-import { CreatePost, GetPostById, UpdatePost } from "../../API/PostApi";
+import WorkspaceSelect from "../Molecules/susu/WorkSpaceSelect";
+import {
+  CreatePost,
+  GetWorkSpace,
+  GetPostById,
+  UpdatePost,
+} from "../../API/PostApi";
+import WorkSpaceSelector from "../Molecules/susu/WorkSpaceSelect";
 
 const colors = {
   primary: "#667eea",
@@ -188,13 +195,23 @@ const PostForm = () => {
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
   const [files, setFiles] = useState([]);
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]); // 워크스페이스 목록 상태
   const [selectedPageId, setSelectedPageId] = useState([]);
   const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
+  const [grouped, setGrouped] = useState(false); // 워크스페이스 그룹화 여부 상태
 
   const [existingFiles, setExistingFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
   // const [fk_workspace_id, setWorkSpaceId] = useState(null); // 워크스페이스 관련 상태가 필요하다면 유지
+
+  const {
+    data,
+    isLoading: isWorkspacesLoading,
+    isError: isWorkspacesError,
+  } = useQuery({
+    queryKey: ["workspaces", uid],
+    queryFn: () => GetWorkSpace(uid),
+  });
 
   // 게시글 상세 조회
   const {
@@ -269,7 +286,7 @@ const PostForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["post", post_id] }); // 수정된 특정 게시글 상세 데이터 무효화
       queryClient.invalidateQueries({ queryKey: ["posts"] }); // 게시글 목록 데이터 무효화 (선택 사항)
-      navigate(`/detail/${post_id}`); // <-- 현재 수정 중인 게시글의 post_id를 사용하여 이동
+      navigate(`/detail/${post_id}`); // <-- 현재 수정 중인  게시글의 post_id를 사용하여 이동
     },
     onError: (error) => {
       console.error("게시글 수정 실패:", error);
@@ -363,6 +380,16 @@ const PostForm = () => {
               setSubCategories={setSubCategories}
               categoryId={categoryId}
               setCategoryId={setCategoryId}
+            />
+
+            <WorkSpaceSelector
+              workspaces={workspaces}
+              selectedWorkspaceId={fk_workspace_id}
+              setSelectedWorkspaceId={setWorkSpaceId}
+              isWorkspaceShared={isWorkspaceShared}
+              setIsWorkspaceShared={setIsWorkspaceShared}
+              selectedPageId={selectedPageId}
+              setSelectedPageId={setSelectedPageId} // 이 부분이 누락되었거나 잘못됨
             />
 
             <ContentEdit

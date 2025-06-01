@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
 
@@ -163,7 +163,8 @@ const WorkSpaceSelector = ({
   // Internal state for managing UI interactions
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectionMode, setSelectionMode] = useState("single"); // Default to single
-
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [selectedPageIds, setSelectedPageIds] = useState([]);
   // Memoized lists for efficiency
   const parentWorkspaces = useMemo(() => {
     return workspaces.filter((item) => !item.parent_id);
