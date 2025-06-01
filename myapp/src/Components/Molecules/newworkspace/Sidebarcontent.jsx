@@ -538,10 +538,11 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                       {popupwrapfolder ? (
                         <Popwrap>
                           <Popupbody>
-                            <div>삭체하세겠습니까 ??</div>
+                            <div>삭제하시겠습니까 ??</div>
                             <div>
                               <button className='cancelbtn'
                                 onClick={(e) => {
+                                  e.stopPropagation()
                                   setPopupwrap(false)
                                 }}
                               >취소</button>
@@ -601,6 +602,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                             <div>
                               <button className='cancelbtn'
                                 onClick={(e) => {
+                                  e.stopPropagation()
                                   setPopupwrap(false)
                                 }}
                               >취소</button>
@@ -611,6 +613,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                                   setState(true)
                                   setPopupwrap(false)
                                   navigate('/main')
+                                  
                                 }}
                               >완료</button>
                             </div>
@@ -680,6 +683,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
               action=""
               onSubmit={(e) => {
                 createFile(e);
+                // toggleSection(toggleindex)
+                // settoggleIndex(toggleindex);
                 setState(true);
                 
               }}

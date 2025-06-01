@@ -7,6 +7,7 @@ import Title from '../../Molecules/susu/Title';
 import MediaSlider from '../../Atoms/susu/MediaSlider';
 import hearticon from '../../../images/icons/hearticon.png';
 import fullheart from '../../../images/icons/fullheart.png';
+import { redirect } from 'react-router-dom';
 
 const CardBlock = styled.div`
   width: 100%;
@@ -59,6 +60,54 @@ const CategoryText = styled.p`
   font-size: 14px;
   margin-top: -12px;
   margin-bottom: 12px;
+`;
+
+const CollapsibleText = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})`
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  ${({ expanded }) =>
+    expanded
+      ? `
+        display: block;
+        overflow: visible;
+        max-height: none;
+      `
+      : `
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+      `}
+`;
+
+const WorkspaceWrap = styled.div`
+  padding: 12px 16px;
+  margin: 0 16px 16px;
+  background-color: #f5f5fa;
+  border-left: 4px solid #7e57c2;
+  border-radius: 6px;
+`;
+
+const WorkspaceTitle = styled.div`
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #5a39a3;
+  font-size: 14px;
+`;
+
+const WorkspaceToggleButton = styled.button`
+  font-size: 13px;
+  color: #7e57c2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+  padding: 0;
 `;
 
 const heartBeat = keyframes`
@@ -142,13 +191,33 @@ function PostCard({
   post_id,
   authNick,
   hearts = [],
+  parent_id,
+  workspaceCtgrName,
+  workspaceSubCtgrName,
+  result_id
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
   const contentRef = useRef(null);
+  const [showFullWorkspace, setShowFullWorkspace] = useState(false);
+  const [showWorkspaceToggle, setShowWorkspaceToggle] = useState(false);
+  const workspaceRef = useRef(null);
+
+  useEffect(() => {
+    const el = workspaceRef.current;
+    if (!el) return;
+
+    const frame = requestAnimationFrame(() => {
+      const isOverflowing = el.scrollHeight > el.offsetHeight;
+      setShowWorkspaceToggle(isOverflowing);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [parent_id, workspaceCtgrName, workspaceSubCtgrName]);
+
 
   const queryClient = useQueryClient();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
   const nick = userInfo?.nick;
 
@@ -159,6 +228,15 @@ function PostCard({
   );
 
   const [likeCount, setLikeCount] = useState(hearts.length);
+
+  //   const {
+  //   data: workspacedata,
+  //   isLoading: isWorkspacesLoading,
+  //   isError: isWorkspacesError,
+  // } = useQuery({
+  //   queryKey: ["workspaces", uid],
+  //   queryFn: () => GetWorkSpace(uid),
+  // });
 
   useEffect(() => {
     setLocalHearts(hearts);
@@ -224,17 +302,17 @@ function PostCard({
     }
   };
 
-useEffect(() => {
-  const el = contentRef.current;
-  if (!el) return;
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
 
-  const frame = requestAnimationFrame(() => {
-    const isOverflowing = el.scrollHeight > el.offsetHeight;
-    setShowMoreButton(isOverflowing);
-  });
+    const frame = requestAnimationFrame(() => {
+      const isOverflowing = el.scrollHeight > el.offsetHeight;
+      setShowMoreButton(isOverflowing);
+    });
 
-  return () => cancelAnimationFrame(frame);
-}, [content]);
+    return () => cancelAnimationFrame(frame);
+  }, [content]);
 
 
   return (
@@ -253,7 +331,26 @@ useEffect(() => {
           카테고리: {categoryName} {subCategoryName && ` > ${subCategoryName}`}
         </CategoryText>
 
-        <MediaSlider images={images} videos={videos} />
+
+        {parent_id && (
+          <WorkspaceWrap>
+            <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
+            <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
+              {parent_id}
+              {workspaceCtgrName && ` > ${workspaceCtgrName}`}
+              {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
+            </CollapsibleText>
+            {showWorkspaceToggle && (
+              <WorkspaceToggleButton
+                onClick={() => setShowFullWorkspace((prev) => !prev)}
+              >
+                {showFullWorkspace ? '접기' : '더보기'}
+              </WorkspaceToggleButton>
+            )}
+          </WorkspaceWrap>
+        )}
+
+        <MediaSlider images={images} videos={videos} result_id={result_id} />
 
         <ContentWrap>
           <PostText ref={contentRef} expanded={expanded}>

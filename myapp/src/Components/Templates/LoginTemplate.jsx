@@ -154,15 +154,15 @@ const LoginTemplate = () => {
                 textAlign: "left",
               }}
             >
-              Notionary는 개인 및 팀 프로젝트를 위한 최적의 워크스페이스입니다.
-              간편한 협업과 소통으로 업무 생산성을 극대화하세요.
+              Notionary는 당신의 프로젝트를 위한 최적의 커뮤니티입니다. 간편한
+              작업과 소통으로 업무 생산성을 극대화하세요.
             </Text>
 
             <FeatureList>
               <FeatureItem>
                 개인 맞춤형 워크스페이스로 업무 효율성 증가
               </FeatureItem>
-              <FeatureItem>팀원들과 실시간 협업 및 프로젝트 관리</FeatureItem>
+              <FeatureItem>이용자 간 워크스페이스 공유, 열람 기능</FeatureItem>
               <FeatureItem>
                 강력한 커뮤니티 기능으로 지식 공유 및 네트워킹
               </FeatureItem>

@@ -132,12 +132,12 @@ const getWspacecontent = async (wname) => {
     return error;
   }
 };
-const getBlock = async (
+const PostBlockcontent = async (
   workspacename,
   foldername,
   filename,
   { data },
-  imgpath,
+  imgfile,
   blockId
 ) => {
   const token = Cookies.get("authToken");
@@ -148,12 +148,12 @@ const getBlock = async (
     console.log("토큰이 없습니다");
     return;
   }
-  if (imgpath) {
+  if (imgfile) {
     console.log(data, "axiosdata");
     const form = new FormData();
     const dataJson = JSON.stringify(data);
     form.append("data", dataJson);
-    form.append("imgpath", imgpath);
+    form.append("imgfile", imgfile);
 
     const { data: workspaceData } = await axios.post(
       `${WORKSPACE_URL}/workspace/selectspace/${workspacename}/${foldername}/${filename}/image/${blockId}`,
@@ -195,7 +195,7 @@ const getBlock = async (
   return { state: 200, message: "nice" };
 };
 
-const getBlock2 = async (workspacename, foldername, filename) => {
+const getBlockcontent = async (workspacename, foldername, filename) => {
   const token = Cookies.get("authToken");
   const loginAccessToken = Cookies.get("login_access_token");
   const accessToken = token || loginAccessToken;
@@ -219,9 +219,35 @@ const getBlock2 = async (workspacename, foldername, filename) => {
     return null;
   }
 };
+const getBlockIdcontent = async (result_id) => {
+  try {
+
+    const token = Cookies.get("authToken");
+    const loginAccessToken = Cookies.get("login_access_token");
+    const accessToken = token || loginAccessToken;
+    console.log(accessToken, 'accesstoken')
+    if (!accessToken) {
+      console.log("토큰이 없습니다");
+      return;
+    }
+    const { data: workspacePageData } = await axios.post(
+      `${WORKSPACE_URL}/workspace/getBlockIdcontent`, {result_id },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        withCredentials: true,
+      }
+    );
+    console.log(workspacePageData, 'workspacepagedata return')
+    return ({workspacePageData});
+  } catch (error) {
+    console.log(error, 'error111')
+    return error
+  }
+
+};
 
 const DelWorkspace = async (workspacename, foldername) => {
-  console.log('Delworkspace',workspacename, foldername)
+  console.log('Delworkspace', workspacename, foldername)
   const token = Cookies.get("authToken");
   const loginAccessToken = Cookies.get("login_access_token");
   const accessToken = token || loginAccessToken;
@@ -230,19 +256,19 @@ const DelWorkspace = async (workspacename, foldername) => {
     console.log("토큰이 없습니다");
     return;
   }
-  const { data} = await axios.post(`${WORKSPACE_URL}/workspace/delworkspace`, 
-    {workspacename, foldername},
+  const { data } = await axios.post(`${WORKSPACE_URL}/workspace/delworkspace`,
+    { workspacename, foldername },
     {
       headers: { Authorization: `Bearer ${accessToken}` },
       withCredentials: true,
     }
   );
-    return ('deleted')
+  return ('deleted')
 };
-  
+
 
 const DelWorkspacepage = async (workspacename, foldername, filename) => {
-  console.log('Delworkspacepage',workspacename, foldername, filename)
+  console.log('Delworkspacepage', workspacename, foldername, filename)
   const token = Cookies.get("authToken");
   const loginAccessToken = Cookies.get("login_access_token");
   const accessToken = token || loginAccessToken;
@@ -251,20 +277,38 @@ const DelWorkspacepage = async (workspacename, foldername, filename) => {
     console.log("토큰이 없습니다");
     return;
   }
-  const { data} = await axios.post(`${WORKSPACE_URL}/workspace/delworkspacepage`, 
-    {workspacename, foldername, filename},
+  const { data } = await axios.post(`${WORKSPACE_URL}/workspace/delworkspacepage`,
+    { workspacename, foldername, filename },
     {
       headers: { Authorization: `Bearer ${accessToken}` },
       withCredentials: true,
     }
   );
-    return ('deleted')
+  return ('deleted')
 };
-  
-   
+
+const getPagecontent = async (result_id) => {
+  const token = Cookies.get("authToken");
+  const loginAccessToken = Cookies.get("login_access_token");
+  const accessToken = token || loginAccessToken;
+  console.log("토큰이 이습니다");
+  if (!accessToken) {
+    console.log("토큰이 없습니다");
+    return;
+  }
+  const data = await axios.get(`${WORKSPACE_URL}/workspace/getpagecontent`, { result_id },
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      withCredentials: true,
+    }
+  );
+  return data
+}
+
 
 export {
-  getBlock,
+  PostBlockcontent,
+  getBlockIdcontent,
   DelWorkspacepage,
   DelWorkspace,
   saveData,
@@ -272,5 +316,6 @@ export {
   getworkspaceDataTwo,
   getTextdata,
   getWspacecontent,
-  getBlock2,
+  getBlockcontent,
+  getPagecontent
 };
