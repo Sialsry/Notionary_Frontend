@@ -140,17 +140,24 @@ const PostList = ({ posts: externalPosts }) => {
     refetchOnWindowFocus: true,
   });
 
-  const {
-    data: workspacedata,
-    isLoading: isWorkspacesLoading,
-    isError: isWorkspacesError,
-  } = useQuery({
-    queryKey: ["workspaces", uid],
-    queryFn: () => GetWorkSpace(uid),
-  });
+const {
+  data: workspacedata,
+  isLoading: isWorkspacesLoading,
+  isError: isWorkspacesError,
+} = useQuery({
+  queryKey: ["workspaces", uid],
+  queryFn: () => GetWorkSpace(uid),
+  enabled: !!uid, // ✅ uid가 있을 때만 실행
+});
+
+useEffect(() => {
+  console.log("uid:", uid); // undefined인지 확인
+}, [uid]);
 
   const workspaceDatas = workspacedata?.data || [];
 
+
+  
   useEffect(() => {
     console.log(workspaceDatas, "workspaceDatas");
   }, [workspaceDatas]);
@@ -251,7 +258,13 @@ const PostList = ({ posts: externalPosts }) => {
             ? "기타"
             : category.ParentCategory?.category_name || "알 수 없는 카테고리";
           const subCategoryName = isTopEtc ? "" : category.category_name;
-          const workspacePages = JSON.parse(post.workspace_pages);
+          const workspacePages = (() => {
+        try {
+          return post.workspace_pages ? JSON.parse(post.workspace_pages) : [];
+        } catch {
+          return [];
+        }
+})();
           const result = workspaceDatas
             .filter((item) => workspacePages.includes(item.workspace_id))
             .map((item) => item.workspacesubctgrs_name);

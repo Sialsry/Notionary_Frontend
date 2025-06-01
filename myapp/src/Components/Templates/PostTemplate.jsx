@@ -55,14 +55,12 @@ const PageSubtitle = styled.p`
 
 const PostTemplate = () => (
   <Container>
-    <HeaderCard>
+    {/* <HeaderCard>
       <PageTitle>
-        <Edit3 size={32} color={colors.primary} />새 질문 작성하기
       </PageTitle>
-      <PageSubtitle>
-        궁금한 것이 있으신가요? 자유롭게 질문을 작성해보세요!
-      </PageSubtitle>
-    </HeaderCard>
+      {/* <PageSubtitle>
+      </PageSubtitle> 
+    </HeaderCard> */}
     <PostForm />
   </Container>
 );

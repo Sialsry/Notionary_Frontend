@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react"; // useRef 추가
 import styled from "styled-components";
-import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
+import { Folder, ChevronDown, Users, User, CheckSquare, XSquare } from "lucide-react";
 
 const colors = {
   primary: "#667eea",
@@ -52,6 +52,20 @@ const DropdownButton = styled.button`
     border-color: ${colors.primary};
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
   }
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    cursor: not-allowed;
+    border-color: #e9ecef;
+    box-shadow: none;
+    &:hover {
+      border-color: #e9ecef;
+      box-shadow: none;
+    }
+  `}
 `;
 
 const DropdownList = styled.ul`
@@ -84,6 +98,35 @@ const DropdownItem = styled.li`
   }
 `;
 
+const ShareOptionSelector = styled.div`
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+`;
+
+const ShareOptionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: ${({ active }) => (active ? colors.gradient : "#f8f9fa")};
+  color: ${({ active }) => (active ? "white" : "#6c757d")};
+  border: 2px solid ${({ active }) => (active ? "transparent" : "#e9ecef")};
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+`;
+
 const ModeSelector = styled.div`
   display: flex;
   gap: 8px;
@@ -108,6 +151,20 @@ const ModeButton = styled.button`
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+    background-color: #f8f9fa !important;
+    color: #adb5bd !important;
+    cursor: not-allowed !important;
+    border-color: #e9ecef !important;
+    box-shadow: none !important;
+    &:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+  `}
 `;
 
 const SubLabel = styled.div`
@@ -151,7 +208,7 @@ const NoPagesMessage = styled.div`
   padding: 20px 0;
 `;
 
-const WorkSpaceSelector = ({
+const WorkSpaceSelect = ({
   workspaces = [],
   selectedWorkspaceId, // From PostForm: fk_workspace_id
   setSelectedWorkspaceId, // From PostForm: setFk_workspace_id
@@ -160,12 +217,18 @@ const WorkSpaceSelector = ({
   selectedPageId, // From PostForm: selectedPageId (array or single ID)
   setSelectedPageId, // From PostForm: setSelectedPageId
 }) => {
-  // Internal state for managing UI interactions
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectionMode, setSelectionMode] = useState("single"); // Default to single
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [selectedPageIds, setSelectedPageIds] = useState([]);
-  // Memoized lists for efficiency
+  const [selectionMode, setSelectionMode] = useState("single");
+
+  // `selectedPageId`를 항상 배열로 사용하기 위한 헬퍼 변수 (prop을 직접 바꾸지 않음)
+  const normalizedSelectedPageId = useMemo(() => {
+    return Array.isArray(selectedPageId)
+      ? selectedPageId
+      : selectedPageId
+      ? [selectedPageId]
+      : [];
+  }, [selectedPageId]);
+
   const parentWorkspaces = useMemo(() => {
     return workspaces.filter((item) => !item.parent_id);
   }, [workspaces]);
@@ -179,6 +242,7 @@ const WorkSpaceSelector = ({
             p.workspace_name === item.parent_id
         );
         const parentId = parent ? parent.workspace_id : null;
+
         if (parentId) {
           if (!acc[parentId]) acc[parentId] = [];
           acc[parentId].push({
@@ -201,134 +265,141 @@ const WorkSpaceSelector = ({
     }, {});
   }, [parentWorkspaces]);
 
-  const currentPages =
-    selectedWorkspaceId && grouped[selectedWorkspaceId]
+  const currentPages = useMemo(() => {
+    return selectedWorkspaceId && grouped[selectedWorkspaceId]
       ? grouped[selectedWorkspaceId]
       : [];
+  }, [selectedWorkspaceId, grouped]);
 
-  // --- Initial state and update logic for props ---
+  // 이 useEffect는 selectionMode를 초기 설정하고,
+  // isWorkspaceShared나 selectedWorkspaceId 변경 시 동기화합니다.
+  // selectedPageId를 직접 변경하지 않으므로 무한 루프 위험이 적습니다.
   useEffect(() => {
-    // Set initial selected workspace based on prop
-    if (selectedWorkspaceId !== null) {
-      setSelectedWorkspaceId(selectedWorkspaceId);
-    }
-  }, [selectedWorkspaceId, setSelectedWorkspaceId]);
-
-  useEffect(() => {
-    // Set initial selected pages based on prop
-    // Ensure selectedPageId is an array for internal consistency
-    const pages = Array.isArray(selectedPageId)
-      ? selectedPageId
-      : selectedPageId
-      ? [selectedPageId]
-      : [];
-    setSelectedPageId(pages);
-
-    // Determine initial selection mode
-    if (
-      isWorkspaceShared &&
-      selectedWorkspaceId &&
-      grouped[selectedWorkspaceId]
-    ) {
+    if (isWorkspaceShared && selectedWorkspaceId && grouped[selectedWorkspaceId]) {
       const allPagesInWorkspace = grouped[selectedWorkspaceId].map((p) => p.id);
       if (
         allPagesInWorkspace.length > 0 &&
-        pages.length === allPagesInWorkspace.length &&
-        allPagesInWorkspace.every((id) => pages.includes(id))
+        normalizedSelectedPageId.length === allPagesInWorkspace.length &&
+        allPagesInWorkspace.every((id) => normalizedSelectedPageId.includes(id))
       ) {
         setSelectionMode("all");
-      } else if (pages.length === 1) {
+      } else if (normalizedSelectedPageId.length === 1) {
         setSelectionMode("single");
-      } else if (pages.length > 1) {
+      } else if (normalizedSelectedPageId.length > 1) {
         setSelectionMode("multiple");
       } else {
-        setSelectionMode("single"); // Default if no pages or unknown state
+        setSelectionMode("single");
       }
     } else {
-      setSelectionMode("single"); // Default if not shared or no workspace selected
+      setSelectionMode("single"); // 공유 안 함 상태이거나 워크스페이스가 선택되지 않았을 때
     }
-  }, [
-    selectedPageId,
-    setSelectedPageId,
-    isWorkspaceShared,
-    selectedWorkspaceId,
-    grouped,
-  ]);
+  }, [isWorkspaceShared, selectedWorkspaceId, grouped, normalizedSelectedPageId]);
 
-  // When selectionMode or selectedWorkspaceId changes, update selectedPageId and call parent's onChange
+
+  // 이 useEffect는 isWorkspaceShared 상태 변경에 따라 주요 상태를 초기화하고,
+  // selectionMode 또는 selectedWorkspaceId 변경 시 selectedPageId를 업데이트합니다.
   useEffect(() => {
-    let newSelectedPageIds = Array.isArray(selectedPageId)
-      ? [...selectedPageId]
-      : selectedPageId
-      ? [selectedPageId]
-      : [];
+    // isWorkspaceShared가 false로 변경되면 모든 상태를 초기화합니다.
+    if (!isWorkspaceShared) {
+      if (selectedWorkspaceId !== null) setSelectedWorkspaceId(null);
+      if (normalizedSelectedPageId.length > 0) setSelectedPageId([]);
+      if (selectionMode !== "single") setSelectionMode("single");
+      setShowDropdown(false);
+      return; // 초기화 후 더 이상 아래 로직 실행 방지
+    }
 
-    if (
-      selectionMode === "all" &&
-      selectedWorkspaceId &&
-      grouped[selectedWorkspaceId]
-    ) {
-      newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
+    // 공유가 활성화된 상태에서 selectionMode나 selectedWorkspaceId가 변경될 때
+    let newSelectedPageIds = [...normalizedSelectedPageId]; // 현재 선택된 페이지들을 복사하여 사용
+
+    if (selectionMode === "all") {
+      if (selectedWorkspaceId && grouped[selectedWorkspaceId]) {
+        newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
+      } else {
+        newSelectedPageIds = []; // 워크스페이스가 없으면 빈 배열
+      }
     } else if (selectionMode === "single") {
-      // If current selection has more than one, or none, reset to empty
+      // 단일 선택 모드에서 현재 선택된 페이지가 여러 개이거나, 현재 워크스페이스에 없으면 초기화
       if (
         newSelectedPageIds.length > 1 ||
         (newSelectedPageIds.length === 1 &&
-          !currentPages.find((p) => p.id === newSelectedPageIds[0]))
+          !currentPages.some((p) => p.id === newSelectedPageIds[0]))
       ) {
         newSelectedPageIds = [];
       }
+    } else if (selectionMode === "multiple") {
+        // 다중 선택 모드에서 현재 워크스페이스에 없는 페이지는 필터링
+        newSelectedPageIds = newSelectedPageIds.filter((id) =>
+            currentPages.some((p) => p.id === id)
+        );
     }
+    
+    // 이전 selectedPageId와 실제로 다를 경우에만 업데이트하여 무한 루프 방지
+    const sortedNew = newSelectedPageIds.sort();
+    const sortedOld = normalizedSelectedPageId.sort();
 
-    // Only update if something actually changed to prevent infinite loops
-    if (
-      JSON.stringify(newSelectedPageIds.sort()) !==
-      JSON.stringify(selectedPageId.sort())
-    ) {
+    if (JSON.stringify(sortedNew) !== JSON.stringify(sortedOld)) {
       setSelectedPageId(newSelectedPageIds);
     }
   }, [
+    isWorkspaceShared,
     selectionMode,
     selectedWorkspaceId,
     grouped,
-    selectedPageId,
+    setSelectedWorkspaceId,
     setSelectedPageId,
     currentPages,
+    normalizedSelectedPageId // normalizedSelectedPageId를 의존성에 포함 (useMemo된 값)
   ]);
 
+
+  const handleToggleShare = (shareStatus) => {
+    setIsWorkspaceShared(shareStatus);
+    if (!shareStatus) {
+      // 공유 안 함을 선택하면 워크스페이스 및 페이지 선택 초기화
+      setSelectedWorkspaceId(null);
+      setSelectedPageId([]);
+      setShowDropdown(false);
+      setSelectionMode("single");
+    }
+    // '워크스페이스 공유'로 전환될 때는 별도의 초기화 없음 (useEffect가 처리)
+  };
+
   const handleWorkspaceSelect = (workspaceId) => {
-    console.log(workspaceId, "workspaceid");
-    setSelectedWorkspace(workspaceId);
-    setSelectedPageIds([]);
+    setSelectedWorkspaceId(workspaceId);
     setShowDropdown(false);
-    setIsWorkspaceShared(true); // Selecting a workspace means it's shared
 
     let newSelectedPageIds = [];
     if (selectionMode === "all") {
       newSelectedPageIds = (grouped[workspaceId] || []).map((p) => p.id);
+    } else {
+      // 단일/복수 선택 모드에서는 워크스페이스 변경 시 기존 페이지 선택 초기화
+      newSelectedPageIds = [];
     }
-    setSelectedPageId(newSelectedPageIds);
+    // 현재 selectedPageId와 다를 경우에만 업데이트 (무한 루프 방지)
+    const sortedNew = newSelectedPageIds.sort();
+    const sortedOld = normalizedSelectedPageId.sort(); // normalizedSelectedPageId 사용
+
+    if (JSON.stringify(sortedNew) !== JSON.stringify(sortedOld)) {
+        setSelectedPageId(newSelectedPageIds);
+    }
   };
 
   const handlePageClick = (pageId) => {
-    if (!isWorkspaceShared) return; // Only allow page selection if sharing is enabled
-
-    if (selectionMode === "all") return; // Cannot select individual pages in "all" mode
+    if (!isWorkspaceShared || selectionMode === "all") return;
 
     let updatedPageIds;
     if (selectionMode === "single") {
-      updatedPageIds = selectedPageId.includes(pageId) ? [] : [pageId];
-    } else {
-      updatedPageIds = selectedPageId.includes(pageId)
-        ? selectedPageId.filter((id) => id !== pageId)
-        : [...selectedPageId, pageId];
+      updatedPageIds = normalizedSelectedPageId.includes(pageId) ? [] : [pageId];
+    } else { // multiple mode
+      updatedPageIds = normalizedSelectedPageId.includes(pageId)
+        ? normalizedSelectedPageId.filter((id) => id !== pageId)
+        : [...normalizedSelectedPageId, pageId];
     }
     setSelectedPageId(updatedPageIds);
   };
 
   const handleChangeSelectionMode = (newMode) => {
     setSelectionMode(newMode);
-    setIsWorkspaceShared(true); // Changing mode implies sharing
 
     let newSelectedPageIds = [];
     if (newMode === "all") {
@@ -336,77 +407,98 @@ const WorkSpaceSelector = ({
         newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
       }
     } else if (newMode === "single") {
-      // If current selection has one item and it's valid, keep it, otherwise clear.
       if (
-        selectedPageId.length === 1 &&
-        currentPages.find((p) => p.id === selectedPageId[0])
+        normalizedSelectedPageId.length === 1 &&
+        currentPages.some((p) => p.id === normalizedSelectedPageId[0])
       ) {
-        newSelectedPageIds = selectedPageId;
+        newSelectedPageIds = [normalizedSelectedPageId[0]];
       } else {
         newSelectedPageIds = [];
       }
     } else if (newMode === "multiple") {
-      // If coming from 'single' with a valid page, keep it. Otherwise, initialize empty.
-      if (
-        selectionMode === "single" &&
-        selectedPageId.length === 1 &&
-        currentPages.find((p) => p.id === selectedPageId[0])
-      ) {
-        newSelectedPageIds = selectedPageId;
-      } else {
-        // When switching to multiple, if no pages were selected or it was 'all', start fresh.
-        // Or, if there are existing valid pages, keep them.
-        newSelectedPageIds = selectedPageId.filter((id) =>
-          currentPages.some((p) => p.id === id)
-        );
-      }
+      newSelectedPageIds = normalizedSelectedPageId.filter((id) =>
+        currentPages.some((p) => p.id === id)
+      );
     }
-    setSelectedPageId(newSelectedPageIds);
+    
+    // 현재 selectedPageId와 다를 경우에만 업데이트 (무한 루프 방지)
+    const sortedNew = newSelectedPageIds.sort();
+    const sortedOld = normalizedSelectedPageId.sort(); // normalizedSelectedPageId 사용
+
+    if (JSON.stringify(sortedNew) !== JSON.stringify(sortedOld)) {
+        setSelectedPageId(newSelectedPageIds);
+    }
   };
 
   const dropdownButtonText =
-    selectedWorkspaceId && parentMap[selectedWorkspaceId]
+    selectedWorkspaceId && parentMap[selectedWorkspaceId] && isWorkspaceShared
       ? parentMap[selectedWorkspaceId]
-      : "워크스페이스를 선택하세요";
+      : isWorkspaceShared
+      ? "워크스페이스를 선택하세요"
+      : "워크스페이스 공유 안 함";
 
   return (
     <Wrapper>
       <Label>
         <Folder size={18} color={colors.primary} />
-        공유할 워크스페이스
+        공유 설정
       </Label>
+
+      <ShareOptionSelector>
+        <ShareOptionButton
+          type="button"
+          active={!isWorkspaceShared}
+          onClick={() => handleToggleShare(false)}
+        >
+          <XSquare size={14} />
+          공유 안 함
+        </ShareOptionButton>
+        <ShareOptionButton
+          type="button"
+          active={isWorkspaceShared}
+          onClick={() => handleToggleShare(true)}
+        >
+          <Users size={14} />
+          워크스페이스 공유
+        </ShareOptionButton>
+      </ShareOptionSelector>
 
       <DropdownContainer>
         <DropdownButton
           type="button"
-          onClick={() => setShowDropdown((prev) => !prev)}
+          onClick={() => isWorkspaceShared && setShowDropdown((prev) => !prev)}
+          disabled={!isWorkspaceShared}
         >
           {dropdownButtonText}
           <ChevronDown size={16} />
         </DropdownButton>
 
-        {showDropdown && (
+        {showDropdown && isWorkspaceShared && (
           <DropdownList>
-            {parentWorkspaces.map((w) => (
-              <DropdownItem
-                key={w.workspace_id}
-                onClick={() => handleWorkspaceSelect(w.workspace_id)}
-              >
-                {parentMap[w.workspace_id]}
-              </DropdownItem>
-            ))}
+            {parentWorkspaces.length > 0 ? (
+              parentWorkspaces.map((w) => (
+                <DropdownItem
+                  key={w.workspace_id}
+                  onClick={() => handleWorkspaceSelect(w.workspace_id)}
+                >
+                  {parentMap[w.workspace_id]}
+                </DropdownItem>
+              ))
+            ) : (
+              <NoPagesMessage>선택 가능한 워크스페이스가 없습니다.</NoPagesMessage>
+            )}
           </DropdownList>
         )}
       </DropdownContainer>
 
-      {/* Only show sharing options if a workspace is selected or if it was previously shared */}
-      {(selectedWorkspaceId || isWorkspaceShared) && (
+      {isWorkspaceShared && (
         <>
           <ModeSelector>
             <ModeButton
               type="button"
               active={selectionMode === "single"}
               onClick={() => handleChangeSelectionMode("single")}
+              disabled={!isWorkspaceShared}
             >
               <User size={14} />
               단일 선택
@@ -415,6 +507,7 @@ const WorkSpaceSelector = ({
               type="button"
               active={selectionMode === "multiple"}
               onClick={() => handleChangeSelectionMode("multiple")}
+              disabled={!isWorkspaceShared}
             >
               <Users size={14} />
               복수 선택
@@ -423,33 +516,38 @@ const WorkSpaceSelector = ({
               type="button"
               active={selectionMode === "all"}
               onClick={() => handleChangeSelectionMode("all")}
+              disabled={!isWorkspaceShared}
             >
               <CheckSquare size={14} />
               전체 선택
             </ModeButton>
           </ModeSelector>
 
-          {currentPages.length > 0 ? (
-            <>
-              <SubLabel>페이지 선택</SubLabel>
-              <ChipContainer>
-                {currentPages.map((page) => (
-                  <Chip
-                    key={page.id}
-                    selected={
-                      selectionMode === "all" ||
-                      selectedPageId.includes(page.id)
-                    }
-                    disabled={selectionMode === "all"}
-                    onClick={() => handlePageClick(page.id)}
-                  >
-                    {page.name}
-                  </Chip>
-                ))}
-              </ChipContainer>
-            </>
+          {selectedWorkspaceId ? ( // 워크스페이스가 선택되어야 페이지를 보여줌
+            currentPages.length > 0 ? (
+              <>
+                <SubLabel>페이지 선택</SubLabel>
+                <ChipContainer>
+                  {currentPages.map((page) => (
+                    <Chip
+                      key={page.id}
+                      selected={
+                        selectionMode === "all" ||
+                        normalizedSelectedPageId.includes(page.id) // normalizedSelectedPageId 사용
+                      }
+                      disabled={!isWorkspaceShared || selectionMode === "all"}
+                      onClick={() => handlePageClick(page.id)}
+                    >
+                      {page.name}
+                    </Chip>
+                  ))}
+                </ChipContainer>
+              </>
+            ) : (
+              <NoPagesMessage>선택 가능한 페이지가 없습니다.</NoPagesMessage>
+            )
           ) : (
-            <NoPagesMessage>선택 가능한 페이지가 없습니다.</NoPagesMessage>
+            <NoPagesMessage>워크스페이스를 선택해주세요.</NoPagesMessage> // 워크스페이스 선택 안된 경우
           )}
         </>
       )}
@@ -457,4 +555,4 @@ const WorkSpaceSelector = ({
   );
 };
 
-export default WorkSpaceSelector;
+export default WorkSpaceSelect;

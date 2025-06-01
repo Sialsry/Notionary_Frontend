@@ -8,14 +8,13 @@ import TitleInput from "../Molecules/susu/TitleInput";
 import MediaUpload from "../Molecules/susu/MideaUpload";
 import CategorySelect from "../Molecules/susu/CategorySelect";
 import ContentEdit from "../Molecules/susu/ContentEdit";
-import WorkspaceSelect from "../Molecules/susu/WorkSpaceSelect";
+import WorkSpaceSelect from "../Molecules/susu/WorkSpaceSelect"; // WorkSpaceSelect 임포트 유지
 import {
   CreatePost,
   GetWorkSpace,
   GetPostById,
   UpdatePost,
 } from "../../API/PostApi";
-import WorkSpaceSelector from "../Molecules/susu/WorkSpaceSelect";
 
 const colors = {
   primary: "#667eea",
@@ -183,7 +182,7 @@ const ValidationMessage = styled.div`
 
 const PostForm = () => {
   const navigate = useNavigate();
-  const { post_id } = useParams();
+  const { post_id } = useParams(); // post_id 존재 여부로 수정 모드 판단
   const queryClient = useQueryClient();
   const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
@@ -191,19 +190,18 @@ const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [fk_workspace_id, setWorkSpaceId] = useState([]);
+  const [fk_workspace_id, setWorkSpaceId] = useState(null);
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
   const [files, setFiles] = useState([]);
-  const [workspaces, setWorkspaces] = useState([]); // 워크스페이스 목록 상태
+  const [workspaces, setWorkspaces] = useState([]);
   const [selectedPageId, setSelectedPageId] = useState([]);
   const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
-  const [grouped, setGrouped] = useState(false); // 워크스페이스 그룹화 여부 상태
 
   const [existingFiles, setExistingFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
-  // const [fk_workspace_id, setWorkSpaceId] = useState(null); // 워크스페이스 관련 상태가 필요하다면 유지
 
+  // 워크스페이스 데이터 로드 (게시글 생성 모드일 때만 필요)
   const {
     data,
     isLoading: isWorkspacesLoading,
@@ -211,7 +209,14 @@ const PostForm = () => {
   } = useQuery({
     queryKey: ["workspaces", uid],
     queryFn: () => GetWorkSpace(uid),
+    enabled: !post_id, // post_id가 없을 때 (새 게시글 작성 모드)에만 워크스페이스 쿼리 실행
   });
+
+  useEffect(() => {
+    if (data?.data) {
+      setWorkspaces(data.data);
+    }
+  }, [data]);
 
   // 게시글 상세 조회
   const {
@@ -247,8 +252,15 @@ const PostForm = () => {
 
       setExistingFiles([...imgPaths, ...videoPaths]);
       setFiles([...imgPaths, ...videoPaths]);
+
+      // 수정 모드에서는 워크스페이스 관련 정보를 로드하지 않거나, 초기화합니다.
+      // (요구사항에 따라 수정 모드에서 워크스페이스가 나타나지 않아야 하므로)
+      setWorkSpaceId(null); // 수정 모드에서는 fk_workspace_id를 null로 초기화
+      setIsWorkspaceShared(false); // 수정 모드에서는 공유 안 함으로 설정
+      setSelectedPageId([]); // 수정 모드에서는 페이지 선택도 초기화
+
     } else if (!post_id) {
-      // 새로운 게시글 작성 모드일 때 상태 초기화
+      // 새로운 게시글 작성 모드일 때 상태 초기화 (기존 로직 유지)
       setTitle("");
       setContent("");
       setCategoryId("");
@@ -257,8 +269,11 @@ const PostForm = () => {
       setFiles([]);
       setExistingFiles([]);
       setNewFiles([]);
+      setWorkSpaceId(null);
+      setSelectedPageId([]);
+      setIsWorkspaceShared(false);
     }
-  }, [postData, post_id]);
+  }, [postData, post_id]); // post_id 의존성 추가로 모드 변경 감지
 
   const handleRemoveExistingFile = (fileToRemove) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
@@ -284,9 +299,9 @@ const PostForm = () => {
   const updateMutation = useMutation({
     mutationFn: UpdatePost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post", post_id] }); // 수정된 특정 게시글 상세 데이터 무효화
-      queryClient.invalidateQueries({ queryKey: ["posts"] }); // 게시글 목록 데이터 무효화 (선택 사항)
-      navigate(`/detail/${post_id}`); // <-- 현재 수정 중인  게시글의 post_id를 사용하여 이동
+      queryClient.invalidateQueries({ queryKey: ["post", post_id] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      navigate(`/detail/${post_id}`);
     },
     onError: (error) => {
       console.error("게시글 수정 실패:", error);
@@ -310,41 +325,44 @@ const PostForm = () => {
     e.preventDefault();
 
     if (!isFormValid) {
-      alert("필수 항목을 모두 입력해주세요.");
+      alert("필수 항목 (제목, 내용, 카테고리)을 모두 입력해주세요.");
       return;
     }
 
-    // UID 유효성 검사 추가
     if (!uid) {
       alert(
         "로그인 정보가 없습니다. 게시글을 작성하거나 수정하려면 로그인해주세요."
       );
-      navigate("/login"); // 로그인 페이지로 리디렉션하거나 적절한 처리
+      navigate("/login");
       return;
     }
 
     const formData = new FormData();
+    formData.append("mainCategory", mainCategory);
+    formData.append("subCategories", JSON.stringify(subCategories));
     formData.append("title", title);
-    formData.append("uid", uid); // uid 추가
+    formData.append("uid", uid);
     formData.append("content", content);
-    formData.append("isWorkspaceShared", isWorkspaceShared);
-
-    if (isWorkspaceShared) {
-      formData.append("fk_workspace_id", fk_workspace_id);
-      formData.append("workSpace_pages", selectedPageId);
-      // formData.append(
-      //   "selectedPageIds",
-      //   Array.isArray(selectedPageId)
-      //     ? selectedPageId.join(",")
-      //     : selectedPageId
-      // );
+    formData.append("category_id", categoryId);
+    
+    // 수정 모드에서는 isWorkspaceShared, fk_workspace_id, workSpace_pages를 전송하지 않습니다.
+    // 또는 서버에서 해당 필드를 무시하도록 처리해야 합니다.
+    // 여기서는 isWorkspaceShared가 false로 고정되므로 자연스럽게 빈 값으로 전송됩니다.
+    if (!post_id && isWorkspaceShared && fk_workspace_id) { // 새 게시글 작성 모드일 때만 워크스페이스 정보 전송
+        formData.append("isWorkspaceShared", isWorkspaceShared);
+        formData.append("fk_workspace_id", fk_workspace_id);
+        formData.append("workSpace_pages", selectedPageId);
     } else {
-      formData.append("fk_workspace_id", "");
-      formData.append("selectedPageIds", "");
+        // 새 게시글인데 공유 안 함 또는 워크스페이스 선택 안 함
+        // 수정 모드일 때도 이 경로를 타게 됩니다.
+        formData.append("isWorkspaceShared", false); // 항상 false로 보내도록 강제
+        formData.append("fk_workspace_id", "");
+        formData.append("workSpace_pages", "[]"); // 빈 배열 JSON 문자열
     }
 
+
     newFiles.forEach((file) => {
-      formData.append("media", file); // Multer가 'media' 필드를 기대하므로 일치시킵니다.
+      formData.append("media", file);
     });
 
     formData.append("existingFiles", JSON.stringify(existingFiles));
@@ -356,9 +374,9 @@ const PostForm = () => {
     }
   };
 
-  if (isPostLoading) return <div>로딩 중...</div>;
-  if (isPostError)
-    return <div>게시글 정보를 불러오는 중 오류가 발생했습니다.</div>;
+  if (isPostLoading || isWorkspacesLoading) return <div>로딩 중...</div>;
+  if (isPostError || isWorkspacesError)
+    return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>;
 
   return (
     <>
@@ -382,15 +400,18 @@ const PostForm = () => {
               setCategoryId={setCategoryId}
             />
 
-            <WorkSpaceSelector
-              workspaces={workspaces}
-              selectedWorkspaceId={fk_workspace_id}
-              setSelectedWorkspaceId={setWorkSpaceId}
-              isWorkspaceShared={isWorkspaceShared}
-              setIsWorkspaceShared={setIsWorkspaceShared}
-              selectedPageId={selectedPageId}
-              setSelectedPageId={setSelectedPageId} // 이 부분이 누락되었거나 잘못됨
-            />
+            {/* post_id가 없을 때만 WorkSpaceSelect 컴포넌트를 렌더링 */}
+            {!post_id && (
+              <WorkSpaceSelect
+                workspaces={workspaces}
+                selectedWorkspaceId={fk_workspace_id}
+                setSelectedWorkspaceId={setWorkSpaceId}
+                isWorkspaceShared={isWorkspaceShared}
+                setIsWorkspaceShared={setIsWorkspaceShared}
+                selectedPageId={selectedPageId}
+                setSelectedPageId={setSelectedPageId}
+              />
+            )}
 
             <ContentEdit
               value={content}
@@ -408,7 +429,7 @@ const PostForm = () => {
 
           {!isFormValid && (
             <ValidationMessage>
-              <X size={16} /> 필수 항목을 모두 입력해주세요.
+              <X size={16} /> 필수 항목 (제목, 내용, 카테고리)을 모두 입력해주세요.
             </ValidationMessage>
           )}
 
