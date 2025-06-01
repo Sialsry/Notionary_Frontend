@@ -70,9 +70,9 @@ const ContentEdit = ({ value, onChange }) => (
       onChange={onChange}
       placeholder="질문 내용을 자세히 작성해주세요"
       maxLength={1000}
-    />
-    <CharCount>{value?.length || 0} / 1000</CharCount>
-  </Wrapper>
+      />
+      <CharCount>{value?.length || 0} / 1000</CharCount>
+    </Wrapper>
 );
 
 export default ContentEdit;

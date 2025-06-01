@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // useEffect 추가
 import styled from "styled-components";
 import { Tag, ChevronDown } from "lucide-react";
 
@@ -193,23 +193,79 @@ const categoryMap = {
   },
 };
 
-const CategorySelector = ({ onCategoryChange }) => {
-  const [mainCategory, setMainCategory] = useState("");
+const CategorySelector = ({
+  mainCategory, // PostForm에서 받아온 mainCategory 상태
+  setMainCategory, // PostForm의 setMainCategory 함수
+  subCategories, // PostForm에서 받아온 subCategories 상태 (배열)
+  setSubCategories, // PostForm의 setSubCategories 함수
+  categoryId, // PostForm에서 받아온 categoryId 상태 (Post API의 category_id)
+  setCategoryId, // PostForm의 setCategoryId 함수
+}) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [subCategories, setSubCategories] = useState([]);
+
+  // categoryId prop이 변경될 때 (즉, 게시글 데이터를 불러왔을 때)
+  // 해당 categoryId에 맞는 메인/서브 카테고리를 찾아 부모의 상태를 업데이트합니다.
+  useEffect(() => {
+    if (categoryId) { // categoryId가 유효한 경우에만 실행
+      let foundMainCategoryName = "";
+      let foundSubCategoryIds = [];
+
+      for (const mainCatKey in categoryMap) {
+        const mainCatValue = categoryMap[mainCatKey];
+
+        // 1. categoryId가 메인 카테고리 ID인 경우 (예: '기타'의 ID 6)
+        if (mainCatValue.id === categoryId) {
+          foundMainCategoryName = mainCatKey;
+          foundSubCategoryIds = []; // 메인 카테고리인 경우 서브 카테고리는 없음
+          break;
+        }
+
+        // 2. categoryId가 서브 카테고리 ID인 경우
+        const foundSub = mainCatValue.subs.find(
+          (sub) => sub.id === categoryId
+        );
+        if (foundSub) {
+          foundMainCategoryName = mainCatKey;
+          foundSubCategoryIds = [foundSub.id]; // 서브 카테고리는 단일 선택으로 가정
+          break;
+        }
+      }
+
+      // 부모의 mainCategory 상태 업데이트 (현재 값과 다를 경우에만)
+      if (foundMainCategoryName && foundMainCategoryName !== mainCategory) {
+        setMainCategory(foundMainCategoryName);
+      }
+      
+      // 부모의 subCategories 상태 업데이트 (현재 값과 다를 경우에만)
+      // 배열 비교를 위해 JSON.stringify 사용
+      if (JSON.stringify(foundSubCategoryIds) !== JSON.stringify(subCategories)) {
+        setSubCategories(foundSubCategoryIds);
+      }
+      
+      // 부모의 categoryId 상태는 이미 PostForm에서 설정되었으므로 여기서는 건드리지 않습니다.
+      // (단, CategorySelector가 categoryId를 직접 설정해야 하는 로직이라면 필요할 수 있습니다.)
+
+    } else {
+      // categoryId가 없거나 (새 게시글 작성 모드) 유효하지 않을 경우
+      // 부모의 상태를 초기화
+      setMainCategory("");
+      setSubCategories([]);
+      // setCategoryId(""); // PostForm에서 이미 초기화하므로 여기서는 필요 없을 수 있습니다.
+    }
+  }, [categoryId, setMainCategory, setSubCategories]); // 의존성 배열에 관련 prop들 포함
 
   const handleMainCategorySelect = (category) => {
-    setMainCategory(category);
-    setSubCategories([]);
+    const mainCatId = categoryMap[category].id;
+    setMainCategory(category); // 부모의 mainCategory 상태 업데이트
+    setSubCategories([]); // 메인 카테고리 변경 시 서브 카테고리 초기화
+    setCategoryId(mainCatId); // 부모의 categoryId 상태 업데이트
     setShowDropdown(false);
-    onCategoryChange?.(category, [], categoryMap[category].id);
   };
 
   const toggleSubCategory = (sub) => {
-    const alreadySelected = subCategories.includes(sub.id);
-    const updated = alreadySelected ? [] : [sub.id];
-    setSubCategories(updated);
-    onCategoryChange?.(mainCategory, updated, updated[0] || null);
+    const updated = [sub.id]; // 현재는 서브 카테고리 단일 선택으로 가정
+    setSubCategories(updated); // 부모의 subCategories 상태 업데이트
+    setCategoryId(updated[0]); // 부모의 categoryId 상태 업데이트 (서브 카테고리 ID로)
   };
 
   return (
@@ -224,7 +280,7 @@ const CategorySelector = ({ onCategoryChange }) => {
           type="button"
           onClick={() => setShowDropdown((prev) => !prev)}
         >
-          {mainCategory || "카테고리를 선택하세요"}
+          {mainCategory || "카테고리를 선택하세요"} {/* 부모의 mainCategory prop 사용 */}
           <ChevronDown size={16} />
         </DropdownButton>
 
@@ -242,6 +298,7 @@ const CategorySelector = ({ onCategoryChange }) => {
         )}
       </DropdownContainer>
 
+      {/* 메인 카테고리가 선택되었고, 해당 메인 카테고리에 서브 카테고리가 있을 경우에만 표시 */}
       {mainCategory && categoryMap[mainCategory]?.subs.length > 0 && (
         <SubCategorySection>
           <SubLabel>세부 카테고리 선택</SubLabel>

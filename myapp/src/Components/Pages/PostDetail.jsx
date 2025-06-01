@@ -913,6 +913,7 @@ const PostDetail = () => {
 
               {post.isMyPost && (
                 <PostActions>
+<<<<<<< HEAD
                   <ActionButton
                     variant="edit"
                     onClick={() => navigate(`/post/${post_id}/edit`)}
@@ -920,6 +921,12 @@ const PostDetail = () => {
                     <Edit3 size={14} />
                     수정
                   </ActionButton>
+=======
+                <ActionButton variant="edit" onClick={() => navigate(`/post/edit/${post.post_id}`)}>
+              <Edit3 size={14} />
+                  수정
+            </ActionButton>
+>>>>>>> susu
                   <ActionButton variant="delete" onClick={deletePost}>
                     <Trash2 size={14} />
                     삭제

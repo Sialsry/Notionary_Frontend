@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
@@ -8,11 +8,12 @@ import TitleInput from "../Molecules/susu/TitleInput";
 import MediaUpload from "../Molecules/susu/MideaUpload";
 import CategorySelect from "../Molecules/susu/CategorySelect";
 import ContentEdit from "../Molecules/susu/ContentEdit";
-import Button from "../Atoms/susu/Button";
-import { CreatePost, GetWorkSpace } from "../../API/PostApi";
-import WorkSpaceSelect from "../Molecules/susu/WorkSpaceSelect";
+import {
+  CreatePost,
+  GetPostById,
+  UpdatePost,
+} from "../../API/PostApi";
 
-// 컬러 팔레트 (마이페이지와 동일)
 const colors = {
   primary: "#667eea",
   secondary: "#764ba2",
@@ -136,12 +137,12 @@ const StyledButton = styled.button`
     `
     background: ${colors.gradient};
     color: white;
-    
+
     &:hover:not(:disabled) {
       transform: translateY(-1px);
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
-    
+
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -155,7 +156,7 @@ const StyledButton = styled.button`
     background: #f8f9fa;
     color: #495057;
     border: 2px solid #dee2e6;
-    
+
     &:hover {
       background: #e9ecef;
       border-color: ${colors.primary};
@@ -179,6 +180,7 @@ const ValidationMessage = styled.div`
 
 const PostForm = () => {
   const navigate = useNavigate();
+  const { post_id } = useParams();
   const queryClient = useQueryClient();
   const userInfo = useSelector((state) => state.reducer.user.userInfo);
   const uid = userInfo?.uid;
@@ -186,35 +188,85 @@ const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [fk_workspace_id, setWorkSpaceId] = useState(null);
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
   const [files, setFiles] = useState([]);
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
-  const [selectedPageId, setSelectedPageId] = useState(null);
-  const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
 
-  const {
-    data,
-    isLoading: isWorkspacesLoading,
-    isError: isWorkspacesError,
-  } = useQuery({
-    queryKey: ["workspaces", uid],
-    queryFn: () => GetWorkSpace(uid),
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [newFiles, setNewFiles] = useState([]);
+  const [fk_workspace_id, setWorkSpaceId] = useState(null); // 워크스페이스 관련 상태가 필요하다면 유지
+
+  // 게시글 상세 조회
+  const { data: postData, isLoading: isPostLoading, isError: isPostError } = useQuery({
+    queryKey: ["post", post_id],
+    queryFn: () => GetPostById(post_id),
+    enabled: !!post_id, // post_id가 있을 때만 쿼리 실행
   });
 
-  const workspaces = data?.data || [];
+  // postData가 변경될 때마다 폼 상태를 업데이트합니다.
+  useEffect(() => {
+    if (postData && postData.data) {
+      const post = postData.data;
 
-  const { mutate, isLoading: isSubmitting } = useMutation({
-    mutationFn: CreatePost,
-    onSuccess: (data) => {
-      console.log("성공",data);
-      queryClient.invalidateQueries(["posts"]);
-      navigate("/main");
+      setTitle(post.title || "");
+      setContent(post.content || "");
+      setCategoryId(post.category_id || "");
+      setMainCategory(post.mainCategory || "");
+      try {
+        setSubCategories(post.subCategories ? JSON.parse(post.subCategories) : []);
+      } catch (e) {
+        console.error("Failed to parse subCategories from backend:", e);
+        setSubCategories([]);
+      }
+
+      const imgPaths = post.imgPaths ? JSON.parse(post.imgPaths) : [];
+      const videoPaths = post.videoPaths ? JSON.parse(post.videoPaths) : [];
+
+      setExistingFiles([...imgPaths, ...videoPaths]);
+      setFiles([...imgPaths, ...videoPaths]);
+    } else if (!post_id) {
+      // 새로운 게시글 작성 모드일 때 상태 초기화
+      setTitle("");
+      setContent("");
+      setCategoryId("");
+      setMainCategory("");
+      setSubCategories([]);
+      setFiles([]);
+      setExistingFiles([]);
+      setNewFiles([]);
+    }
+  }, [postData, post_id]);
+
+  const handleRemoveExistingFile = (fileToRemove) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
+    setExistingFiles((prevExistingFiles) =>
+      prevExistingFiles.filter((file) => file !== fileToRemove)
+    );
+  };
+
+ const createMutation = useMutation({
+  mutationFn: CreatePost,
+  onSuccess: (data) => {
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
+    navigate("/main"); 
+  },
+  onError: (error) => {
+    console.error("게시글 작성 실패:", error);
+    alert("게시글 작성에 실패했습니다: " + (error.message || "알 수 없는 오류"));
+  }
+});
+
+  const updateMutation = useMutation({
+    mutationFn: UpdatePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post", post_id] }); // 수정된 특정 게시글 상세 데이터 무효화
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); // 게시글 목록 데이터 무효화 (선택 사항)
+      navigate(`/detail/${post_id}`); // <-- 현재 수정 중인 게시글의 post_id를 사용하여 이동
     },
     onError: (error) => {
-      console.log(error);
-    },
+        console.error("게시글 수정 실패:", error);
+        alert("게시글 수정에 실패했습니다: " + (error.message || "알 수 없는 오류"));
+    }
   });
 
   const isFormValid =
@@ -225,153 +277,119 @@ const PostForm = () => {
     typeof content === "string" &&
     content.trim() !== "" &&
     (mainCategory === "기타" ||
-      (Array.isArray(subCategories) && subCategories.length > 0)) &&
-    (!isWorkspaceShared ||
-      (fk_workspace_id &&
-        selectedPageId &&
-        (Array.isArray(selectedPageId) ? selectedPageId.length > 0 : true)));
+      (Array.isArray(subCategories) && subCategories.length > 0));
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!isFormValid) {
-      alert("제목, 대표 카테고리, 세부 카테고리, 내용을 모두 입력해주세요.");
+      alert("필수 항목을 모두 입력해주세요.");
       return;
     }
 
-    if (!categoryId && mainCategory !== "기타") {
-      alert("세부 카테고리를 선택해주세요.");
-      return;
-    }
-
-    if (isWorkspaceShared) {
-      if (
-        !fk_workspace_id ||
-        !selectedPageId ||
-        (Array.isArray(selectedPageId) && selectedPageId.length === 0)
-      ) {
-        alert(
-          "워크스페이스에 게시글을 공유하려면 워크스페이스 및 페이지를 선택하세요."
-        );
+    // UID 유효성 검사 추가
+    if (!uid) {
+        alert("로그인 정보가 없습니다. 게시글을 작성하거나 수정하려면 로그인해주세요.");
+        navigate("/login"); // 로그인 페이지로 리디렉션하거나 적절한 처리
         return;
-      }
     }
 
     const formData = new FormData();
-    formData.append("mainCategory", mainCategory);
-    formData.append("subCategories", subCategories.join(","));
-    formData.append("uid", uid);
-    formData.append("category_id", categoryId);
     formData.append("title", title);
+    formData.append("uid", uid); // uid 추가
     formData.append("content", content);
-    formData.append("isWorkspaceShared", isWorkspaceShared);
-
-    if (isWorkspaceShared) {
-      formData.append("fk_workspace_id", fk_workspace_id);
-      formData.append(
-        "selectedPageIds",
-        Array.isArray(selectedPageId)
-          ? selectedPageId.join(",")
-          : selectedPageId
-      );
-    } else {
-      formData.append("fk_workspace_id", "");
-      formData.append("selectedPageIds", "");
+    formData.append("category_id", categoryId);
+    formData.append("mainCategory", mainCategory);
+    // subCategories는 배열이므로 join으로 문자열로 변환하여 전송 (백엔드에서 파싱 필요)
+    formData.append("subCategories", subCategories.join(",")); 
+    // fk_workspace_id가 필요하다면 여기에 추가 (현재 상태는 null)
+    if (fk_workspace_id) {
+        formData.append("fk_workspace_id", fk_workspace_id);
     }
 
-    files.forEach((file) => {
-      formData.append("media", file);
+    newFiles.forEach((file) => {
+      formData.append("media", file); // Multer가 'media' 필드를 기대하므로 일치시킵니다.
     });
 
-    mutate(formData);
+    formData.append("existingFiles", JSON.stringify(existingFiles));
+
+    if (post_id) {
+      updateMutation.mutate({ post_id, formData });
+    } else {
+      createMutation.mutate(formData);
+    }
   };
 
-  const handleCancel = (e) => {
-    e.preventDefault();
-    navigate("/main");
-  };
+  if (isPostLoading) return <div>로딩 중...</div>;
+  if (isPostError) return <div>게시글 정보를 불러오는 중 오류가 발생했습니다.</div>;
 
   return (
-    <FormCard>
-      <Form onSubmit={handleSubmit} id="postForm">
-        <FormSection>
-          <TitleInput
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </FormSection>
-
-        <FormSection>
-          <MediaUpload onFileSelect={(newFiles) => setFiles(newFiles)} />
-        </FormSection>
-
-        <FormSection>
-          <CategorySelect
-            onCategoryChange={(main, subs) => {
-              setMainCategory(main);
-              setSubCategories(subs);
-              setCategoryId(main === "기타" ? 6 : subs[0] || null);
-            }}
-          />
-        </FormSection>
-
-        <CheckboxContainer>
-          <CheckboxLabel>
-            <input
-              type="checkbox"
-              checked={isWorkspaceShared}
-              onChange={(e) => setIsWorkspaceShared(e.target.checked)}
-            />
-            워크스페이스에 게시글 공유하기
-          </CheckboxLabel>
-        </CheckboxContainer>
-
-        {!isWorkspacesLoading && !isWorkspacesError && isWorkspaceShared && (
+    <>
+      <FormCard>
+        <Form onSubmit={handleSubmit}>
           <FormSection>
-            <WorkSpaceSelect
-              workspaces={workspaces}
-              value={selectedPageId}
-              onChange={(pageId, workspaceId) => {
-                setSelectedPageId(pageId);
-                setSelectedWorkspaceId(
-                  workspaceId ? Number(workspaceId) : null
-                );
-                setWorkSpaceId(workspaceId ? Number(workspaceId) : null);
-              }}
+            <SectionTitle>{post_id ? "게시글 수정" : "새 게시글 작성"}</SectionTitle>
+
+            <TitleInput
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <CategorySelect
+              mainCategory={mainCategory}
+              setMainCategory={setMainCategory}
+              subCategories={subCategories}
+              setSubCategories={setSubCategories}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+            />
+
+            <ContentEdit
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+
+            <MediaUpload
+              files={files}
+              setFiles={setFiles}
+              setNewFiles={setNewFiles}
+              existingFiles={existingFiles}
+              onRemoveExistingFile={handleRemoveExistingFile}
             />
           </FormSection>
-        )}
 
-        <FormSection>
-          <ContentEdit
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </FormSection>
+          {!isFormValid && (
+            <ValidationMessage>
+              <X size={16} /> 필수 항목을 모두 입력해주세요.
+            </ValidationMessage>
+          )}
 
-        {!isFormValid && (title || content || mainCategory) && (
-          <ValidationMessage>
-            ⚠️ 모든 필수 항목을 입력해주세요.
-          </ValidationMessage>
-        )}
-      </Form>
+          <ButtonGroup>
+            <StyledButton type="button" variant="secondary" onClick={() => navigate(-1)}>
+              <ArrowLeft size={16} />
+              취소
+            </StyledButton>
 
-      <ButtonGroup>
-        <StyledButton variant="secondary" onClick={handleCancel} type="button">
-          <ArrowLeft size={16} />
-          취소
-        </StyledButton>
-        <StyledButton
-          variant="primary"
-          type="submit"
-          form="postForm"
-          disabled={!isFormValid || isSubmitting}
-        >
-          <Send size={16} />
-          {isSubmitting ? "등록 중..." : "질문 등록"}
-        </StyledButton>
-      </ButtonGroup>
-    </FormCard>
+            <StyledButton
+              type="submit"
+              variant="primary"
+              disabled={!isFormValid || createMutation.isLoading || updateMutation.isLoading}
+            >
+              {post_id ? (
+                <>
+                  <Send size={16} />
+                  수정하기
+                </>
+              ) : (
+                <>
+                  <Send size={16} />
+                  작성하기
+                </>
+              )}
+            </StyledButton>
+          </ButtonGroup>
+        </Form>
+      </FormCard>
+    </>
   );
 };
 

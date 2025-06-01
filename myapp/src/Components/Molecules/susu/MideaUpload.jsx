@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { Upload, Image, Video, X } from "lucide-react";
 
@@ -16,6 +16,7 @@ const colors = {
 const MAX_FILES = 5;
 const MAX_FILE_SIZE_MB = 100;
 
+// --- (스타일 컴포넌트들은 변경 없음) ---
 const Wrapper = styled.div`
   margin-bottom: 0;
 `;
@@ -129,6 +130,7 @@ const PreviewFile = styled.div`
   border: 1px solid #dee2e6;
   border-radius: 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 12px;
@@ -136,6 +138,7 @@ const PreviewFile = styled.div`
   padding: 8px;
   background: #f8f9fa;
   color: #495057;
+  word-break: break-all;
 `;
 
 const RemoveButton = styled.button`
@@ -160,62 +163,110 @@ const RemoveButton = styled.button`
   }
 `;
 
-const MediaUploader = ({ onFileSelect }) => {
+const MediaUploader = ({ files, setFiles, setNewFiles, existingFiles, onRemoveExistingFile }) => {
   const [error, setError] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [internalNewFiles, setInternalNewFiles] = useState([]);
 
-  const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const combinedFiles = [...selectedFiles, ...newFiles];
-
-    if (combinedFiles.length > MAX_FILES) {
-      setError(`최대 ${MAX_FILES}개의 파일만 업로드할 수 있습니다.`);
-      e.target.value = null;
-      return;
+  // files prop이 변경될 때 internalNewFiles를 동기화
+  useEffect(() => {
+    const currentNewFiles = files.filter(file => file instanceof File);
+    // 내용 비교를 통해 불필요한 업데이트 방지
+    if (JSON.stringify(currentNewFiles.map(f => f.name)) !== JSON.stringify(internalNewFiles.map(f => f.name))) {
+        setInternalNewFiles(currentNewFiles);
     }
+  }, [files, internalNewFiles]); // internalNewFiles를 의존성에 추가하여 최신 값을 참조하도록 함
 
-    for (const file of newFiles) {
-      const isImage = file.type.startsWith("image/");
-      const isVideo = file.type.startsWith("video/");
-
-      if (isVideo && !file.name.toLowerCase().endsWith(".mp4")) {
-        setError(`영상 파일은 mp4 형식만 허용합니다: ${file.name}`);
-        e.target.value = null;
-        return;
-      }
-
-      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        setError(
-          `파일 "${file.name}"이(가) ${MAX_FILE_SIZE_MB}MB를 초과합니다.`
-        );
-        e.target.value = null;
-        return;
-      }
-
-      if (!isImage && !isVideo) {
-        setError(`지원하지 않는 파일 형식입니다: ${file.name}`);
-        e.target.value = null;
-        return;
-      }
-    }
-
-    setSelectedFiles(combinedFiles);
+  const handleFileChange = useCallback((e) => {
+    const newlySelectedFiles = Array.from(e.target.files);
     setError("");
-    onFileSelect?.(combinedFiles);
-    e.target.value = null;
-  };
 
-  const handleRemoveFile = (index) => {
-    const updatedFiles = [...selectedFiles];
-    updatedFiles.splice(index, 1);
-    setSelectedFiles(updatedFiles);
-    onFileSelect?.(updatedFiles);
+    if ((existingFiles.length + internalNewFiles.length + newlySelectedFiles.length) > MAX_FILES) {
+        setError(`최대 ${MAX_FILES}개의 파일만 업로드할 수 있습니다.`);
+        e.target.value = null;
+        return;
+    }
+
+    for (const file of newlySelectedFiles) {
+        const isImage = file.type.startsWith("image/");
+        const isVideo = file.type.startsWith("video/");
+
+        if (isVideo && !file.name.toLowerCase().endsWith(".mp4")) {
+            setError(`영상 파일은 mp4 형식만 허용합니다: ${file.name}`);
+            e.target.value = null;
+            return;
+        }
+
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+            setError(`파일 "${file.name}"이(가) ${MAX_FILE_SIZE_MB}MB를 초과합니다.`);
+            e.target.value = null;
+            return;
+        }
+
+        if (!isImage && !isVideo) {
+            setError(`지원하지 않는 파일 형식입니다: ${file.name}`);
+            e.target.value = null;
+            return;
+        }
+    }
+
+    const updatedInternalNewFiles = [...internalNewFiles, ...newlySelectedFiles];
+    setInternalNewFiles(updatedInternalNewFiles);
+    setNewFiles(updatedInternalNewFiles); // 부모의 `newFiles` 상태 업데이트
+
+    setFiles([...existingFiles, ...updatedInternalNewFiles]); // 부모의 `files` 상태도 업데이트
+
+    e.target.value = null;
+  }, [existingFiles, internalNewFiles, setFiles, setNewFiles]);
+
+  const handleRemoveFile = useCallback((fileToRemove) => {
+    const isExistingFile = typeof fileToRemove === 'string';
+    const isNewFile = fileToRemove instanceof File;
+
+    if (isExistingFile) {
+      if (onRemoveExistingFile) {
+        onRemoveExistingFile(fileToRemove); // 부모의 existingFiles 상태 업데이트 요청
+      }
+      // `files` 상태도 업데이트 (기존 파일 URL 제거)
+      setFiles(prevFiles => prevFiles.filter(f => f !== fileToRemove));
+
+    } else if (isNewFile) {
+      const updatedInternalNewFiles = internalNewFiles.filter(file => file !== fileToRemove);
+      setInternalNewFiles(updatedInternalNewFiles);
+      setNewFiles(updatedInternalNewFiles); // 부모의 newFiles 상태 업데이트
+
+      // `files` 상태도 업데이트 (새로운 File 객체 제거)
+      // 기존 파일 목록은 그대로 두고, 새로운 파일 목록에서만 제거된 후 합쳐짐
+      setFiles(prevFiles => prevFiles.filter(f => f !== fileToRemove)); // files에서 해당 fileToRemove (File 객체) 제거
+
+    }
+  }, [existingFiles, internalNewFiles, setFiles, setNewFiles, onRemoveExistingFile]);
+
+
+  const getFileNameAndType = (file) => {
+    if (typeof file === 'string') {
+      const parts = file.split('/');
+      const name = parts[parts.length - 1];
+      const isImage = /\.(jpeg|jpg|png|gif|webp)$/i.test(name);
+      const isVideo = /\.(mp4)$/i.test(name);
+      return { name, isImage, isVideo, src: file };
+    } else if (file instanceof File) {
+      return {
+        name: file.name,
+        isImage: file.type.startsWith("image/"),
+        isVideo: file.type.startsWith("video/"),
+        src: URL.createObjectURL(file),
+      };
+    }
+    return { name: "Unknown", isImage: false, isVideo: false, src: "" };
   };
 
   const totalSizeMB = (
-    selectedFiles.reduce((acc, file) => acc + file.size, 0) /
-    (1024 * 1024)
+    files.reduce((acc, file) => {
+      if (file instanceof File) return acc + file.size;
+      return acc;
+    }, 0) / (1024 * 1024)
   ).toFixed(2);
+
 
   return (
     <Wrapper>
@@ -251,39 +302,45 @@ const MediaUploader = ({ onFileSelect }) => {
 
       {error && <ErrorMessage>⚠️ {error}</ErrorMessage>}
 
-      {selectedFiles.length > 0 && (
+      {files.length > 0 && (
         <FileInfo>
-          <span>📁 선택한 파일: {selectedFiles.length}개</span>
+          <span>📁 선택한 파일: {files.length}개</span>
           <span>💾 총 용량: {totalSizeMB} MB</span>
         </FileInfo>
       )}
 
-      {selectedFiles.length > 0 && (
+      {files.length > 0 && (
         <PreviewContainer>
-          {selectedFiles.map((file, idx) => {
-            const isImage = file.type.startsWith("image/");
-            const isVideo = file.type.startsWith("video/");
+          {files.map((file, idx) => {
+            const { name, isImage, isVideo, src } = getFileNameAndType(file);
 
             return (
-              <PreviewItem key={idx}>
+              // 고유한 key를 위해 파일 이름과 파일 크기를 조합 (File 객체인 경우)
+              // URL 문자열인 경우 URL 자체를 key로 사용
+              <PreviewItem key={typeof file === 'string' ? file : `${file.name}-${file.size}`}>
                 {isImage && (
                   <PreviewImage
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
+                    src={src}
+                    alt={name}
                   />
                 )}
                 {isVideo && (
                   <PreviewVideo
-                    src={URL.createObjectURL(file)}
+                    src={src}
                     autoPlay
                     muted
                     loop
                     controls
                   />
                 )}
-                {!isImage && !isVideo && <PreviewFile>{file.name}</PreviewFile>}
+                {!isImage && !isVideo && (
+                  <PreviewFile>
+                    <Image size={24} color={colors.secondary} />
+                    {name}
+                  </PreviewFile>
+                )}
                 <RemoveButton
-                  onClick={() => handleRemoveFile(idx)}
+                  onClick={() => handleRemoveFile(file)}
                   type="button"
                 >
                   <X size={14} />

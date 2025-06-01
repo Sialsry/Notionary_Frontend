@@ -24,19 +24,33 @@ const fadeUp = keyframes`
 `;
 
 const FeedWrapper = styled.div`
+<<<<<<< HEAD
   max-width: 720px;
   margin: 0 auto;
   padding: 40px 20px;
+=======
+  max-width: 1050px;
+  width: 100%;
+>>>>>>> susu
   display: flex;
   flex-direction: column;
+  margin-top: 30px;
   gap: 32px;
+  min-height: 400px;
+  align-items: center;
+  justify-content: center;
 
+<<<<<<< HEAD
   @media (max-width: 480px) {
     padding: 32px 16px;
+=======
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 24px 12px;
+>>>>>>> susu
     gap: 24px;
   }
 `;
-
 const AnimatedCardWrapper = styled.div`
   animation: ${fadeUp} 0.5s ease forwards;
   opacity: 0;

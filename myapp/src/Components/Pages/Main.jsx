@@ -35,8 +35,9 @@ const colors = {
 const MainWrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; 
   align-items: center;
+<<<<<<< HEAD
   width: 80%;
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -46,8 +47,12 @@ const MainWrap = styled.div`
   @media (max-width: 768px) {
     padding-left: 0;
   }
+=======
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fff;
+>>>>>>> susu
 `;
-
 const CategoryTitle = styled.div`
   display: flex;
   justify-content: center;
