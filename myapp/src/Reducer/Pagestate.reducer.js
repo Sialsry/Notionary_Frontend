@@ -11,14 +11,25 @@ const Pagereducer = (state = initstate, action) => {
     switch(type) {
         case 'True':
             return{ ...state, pagestate : true}
-        
+        case 'False': 
+            return {...state, pagestate : false}
         default :
-        return {...state, pagestate : false}
+            return {...state, pagestate : false}
     }
 }
 
 export default Pagereducer   
  
+ 
+ 
+
+
+
+
+
+
+
+
  
  
  

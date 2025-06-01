@@ -3,7 +3,7 @@ import styled from "styled-components";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/notionary-logo.png";
 import defaultProfile from "../../images/default_profile.png"; // 기본 프로필 이미지 필요
 
@@ -17,6 +17,8 @@ const HeaderContainer = styled.header`
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  position: fixed;
+  z-index: 100;
 `;
 
 const LogoContainer = styled.div`
@@ -24,6 +26,7 @@ const LogoContainer = styled.div`
     height: 200px;
     object-fit: contain;
     margin-top: 10px;
+    cursor: pointer;
   }
 `;
 
@@ -82,6 +85,7 @@ const LogoutButton = styled.button`
 `;
 
 const Header = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const [user, setUser] = useState({
     profileImage: null,
@@ -123,18 +127,18 @@ const Header = () => {
           console.log("유저 정보:", response.data.user); // 유저 정보 확인
 
           dispatch({
-          type: "LOGIN",
+            type: "LOGIN",
             payload: {
-            uid: response.data.user.uid,
-            nick: response.data.user.nick,
-            provider: response.data.user.provider || "local",
-            gender : response.data.user.gender,
-            phone : response.data.user.phone,
-            dob : response.data.user.dob,
-            addr : response.data.user.addr,
-            profImg : response.data.user.profImg
-        },
-    });
+              uid: response.data.user.uid,
+              nick: response.data.user.nick,
+              provider: response.data.user.provider || "local",
+              gender: response.data.user.gender,
+              phone: response.data.user.phone,
+              dob: response.data.user.dob,
+              addr: response.data.user.addr,
+              profImg: response.data.user.profImg,
+            },
+          });
         }
 
         if (loginAccessToken) {
@@ -152,19 +156,19 @@ const Header = () => {
             addr: response.data.user.addr,
           });
 
-            dispatch({
+          dispatch({
             type: "LOGIN",
             payload: {
-            uid: response.data.user.uid,
-            nick: response.data.user.nick,
-            provider: response.data.user.provider || "kakao",
-            gender : response.data.user.gender,
-            phone : response.data.user.phone,
-            dob : response.data.user.dob,
-            addr : response.data.user.addr,
-            profImg : response.data.user.profImg
-        },
-    });
+              uid: response.data.user.uid,
+              nick: response.data.user.nick,
+              provider: response.data.user.provider || "kakao",
+              gender: response.data.user.gender,
+              phone: response.data.user.phone,
+              dob: response.data.user.dob,
+              addr: response.data.user.addr,
+              profImg: response.data.user.profImg,
+            },
+          });
         }
       } catch (error) {
         console.error(
@@ -186,21 +190,30 @@ const Header = () => {
     // 로그인 페이지로 이동
     navigate("/");
   };
-
-  return (
-    <HeaderContainer>
-      <UserContainer>
-        <ProfileWrapper onClick={() => navigate("/mypage")}>
-          <ProfileImage src={user.profileImage} alt="프로필 이미지" />
-          <Username>{user.nickname}</Username>
-        </ProfileWrapper>
-      </UserContainer>
-      <LogoContainer>
-        <img src={logo} alt="Notionary Logo" />
-      </LogoContainer>
-      <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
-    </HeaderContainer>
-  );
+  if (
+    location.pathname.startsWith("/workspace") ||
+    location.pathname === "/main" ||
+    location.pathname === "/post" ||
+    location.pathname.startsWith("/detail")
+  ) {
+    return (
+      <HeaderContainer>
+        <UserContainer>
+          <ProfileWrapper onClick={() => navigate("/mypage")}>
+            <ProfileImage src={user.profileImage} alt="프로필 이미지" />
+            <Username>{user.nickname}</Username>
+          </ProfileWrapper>
+        </UserContainer>
+        <LogoContainer>
+          <img
+            src={logo}
+            alt="Notionary Logo"
+            onClick={() => navigate("/main")}
+          />
+        </LogoContainer>
+        <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+      </HeaderContainer>
+    );
+  }
 };
-
 export default Header;

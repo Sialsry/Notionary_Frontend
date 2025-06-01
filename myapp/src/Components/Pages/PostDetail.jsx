@@ -913,7 +913,10 @@ const PostDetail = () => {
 
               {post.isMyPost && (
                 <PostActions>
-                  <ActionButton variant="edit">
+                  <ActionButton
+                    variant="edit"
+                    onClick={() => navigate(`/post/${post_id}/edit`)}
+                  >
                     <Edit3 size={14} />
                     수정
                   </ActionButton>
