@@ -24,14 +24,8 @@ const fadeUp = keyframes`
 `;
 
 const FeedWrapper = styled.div`
-<<<<<<< HEAD
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 20px;
-=======
   max-width: 1050px;
   width: 100%;
->>>>>>> susu
   display: flex;
   flex-direction: column;
   margin-top: 30px;
@@ -40,14 +34,9 @@ const FeedWrapper = styled.div`
   align-items: center;
   justify-content: center;
 
-<<<<<<< HEAD
-  @media (max-width: 480px) {
-    padding: 32px 16px;
-=======
   @media (max-width: 768px) {
     max-width: 100%;
     padding: 24px 12px;
->>>>>>> susu
     gap: 24px;
   }
 `;

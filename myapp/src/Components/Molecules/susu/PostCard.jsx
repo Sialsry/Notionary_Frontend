@@ -386,7 +386,6 @@ function PostCard({
           <TitleText>{title}</TitleText>
         </TitleWrapper>
 
-<<<<<<< HEAD
         {parent_id && (
           <WorkspaceWrap>
             <WorkspaceTitle>공유된 워크스페이스</WorkspaceTitle>
@@ -404,30 +403,6 @@ function PostCard({
             )}
           </WorkspaceWrap>
         )}
-=======
-        <CategoryText>
-          카테고리: {categoryName} {subCategoryName && ` > ${subCategoryName}`}
-        </CategoryText>
-
-        
-        {parent_id && (
-    <WorkspaceWrap>
-    <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
-    <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
-      {parent_id}
-      {workspaceCtgrName && ` > ${workspaceCtgrName}`}
-      {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
-    </CollapsibleText>
-    {showWorkspaceToggle && (
-      <WorkspaceToggleButton
-        onClick={() => setShowFullWorkspace((prev) => !prev)}
-      >
-        {showFullWorkspace ? '접기' : '더보기'}
-      </WorkspaceToggleButton>
-    )}
-  </WorkspaceWrap>
-)}
->>>>>>> susu
 
         <MediaSlider images={images} videos={videos} />
 
