@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
+import BlockEditorcopy from '../newworkspace/BlockEditorcopy';
+import { getBlockIdcontent } from '../../../API/Workspaceapi';
+import { useQuery } from '@tanstack/react-query';
 
 const SliderWrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: 1800px;
   max-width: 800px;
   height: 480px;
   margin: 0 auto;
   perspective: 1500px;
   overflow: visible;
+  .Blockcontent{
+    display: flex;
+    height: 480px;
+    overflow-y: scroll;
+  }
+  .Blocks{
+    width: 1200px;
+  }
 `;
 
 const Slide = styled.div`
@@ -88,7 +99,7 @@ const Arrow = styled.button`
   }
 `;
 
-const MediaSlider = ({ images = [], videos = [] }) => {
+const MediaSlider = ({ result_id, images = [], videos = [] }) => {
   const mediaItems = [
     ...images.map((url) => ({ type: 'image', url })),
     ...videos.map((url) => ({ type: 'video', url })),
@@ -99,6 +110,26 @@ const MediaSlider = ({ images = [], videos = [] }) => {
 
   const prev = () => setIndex((prev) => (prev - 1 + total) % total);
   const next = () => setIndex((prev) => (prev + 1) % total);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["workspacePageData", result_id],
+    queryFn: async () => {
+      const data = await getBlockIdcontent(result_id)
+      return data
+      // const newPageBLocks = pageBlocks.reduce((acc,el) => {
+      //   acc[el.id] = el
+      //   return acc
+      // })
+      // setBlocks({...blocks, ...newPageBLocks})
+    }
+  })
+  // useEffect(() => {
+
+  //   console.log(data.workspacePageData.data, 'fffffffffffff`')
+
+  // }, [data])
+  const newData = data?.workspacePageData.data.data
+  console.log(Array.isArray(newData), 'newdataarray', newData)
 
   return (
     <SliderWrapper>
@@ -120,7 +151,13 @@ const MediaSlider = ({ images = [], videos = [] }) => {
           </Slide>
         );
       })}
+      <Slide>
 
+      <div className='Blockcontent'>
+        {result_id ? newData?.map((el, index) => <div className='Blocks'><BlockEditorcopy key={index} el={el} /></div>) : null}
+      </div>
+      </Slide>
+      {/* aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa */}
       {total > 1 && (
         <>
           <Arrow direction="left" onClick={prev}>‹</Arrow>

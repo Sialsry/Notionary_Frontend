@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useMemo } from "react";
+=======
+import React, { useEffect, useState } from "react";
+>>>>>>> bing
 import styled from "styled-components";
 import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
 
@@ -259,7 +263,13 @@ const WorkSpaceSelector = ({
 
 
   const handleWorkspaceSelect = (workspaceId) => {
+<<<<<<< HEAD
     setSelectedWorkspaceId(workspaceId);
+=======
+    console.log(workspaceId, 'workspaceid')
+    setSelectedWorkspace(workspaceId);
+    setSelectedPageIds([]);
+>>>>>>> bing
     setShowDropdown(false);
     setIsWorkspaceShared(true); // Selecting a workspace means it's shared
 
@@ -314,12 +324,19 @@ const WorkSpaceSelector = ({
     }
     setSelectedPageId(newSelectedPageIds);
   };
+<<<<<<< HEAD
 
   const dropdownButtonText =
     selectedWorkspaceId && parentMap[selectedWorkspaceId]
       ? parentMap[selectedWorkspaceId]
       : "워크스페이스를 선택하세요";
 
+=======
+  useEffect(() => {
+    
+  console.log(grouped, ' grouped', selectedPageIds)
+  }, [grouped])
+>>>>>>> bing
   return (
     <Wrapper>
       <Label>

@@ -188,9 +188,19 @@ const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
+<<<<<<< HEAD
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
   const [files, setFiles] = useState([]);
+=======
+  const [fk_workspace_id, setWorkSpaceId] = useState([]);
+  const [mainCategory, setMainCategory] = useState("");
+  const [subCategories, setSubCategories] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
+  const [selectedPageId, setSelectedPageId] = useState([]);
+  const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
+>>>>>>> bing
 
   const [existingFiles, setExistingFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
@@ -298,6 +308,7 @@ const PostForm = () => {
     formData.append("title", title);
     formData.append("uid", uid); // uid 추가
     formData.append("content", content);
+<<<<<<< HEAD
     formData.append("category_id", categoryId);
     formData.append("mainCategory", mainCategory);
     // subCategories는 배열이므로 join으로 문자열로 변환하여 전송 (백엔드에서 파싱 필요)
@@ -305,6 +316,22 @@ const PostForm = () => {
     // fk_workspace_id가 필요하다면 여기에 추가 (현재 상태는 null)
     if (fk_workspace_id) {
         formData.append("fk_workspace_id", fk_workspace_id);
+=======
+    formData.append("isWorkspaceShared", isWorkspaceShared);
+
+    if (isWorkspaceShared) {
+      formData.append("fk_workspace_id", fk_workspace_id);
+      formData.append("workSpace_pages", selectedPageId);
+      // formData.append(
+      //   "selectedPageIds",
+      //   Array.isArray(selectedPageId)
+      //     ? selectedPageId.join(",")
+      //     : selectedPageId
+      // );
+    } else {
+      formData.append("fk_workspace_id", "");
+      formData.append("selectedPageIds", "");
+>>>>>>> bing
     }
 
     newFiles.forEach((file) => {
