@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useMemo } from "react";
-=======
 import React, { useEffect, useState } from "react";
->>>>>>> bing
 import styled from "styled-components";
 import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
 
@@ -220,14 +216,25 @@ const WorkSpaceSelector = ({
   useEffect(() => {
     // Set initial selected pages based on prop
     // Ensure selectedPageId is an array for internal consistency
-    const pages = Array.isArray(selectedPageId) ? selectedPageId : (selectedPageId ? [selectedPageId] : []);
+    const pages = Array.isArray(selectedPageId)
+      ? selectedPageId
+      : selectedPageId
+      ? [selectedPageId]
+      : [];
     setSelectedPageId(pages);
 
     // Determine initial selection mode
-    if (isWorkspaceShared && selectedWorkspaceId && grouped[selectedWorkspaceId]) {
-      const allPagesInWorkspace = grouped[selectedWorkspaceId].map(p => p.id);
-      if (allPagesInWorkspace.length > 0 && pages.length === allPagesInWorkspace.length &&
-          allPagesInWorkspace.every(id => pages.includes(id))) {
+    if (
+      isWorkspaceShared &&
+      selectedWorkspaceId &&
+      grouped[selectedWorkspaceId]
+    ) {
+      const allPagesInWorkspace = grouped[selectedWorkspaceId].map((p) => p.id);
+      if (
+        allPagesInWorkspace.length > 0 &&
+        pages.length === allPagesInWorkspace.length &&
+        allPagesInWorkspace.every((id) => pages.includes(id))
+      ) {
         setSelectionMode("all");
       } else if (pages.length === 1) {
         setSelectionMode("single");
@@ -237,39 +244,61 @@ const WorkSpaceSelector = ({
         setSelectionMode("single"); // Default if no pages or unknown state
       }
     } else {
-        setSelectionMode("single"); // Default if not shared or no workspace selected
+      setSelectionMode("single"); // Default if not shared or no workspace selected
     }
-  }, [selectedPageId, setSelectedPageId, isWorkspaceShared, selectedWorkspaceId, grouped]);
-
+  }, [
+    selectedPageId,
+    setSelectedPageId,
+    isWorkspaceShared,
+    selectedWorkspaceId,
+    grouped,
+  ]);
 
   // When selectionMode or selectedWorkspaceId changes, update selectedPageId and call parent's onChange
   useEffect(() => {
-    let newSelectedPageIds = Array.isArray(selectedPageId) ? [...selectedPageId] : (selectedPageId ? [selectedPageId] : []);
+    let newSelectedPageIds = Array.isArray(selectedPageId)
+      ? [...selectedPageId]
+      : selectedPageId
+      ? [selectedPageId]
+      : [];
 
-    if (selectionMode === "all" && selectedWorkspaceId && grouped[selectedWorkspaceId]) {
+    if (
+      selectionMode === "all" &&
+      selectedWorkspaceId &&
+      grouped[selectedWorkspaceId]
+    ) {
       newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
     } else if (selectionMode === "single") {
-        // If current selection has more than one, or none, reset to empty
-        if (newSelectedPageIds.length > 1 || (newSelectedPageIds.length === 1 && !currentPages.find(p => p.id === newSelectedPageIds[0]))) {
-            newSelectedPageIds = [];
-        }
+      // If current selection has more than one, or none, reset to empty
+      if (
+        newSelectedPageIds.length > 1 ||
+        (newSelectedPageIds.length === 1 &&
+          !currentPages.find((p) => p.id === newSelectedPageIds[0]))
+      ) {
+        newSelectedPageIds = [];
+      }
     }
 
     // Only update if something actually changed to prevent infinite loops
-    if (JSON.stringify(newSelectedPageIds.sort()) !== JSON.stringify(selectedPageId.sort())) {
-        setSelectedPageId(newSelectedPageIds);
+    if (
+      JSON.stringify(newSelectedPageIds.sort()) !==
+      JSON.stringify(selectedPageId.sort())
+    ) {
+      setSelectedPageId(newSelectedPageIds);
     }
-  }, [selectionMode, selectedWorkspaceId, grouped, selectedPageId, setSelectedPageId, currentPages]);
-
+  }, [
+    selectionMode,
+    selectedWorkspaceId,
+    grouped,
+    selectedPageId,
+    setSelectedPageId,
+    currentPages,
+  ]);
 
   const handleWorkspaceSelect = (workspaceId) => {
-<<<<<<< HEAD
-    setSelectedWorkspaceId(workspaceId);
-=======
-    console.log(workspaceId, 'workspaceid')
+    console.log(workspaceId, "workspaceid");
     setSelectedWorkspace(workspaceId);
     setSelectedPageIds([]);
->>>>>>> bing
     setShowDropdown(false);
     setIsWorkspaceShared(true); // Selecting a workspace means it's shared
 
@@ -307,36 +336,38 @@ const WorkSpaceSelector = ({
       }
     } else if (newMode === "single") {
       // If current selection has one item and it's valid, keep it, otherwise clear.
-      if (selectedPageId.length === 1 && currentPages.find(p => p.id === selectedPageId[0])) {
+      if (
+        selectedPageId.length === 1 &&
+        currentPages.find((p) => p.id === selectedPageId[0])
+      ) {
         newSelectedPageIds = selectedPageId;
       } else {
         newSelectedPageIds = [];
       }
     } else if (newMode === "multiple") {
-        // If coming from 'single' with a valid page, keep it. Otherwise, initialize empty.
-        if (selectionMode === 'single' && selectedPageId.length === 1 && currentPages.find(p => p.id === selectedPageId[0])) {
-            newSelectedPageIds = selectedPageId;
-        } else {
-            // When switching to multiple, if no pages were selected or it was 'all', start fresh.
-            // Or, if there are existing valid pages, keep them.
-            newSelectedPageIds = selectedPageId.filter(id => currentPages.some(p => p.id === id));
-        }
+      // If coming from 'single' with a valid page, keep it. Otherwise, initialize empty.
+      if (
+        selectionMode === "single" &&
+        selectedPageId.length === 1 &&
+        currentPages.find((p) => p.id === selectedPageId[0])
+      ) {
+        newSelectedPageIds = selectedPageId;
+      } else {
+        // When switching to multiple, if no pages were selected or it was 'all', start fresh.
+        // Or, if there are existing valid pages, keep them.
+        newSelectedPageIds = selectedPageId.filter((id) =>
+          currentPages.some((p) => p.id === id)
+        );
+      }
     }
     setSelectedPageId(newSelectedPageIds);
   };
-<<<<<<< HEAD
 
   const dropdownButtonText =
     selectedWorkspaceId && parentMap[selectedWorkspaceId]
       ? parentMap[selectedWorkspaceId]
       : "워크스페이스를 선택하세요";
 
-=======
-  useEffect(() => {
-    
-  console.log(grouped, ' grouped', selectedPageIds)
-  }, [grouped])
->>>>>>> bing
   return (
     <Wrapper>
       <Label>
