@@ -8,11 +8,7 @@ import TitleInput from "../Molecules/susu/TitleInput";
 import MediaUpload from "../Molecules/susu/MideaUpload";
 import CategorySelect from "../Molecules/susu/CategorySelect";
 import ContentEdit from "../Molecules/susu/ContentEdit";
-import {
-  CreatePost,
-  GetPostById,
-  UpdatePost,
-} from "../../API/PostApi";
+import { CreatePost, GetPostById, UpdatePost } from "../../API/PostApi";
 
 const colors = {
   primary: "#667eea",
@@ -188,11 +184,6 @@ const PostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [categoryId, setCategoryId] = useState("");
-<<<<<<< HEAD
-  const [mainCategory, setMainCategory] = useState("");
-  const [subCategories, setSubCategories] = useState([]);
-  const [files, setFiles] = useState([]);
-=======
   const [fk_workspace_id, setWorkSpaceId] = useState([]);
   const [mainCategory, setMainCategory] = useState("");
   const [subCategories, setSubCategories] = useState([]);
@@ -200,14 +191,17 @@ const PostForm = () => {
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
   const [selectedPageId, setSelectedPageId] = useState([]);
   const [isWorkspaceShared, setIsWorkspaceShared] = useState(false);
->>>>>>> bing
 
   const [existingFiles, setExistingFiles] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
-  const [fk_workspace_id, setWorkSpaceId] = useState(null); // 워크스페이스 관련 상태가 필요하다면 유지
+  // const [fk_workspace_id, setWorkSpaceId] = useState(null); // 워크스페이스 관련 상태가 필요하다면 유지
 
   // 게시글 상세 조회
-  const { data: postData, isLoading: isPostLoading, isError: isPostError } = useQuery({
+  const {
+    data: postData,
+    isLoading: isPostLoading,
+    isError: isPostError,
+  } = useQuery({
     queryKey: ["post", post_id],
     queryFn: () => GetPostById(post_id),
     enabled: !!post_id, // post_id가 있을 때만 쿼리 실행
@@ -223,7 +217,9 @@ const PostForm = () => {
       setCategoryId(post.category_id || "");
       setMainCategory(post.mainCategory || "");
       try {
-        setSubCategories(post.subCategories ? JSON.parse(post.subCategories) : []);
+        setSubCategories(
+          post.subCategories ? JSON.parse(post.subCategories) : []
+        );
       } catch (e) {
         console.error("Failed to parse subCategories from backend:", e);
         setSubCategories([]);
@@ -254,17 +250,19 @@ const PostForm = () => {
     );
   };
 
- const createMutation = useMutation({
-  mutationFn: CreatePost,
-  onSuccess: (data) => {
-    queryClient.invalidateQueries({ queryKey: ["posts"] });
-    navigate("/main"); 
-  },
-  onError: (error) => {
-    console.error("게시글 작성 실패:", error);
-    alert("게시글 작성에 실패했습니다: " + (error.message || "알 수 없는 오류"));
-  }
-});
+  const createMutation = useMutation({
+    mutationFn: CreatePost,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      navigate("/main");
+    },
+    onError: (error) => {
+      console.error("게시글 작성 실패:", error);
+      alert(
+        "게시글 작성에 실패했습니다: " + (error.message || "알 수 없는 오류")
+      );
+    },
+  });
 
   const updateMutation = useMutation({
     mutationFn: UpdatePost,
@@ -274,9 +272,11 @@ const PostForm = () => {
       navigate(`/detail/${post_id}`); // <-- 현재 수정 중인 게시글의 post_id를 사용하여 이동
     },
     onError: (error) => {
-        console.error("게시글 수정 실패:", error);
-        alert("게시글 수정에 실패했습니다: " + (error.message || "알 수 없는 오류"));
-    }
+      console.error("게시글 수정 실패:", error);
+      alert(
+        "게시글 수정에 실패했습니다: " + (error.message || "알 수 없는 오류")
+      );
+    },
   });
 
   const isFormValid =
@@ -299,24 +299,17 @@ const PostForm = () => {
 
     // UID 유효성 검사 추가
     if (!uid) {
-        alert("로그인 정보가 없습니다. 게시글을 작성하거나 수정하려면 로그인해주세요.");
-        navigate("/login"); // 로그인 페이지로 리디렉션하거나 적절한 처리
-        return;
+      alert(
+        "로그인 정보가 없습니다. 게시글을 작성하거나 수정하려면 로그인해주세요."
+      );
+      navigate("/login"); // 로그인 페이지로 리디렉션하거나 적절한 처리
+      return;
     }
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("uid", uid); // uid 추가
     formData.append("content", content);
-<<<<<<< HEAD
-    formData.append("category_id", categoryId);
-    formData.append("mainCategory", mainCategory);
-    // subCategories는 배열이므로 join으로 문자열로 변환하여 전송 (백엔드에서 파싱 필요)
-    formData.append("subCategories", subCategories.join(",")); 
-    // fk_workspace_id가 필요하다면 여기에 추가 (현재 상태는 null)
-    if (fk_workspace_id) {
-        formData.append("fk_workspace_id", fk_workspace_id);
-=======
     formData.append("isWorkspaceShared", isWorkspaceShared);
 
     if (isWorkspaceShared) {
@@ -331,7 +324,6 @@ const PostForm = () => {
     } else {
       formData.append("fk_workspace_id", "");
       formData.append("selectedPageIds", "");
->>>>>>> bing
     }
 
     newFiles.forEach((file) => {
@@ -348,14 +340,17 @@ const PostForm = () => {
   };
 
   if (isPostLoading) return <div>로딩 중...</div>;
-  if (isPostError) return <div>게시글 정보를 불러오는 중 오류가 발생했습니다.</div>;
+  if (isPostError)
+    return <div>게시글 정보를 불러오는 중 오류가 발생했습니다.</div>;
 
   return (
     <>
       <FormCard>
         <Form onSubmit={handleSubmit}>
           <FormSection>
-            <SectionTitle>{post_id ? "게시글 수정" : "새 게시글 작성"}</SectionTitle>
+            <SectionTitle>
+              {post_id ? "게시글 수정" : "새 게시글 작성"}
+            </SectionTitle>
 
             <TitleInput
               value={title}
@@ -391,7 +386,11 @@ const PostForm = () => {
           )}
 
           <ButtonGroup>
-            <StyledButton type="button" variant="secondary" onClick={() => navigate(-1)}>
+            <StyledButton
+              type="button"
+              variant="secondary"
+              onClick={() => navigate(-1)}
+            >
               <ArrowLeft size={16} />
               취소
             </StyledButton>
@@ -399,7 +398,11 @@ const PostForm = () => {
             <StyledButton
               type="submit"
               variant="primary"
-              disabled={!isFormValid || createMutation.isLoading || updateMutation.isLoading}
+              disabled={
+                !isFormValid ||
+                createMutation.isLoading ||
+                updateMutation.isLoading
+              }
             >
               {post_id ? (
                 <>
