@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import PostDetail from "./Components/Pages/PostDetail";
 import Sidebar from "./Components/Templates/Sidebar";
 import Header from "./Components/Templates/Header";
+import Workspaceview from "./Components/Atoms/newworkspace/Workspaceview";
 
 function App() {
   const select = useSelector((state) => state);

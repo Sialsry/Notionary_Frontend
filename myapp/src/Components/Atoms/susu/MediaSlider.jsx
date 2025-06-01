@@ -13,7 +13,7 @@ const SliderWrapper = styled.div`
   perspective: 1500px;
   overflow: visible;
   .Blockcontent{
-    display: flex;
+    /* display: flex; */
     height: 480px;
     overflow-y: scroll;
   }

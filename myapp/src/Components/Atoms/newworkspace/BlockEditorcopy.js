@@ -8,10 +8,13 @@ import { useQuery } from '@tanstack/react-query';
 
 
 const BlockEditorContainer = styled.div`
-  max-width: 800px;
+  max-width: 1190px;
+  width: 1190px;
   margin: 0 auto;
   padding: 20px;
   padding-top: 70px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 
   .workspacename{
     font-size : 20px;
@@ -20,6 +23,7 @@ const BlockEditorContainer = styled.div`
 `;
 
 const Block = styled.div`
+width: 1000px;
   margin-bottom: 8px;
   
 `;
@@ -66,9 +70,9 @@ const BlockControls = styled.div`
   height: 36px;
   padding-top: 2px;
 
-  ${BlockContainer}:hover & {
+  /* ${BlockContainer}:hover & {
     opacity: 1;
-  }
+  } */
 `;
 
 const BlockTypeSelector = styled.div`
@@ -79,7 +83,7 @@ const BlockTypeButton = styled.button`
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-size: 24px;
   color: #9B9B9B;
   border-radius: 4px;
@@ -112,7 +116,7 @@ const BlockTypeDropdown = styled.div`
 
 const BlockTypeOption = styled.div`
   padding: 12px 16px;
-  cursor: pointer;
+  /* cursor: pointer; */
   transition: background-color 0.2s;
   font-size: 16px;
   color: #37352F;
@@ -123,7 +127,7 @@ const BlockTypeOption = styled.div`
 `;
 
 const DragHandle = styled.div`
-  cursor: grab;
+  /* cursor: grab; */
   color: #9B9B9B;
   font-size: 20px;
   margin-bottom: 2px;
@@ -224,7 +228,7 @@ const ImageUploadPlaceholder = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  /* cursor: pointer; */
   transition: all 0.2s;
 
   &:hover {
@@ -270,7 +274,7 @@ const RemoveImageButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-size: 16px;
   transition: background-color 0.2s;
 
@@ -618,9 +622,9 @@ const BlockEditorcopy = ({el}) => {
         <BlockControls>
           <BlockTypeSelector>
             <BlockTypeButton
-              onClick={() =>
-                setActiveDropdown(activeDropdown === block.id ? null : block.id)
-              }
+              // onClick={() =>
+              //   setActiveDropdown(activeDropdown === block.id ? null : block.id)
+              // }
             >
               +
             </BlockTypeButton>
@@ -629,7 +633,7 @@ const BlockEditorcopy = ({el}) => {
                 {blockTypes.map(type => (
                   <BlockTypeOption
                     key={type.id}
-                    onClick={() => changeBlockType(block.id, type.id)}
+                    // onClick={() => changeBlockType(block.id, type.id)}
                   >
                     {type.label}
                   </BlockTypeOption>
@@ -664,7 +668,7 @@ const BlockEditorcopy = ({el}) => {
             <TextBlock
               data-placeholder="Type something..."
               ref={el => (blockRefs.current[block.id] = el)}
-              contentEditable
+              // contentEditable
               suppressContentEditableWarning
               onBlur={e => updateBlockContent(block.id, e.target.textContent)}
               onKeyUp={e => handleKeyDown(e, block.id, 'text')}
@@ -675,7 +679,7 @@ const BlockEditorcopy = ({el}) => {
           {block.type === 'h1' && (
             <Heading
               ref={el => (blockRefs.current[block.id] = el)}
-              contentEditable
+              // contentEditable
               suppressContentEditableWarning
               onBlur={e => updateBlockContent(block.id, e.target.textContent)}
               onKeyUp={e => handleKeyDown(e, block.id, 'h1')}
@@ -687,7 +691,7 @@ const BlockEditorcopy = ({el}) => {
             <List>
               <ListItem
                 ref={el => (blockRefs.current[block.id] = el)}
-                contentEditable
+                // contentEditable
                 suppressContentEditableWarning
                 onBlur={e => updateBlockContent(block.id, e.target.textContent)}
                 onKeyUp={e => handleKeyDown(e, block.id, 'ul')}
@@ -700,7 +704,7 @@ const BlockEditorcopy = ({el}) => {
             <OrderedList start={startNumber}>
               <ListItem
                 ref={el => (blockRefs.current[block.id] = el)}
-                contentEditable
+                // contentEditable
                 suppressContentEditableWarning
                 onBlur={e => updateBlockContent(block.id, e.target.textContent)}
                 onKeyUp={e => handleKeyDown(e, block.id, 'ol')}
@@ -718,10 +722,10 @@ const BlockEditorcopy = ({el}) => {
               />
               <CheckboxText
                 ref={el => (blockRefs.current[block.id] = el)}
-                contentEditable
+                // contentEditable
                 suppressContentEditableWarning
-                onBlur={e => updateBlockContent(block.id, e.target.textContent)}
-                onKeyUp={e => handleKeyDown(e, block.id, 'checkbox')}
+                // onBlur={e => updateBlockContent(block.id, e.target.textContent)}
+                // onKeyUp={e => handleKeyDown(e, block.id, 'checkbox')}
               >
                 {block.content}
               </CheckboxText>
@@ -733,14 +737,14 @@ const BlockEditorcopy = ({el}) => {
                 <ImageContainer>
                   <Image src={block.content} alt="Uploaded content" />
                   <RemoveImageButton
-                    onClick={() => updateBlockContent(block.id, '')}
+                    // onClick={() => updateBlockContent(block.id, '')}
                   >
                     ×
                   </RemoveImageButton>
                 </ImageContainer>
               ) : (
                 <ImageUploadPlaceholder
-                  onClick={() => fileInputRef.current?.click()}
+                  // onClick={() => fileInputRef.current?.click()}
                 >
                   <input
                     ref={fileInputRef}
