@@ -257,6 +257,7 @@ function PostCard({
   parent_id,
   workspaceCtgrName,
   workspaceSubCtgrName,
+  result_id,
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showMoreButton, setShowMoreButton] = useState(false);
@@ -287,6 +288,15 @@ function PostCard({
     hearts.some((heart) => heart.uid === uid)
   );
   const [likeCount, setLikeCount] = useState(hearts.length);
+
+  //   const {
+  //   data: workspacedata,
+  //   isLoading: isWorkspacesLoading,
+  //   isError: isWorkspacesError,
+  // } = useQuery({
+  //   queryKey: ["workspaces", uid],
+  //   queryFn: () => GetWorkSpace(uid),
+  // });
 
   useEffect(() => {
     setLocalHearts(hearts);
@@ -404,7 +414,25 @@ function PostCard({
           </WorkspaceWrap>
         )}
 
-        <MediaSlider images={images} videos={videos} />
+        {/* {parent_id && (
+          <WorkspaceWrap>
+            <WorkspaceTitle>📁 공유된 워크스페이스</WorkspaceTitle>
+            <CollapsibleText ref={workspaceRef} expanded={showFullWorkspace}>
+              {parent_id}
+              {workspaceCtgrName && ` > ${workspaceCtgrName}`}
+              {workspaceSubCtgrName && ` > ${workspaceSubCtgrName}`}
+            </CollapsibleText>
+            {showWorkspaceToggle && (
+              <WorkspaceToggleButton
+                onClick={() => setShowFullWorkspace((prev) => !prev)}
+              >
+                {showFullWorkspace ? '접기' : '더보기'}
+              </WorkspaceToggleButton>
+            )}
+          </WorkspaceWrap>
+        )} */}
+
+        <MediaSlider images={images} videos={videos} result_id={result_id} />
 
         <ContentWrap>
           <PostText ref={contentRef} expanded={expanded}>

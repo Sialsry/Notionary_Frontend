@@ -50,20 +50,22 @@ const StyledInput = styled.input`
   }
 `;
 
-const TitleInput = ({ value, onChange }) => (
-  <Wrapper>
-    <Label>
-      <Type size={18} color={colors.primary} />
-      제목
-    </Label>
-    <StyledInput
-      name="title"
-      value={value}
-      onChange={onChange}
-      placeholder="질문 제목을 입력하세요"
-      maxLength={100}
-    />
-  </Wrapper>
-);
+const TitleInput = ({ value, onChange }) => {
+  return (
+    <Wrapper>
+      <Label>
+        <Type size={18} color={colors.primary} />
+        제목
+      </Label>
+      <StyledInput
+        name="title"
+        value={value}
+        onChange={onChange}
+        placeholder="질문 제목을 입력하세요"
+        maxLength={100}
+      />
+    </Wrapper>
+  );
+};
 
 export default TitleInput;

@@ -35,7 +35,7 @@ const colors = {
 const MainWrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 80%;
   min-height: 100vh;
@@ -47,7 +47,6 @@ const MainWrap = styled.div`
     padding-left: 0;
   }
 `;
-
 const CategoryTitle = styled.div`
   display: flex;
   justify-content: center;

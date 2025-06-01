@@ -562,6 +562,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                                 <button
                                   className="cancelbtn"
                                   onClick={(e) => {
+                                    e.stopPropagation();
                                     setPopupwrap(false);
                                   }}
                                 >
@@ -641,6 +642,7 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
                                     <button
                                       className="cancelbtn"
                                       onClick={(e) => {
+                                        e.stopPropagation();
                                         setPopupwrap(false);
                                       }}
                                     >
@@ -732,6 +734,8 @@ const Sidebarcontent = ({ contents, setState, setContent }) => {
               action=""
               onSubmit={(e) => {
                 createFile(e);
+                // toggleSection(toggleindex)
+                // settoggleIndex(toggleindex);
                 setState(true);
               }}
             >

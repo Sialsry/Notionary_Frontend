@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { Folder, ChevronDown, Users, User, CheckSquare } from "lucide-react";
 
@@ -143,66 +143,231 @@ const Chip = styled.div`
   }
 `;
 
-const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [selectedPageIds, setSelectedPageIds] = useState(value);
+const NoPagesMessage = styled.div`
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+  padding: 20px 0;
+`;
+
+const WorkSpaceSelector = ({
+  workspaces = [],
+  selectedWorkspaceId, // From PostForm: fk_workspace_id
+  setSelectedWorkspaceId, // From PostForm: setFk_workspace_id
+  isWorkspaceShared, // From PostForm: isWorkspaceShared (boolean)
+  setIsWorkspaceShared, // From PostForm: setIsWorkspaceShared
+  selectedPageId, // From PostForm: selectedPageId (array or single ID)
+  setSelectedPageId, // From PostForm: setSelectedPageId
+}) => {
+  // Internal state for managing UI interactions
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectionMode, setSelectionMode] = useState("single");
+  const [selectionMode, setSelectionMode] = useState("single"); // Default to single
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [selectedPageIds, setSelectedPageIds] = useState([]);
+  // Memoized lists for efficiency
+  const parentWorkspaces = useMemo(() => {
+    return workspaces.filter((item) => !item.parent_id);
+  }, [workspaces]);
 
-  const parentWorkspaces = workspaces.filter((item) => !item.parent_id);
-  const grouped = {};
+  const grouped = useMemo(() => {
+    return workspaces.reduce((acc, item) => {
+      if (item.parent_id) {
+        const parent = parentWorkspaces.find(
+          (p) =>
+            p.workspacectgrs_name === item.parent_id ||
+            p.workspace_name === item.parent_id
+        );
+        const parentId = parent ? parent.workspace_id : null;
+        if (parentId) {
+          if (!acc[parentId]) acc[parentId] = [];
+          acc[parentId].push({
+            id: item.workspace_id,
+            name: item.workspacesubctgrs_name || `페이지 ${item.workspace_id}`,
+          });
+        }
+      }
+      return acc;
+    }, {});
+  }, [workspaces, parentWorkspaces]);
 
-  workspaces
-    .filter((item) => item.parent_id)
-    .forEach((item) => {
-      const parent = parentWorkspaces.find(
-        (p) =>
-          p.workspacectgrs_name === item.parent_id ||
-          p.workspace_name === item.parent_id
-      );
-      const parentId = parent ? parent.workspace_id : null;
-      if (!parentId) return;
-      if (!grouped[parentId]) grouped[parentId] = [];
-      grouped[parentId].push({
-        id: item.workspace_id,
-        name: item.workspacesubctgrs_name,
-      });
-    });
+  const parentMap = useMemo(() => {
+    return parentWorkspaces.reduce((acc, p) => {
+      acc[p.workspace_id] =
+        p.workspacectgrs_name ||
+        p.workspace_name ||
+        `워크스페이스 ${p.workspace_id}`;
+      return acc;
+    }, {});
+  }, [parentWorkspaces]);
 
-  const parentMap = {};
-  parentWorkspaces.forEach((p) => {
-    parentMap[p.workspace_id] =
-      p.workspacectgrs_name ||
-      p.workspace_name ||
-      `워크스페이스 ${p.workspace_id}`;
-  });
+  const currentPages =
+    selectedWorkspaceId && grouped[selectedWorkspaceId]
+      ? grouped[selectedWorkspaceId]
+      : [];
+
+  // --- Initial state and update logic for props ---
+  useEffect(() => {
+    // Set initial selected workspace based on prop
+    if (selectedWorkspaceId !== null) {
+      setSelectedWorkspaceId(selectedWorkspaceId);
+    }
+  }, [selectedWorkspaceId, setSelectedWorkspaceId]);
+
+  useEffect(() => {
+    // Set initial selected pages based on prop
+    // Ensure selectedPageId is an array for internal consistency
+    const pages = Array.isArray(selectedPageId)
+      ? selectedPageId
+      : selectedPageId
+      ? [selectedPageId]
+      : [];
+    setSelectedPageId(pages);
+
+    // Determine initial selection mode
+    if (
+      isWorkspaceShared &&
+      selectedWorkspaceId &&
+      grouped[selectedWorkspaceId]
+    ) {
+      const allPagesInWorkspace = grouped[selectedWorkspaceId].map((p) => p.id);
+      if (
+        allPagesInWorkspace.length > 0 &&
+        pages.length === allPagesInWorkspace.length &&
+        allPagesInWorkspace.every((id) => pages.includes(id))
+      ) {
+        setSelectionMode("all");
+      } else if (pages.length === 1) {
+        setSelectionMode("single");
+      } else if (pages.length > 1) {
+        setSelectionMode("multiple");
+      } else {
+        setSelectionMode("single"); // Default if no pages or unknown state
+      }
+    } else {
+      setSelectionMode("single"); // Default if not shared or no workspace selected
+    }
+  }, [
+    selectedPageId,
+    setSelectedPageId,
+    isWorkspaceShared,
+    selectedWorkspaceId,
+    grouped,
+  ]);
+
+  // When selectionMode or selectedWorkspaceId changes, update selectedPageId and call parent's onChange
+  useEffect(() => {
+    let newSelectedPageIds = Array.isArray(selectedPageId)
+      ? [...selectedPageId]
+      : selectedPageId
+      ? [selectedPageId]
+      : [];
+
+    if (
+      selectionMode === "all" &&
+      selectedWorkspaceId &&
+      grouped[selectedWorkspaceId]
+    ) {
+      newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
+    } else if (selectionMode === "single") {
+      // If current selection has more than one, or none, reset to empty
+      if (
+        newSelectedPageIds.length > 1 ||
+        (newSelectedPageIds.length === 1 &&
+          !currentPages.find((p) => p.id === newSelectedPageIds[0]))
+      ) {
+        newSelectedPageIds = [];
+      }
+    }
+
+    // Only update if something actually changed to prevent infinite loops
+    if (
+      JSON.stringify(newSelectedPageIds.sort()) !==
+      JSON.stringify(selectedPageId.sort())
+    ) {
+      setSelectedPageId(newSelectedPageIds);
+    }
+  }, [
+    selectionMode,
+    selectedWorkspaceId,
+    grouped,
+    selectedPageId,
+    setSelectedPageId,
+    currentPages,
+  ]);
 
   const handleWorkspaceSelect = (workspaceId) => {
+    console.log(workspaceId, "workspaceid");
     setSelectedWorkspace(workspaceId);
     setSelectedPageIds([]);
     setShowDropdown(false);
-    onChange([], workspaceId);
+    setIsWorkspaceShared(true); // Selecting a workspace means it's shared
+
+    let newSelectedPageIds = [];
+    if (selectionMode === "all") {
+      newSelectedPageIds = (grouped[workspaceId] || []).map((p) => p.id);
+    }
+    setSelectedPageId(newSelectedPageIds);
   };
 
   const handlePageClick = (pageId) => {
+    if (!isWorkspaceShared) return; // Only allow page selection if sharing is enabled
+
+    if (selectionMode === "all") return; // Cannot select individual pages in "all" mode
+
+    let updatedPageIds;
     if (selectionMode === "single") {
-      setSelectedPageIds([pageId]);
-      onChange([pageId], selectedWorkspace);
-    } else if (selectionMode === "multiple") {
-      const updated = selectedPageIds.includes(pageId)
-        ? selectedPageIds.filter((id) => id !== pageId)
-        : [...selectedPageIds, pageId];
-      setSelectedPageIds(updated);
-      onChange(updated, selectedWorkspace);
+      updatedPageIds = selectedPageId.includes(pageId) ? [] : [pageId];
+    } else {
+      updatedPageIds = selectedPageId.includes(pageId)
+        ? selectedPageId.filter((id) => id !== pageId)
+        : [...selectedPageId, pageId];
     }
+    setSelectedPageId(updatedPageIds);
   };
 
-  const handleSelectAll = () => {
-    const allPages = grouped[selectedWorkspace] || [];
-    const allIds = allPages.map((p) => p.id);
-    setSelectedPageIds(allIds);
-    onChange(allIds, selectedWorkspace);
+  const handleChangeSelectionMode = (newMode) => {
+    setSelectionMode(newMode);
+    setIsWorkspaceShared(true); // Changing mode implies sharing
+
+    let newSelectedPageIds = [];
+    if (newMode === "all") {
+      if (selectedWorkspaceId && grouped[selectedWorkspaceId]) {
+        newSelectedPageIds = grouped[selectedWorkspaceId].map((p) => p.id);
+      }
+    } else if (newMode === "single") {
+      // If current selection has one item and it's valid, keep it, otherwise clear.
+      if (
+        selectedPageId.length === 1 &&
+        currentPages.find((p) => p.id === selectedPageId[0])
+      ) {
+        newSelectedPageIds = selectedPageId;
+      } else {
+        newSelectedPageIds = [];
+      }
+    } else if (newMode === "multiple") {
+      // If coming from 'single' with a valid page, keep it. Otherwise, initialize empty.
+      if (
+        selectionMode === "single" &&
+        selectedPageId.length === 1 &&
+        currentPages.find((p) => p.id === selectedPageId[0])
+      ) {
+        newSelectedPageIds = selectedPageId;
+      } else {
+        // When switching to multiple, if no pages were selected or it was 'all', start fresh.
+        // Or, if there are existing valid pages, keep them.
+        newSelectedPageIds = selectedPageId.filter((id) =>
+          currentPages.some((p) => p.id === id)
+        );
+      }
+    }
+    setSelectedPageId(newSelectedPageIds);
   };
+
+  const dropdownButtonText =
+    selectedWorkspaceId && parentMap[selectedWorkspaceId]
+      ? parentMap[selectedWorkspaceId]
+      : "워크스페이스를 선택하세요";
 
   return (
     <Wrapper>
@@ -216,9 +381,7 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
           type="button"
           onClick={() => setShowDropdown((prev) => !prev)}
         >
-          {selectedWorkspace
-            ? parentMap[selectedWorkspace]
-            : "워크스페이스를 선택하세요"}
+          {dropdownButtonText}
           <ChevronDown size={16} />
         </DropdownButton>
 
@@ -236,17 +399,14 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
         )}
       </DropdownContainer>
 
-      {selectedWorkspace && grouped[selectedWorkspace]?.length > 0 && (
+      {/* Only show sharing options if a workspace is selected or if it was previously shared */}
+      {(selectedWorkspaceId || isWorkspaceShared) && (
         <>
           <ModeSelector>
             <ModeButton
               type="button"
               active={selectionMode === "single"}
-              onClick={() => {
-                setSelectionMode("single");
-                setSelectedPageIds([]);
-                onChange([], selectedWorkspace);
-              }}
+              onClick={() => handleChangeSelectionMode("single")}
             >
               <User size={14} />
               단일 선택
@@ -254,11 +414,7 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
             <ModeButton
               type="button"
               active={selectionMode === "multiple"}
-              onClick={() => {
-                setSelectionMode("multiple");
-                setSelectedPageIds([]);
-                onChange([], selectedWorkspace);
-              }}
+              onClick={() => handleChangeSelectionMode("multiple")}
             >
               <Users size={14} />
               복수 선택
@@ -266,35 +422,35 @@ const WorkSpaceSelector = ({ workspaces = [], value = [], onChange }) => {
             <ModeButton
               type="button"
               active={selectionMode === "all"}
-              onClick={() => {
-                setSelectionMode("all");
-                handleSelectAll();
-              }}
+              onClick={() => handleChangeSelectionMode("all")}
             >
               <CheckSquare size={14} />
               전체 선택
             </ModeButton>
           </ModeSelector>
 
-          <SubLabel>페이지 선택</SubLabel>
-          <ChipContainer>
-            {grouped[selectedWorkspace].map((page) => (
-              <Chip
-                key={page.id}
-                selected={
-                  selectionMode === "all"
-                    ? true
-                    : selectedPageIds.includes(page.id)
-                }
-                disabled={selectionMode === "all"}
-                onClick={() => {
-                  if (selectionMode !== "all") handlePageClick(page.id);
-                }}
-              >
-                {page.name}
-              </Chip>
-            ))}
-          </ChipContainer>
+          {currentPages.length > 0 ? (
+            <>
+              <SubLabel>페이지 선택</SubLabel>
+              <ChipContainer>
+                {currentPages.map((page) => (
+                  <Chip
+                    key={page.id}
+                    selected={
+                      selectionMode === "all" ||
+                      selectedPageId.includes(page.id)
+                    }
+                    disabled={selectionMode === "all"}
+                    onClick={() => handlePageClick(page.id)}
+                  >
+                    {page.name}
+                  </Chip>
+                ))}
+              </ChipContainer>
+            </>
+          ) : (
+            <NoPagesMessage>선택 가능한 페이지가 없습니다.</NoPagesMessage>
+          )}
         </>
       )}
     </Wrapper>

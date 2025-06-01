@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { AllCategoryPost } from "../../API/PostApi";
+import { AllCategoryPost, GetWorkSpace } from "../../API/PostApi";
 import PostCard from "../Molecules/susu/PostCard";
 import CommentList from "../Molecules/susu/CommentList";
 
@@ -24,19 +24,22 @@ const fadeUp = keyframes`
 `;
 
 const FeedWrapper = styled.div`
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  max-width: 1050px;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: 30px;
   gap: 32px;
+  min-height: 400px;
+  align-items: center;
+  justify-content: center;
 
-  @media (max-width: 480px) {
-    padding: 32px 16px;
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 24px 12px;
     gap: 24px;
   }
 `;
-
 const AnimatedCardWrapper = styled.div`
   animation: ${fadeUp} 0.5s ease forwards;
   opacity: 0;
@@ -118,6 +121,8 @@ const PAGE_SIZE = 5;
 const PostList = ({ posts: externalPosts }) => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const queryClient = useQueryClient();
+  const userInfo = useSelector((state) => state.reducer.user.userInfo);
+  const uid = userInfo?.uid;
 
   const {
     data: allPostsData = [],
@@ -134,6 +139,21 @@ const PostList = ({ posts: externalPosts }) => {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
+
+  const {
+    data: workspacedata,
+    isLoading: isWorkspacesLoading,
+    isError: isWorkspacesError,
+  } = useQuery({
+    queryKey: ["workspaces", uid],
+    queryFn: () => GetWorkSpace(uid),
+  });
+
+  const workspaceDatas = workspacedata?.data || [];
+
+  useEffect(() => {
+    console.log(workspaceDatas, "workspaceDatas");
+  }, [workspaceDatas]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -231,7 +251,11 @@ const PostList = ({ posts: externalPosts }) => {
             ? "기타"
             : category.ParentCategory?.category_name || "알 수 없는 카테고리";
           const subCategoryName = isTopEtc ? "" : category.category_name;
-
+          const workspacePages = JSON.parse(post.workspace_pages);
+          const result = workspaceDatas
+            .filter((item) => workspacePages.includes(item.workspace_id))
+            .map((item) => item.workspacesubctgrs_name);
+          console.log("type11", result, "sdfd", workspacePages);
           return (
             <AnimatedCardWrapper
               key={post.post_id}
@@ -255,9 +279,9 @@ const PostList = ({ posts: externalPosts }) => {
                   post.Workspacectgr?.workspacectgrs_name ||
                   "워크 스페이스 없음"
                 }
-                workspaceSubCtgrName={
-                  post.Workspacectgr?.workspacesubctgrs_name || "페이지 없음"
-                }
+                // workspaceSubCtgrName={post.Workspacectgr?.workspacesubctgrs_name || "페이지 없음"}
+                workspaceSubCtgrName={result || "페이지 없음"}
+                result_id={workspacePages}
               />
               <CommentList
                 postId={post.post_id}

@@ -915,7 +915,7 @@ const PostDetail = () => {
                 <PostActions>
                   <ActionButton
                     variant="edit"
-                    onClick={() => navigate(`/post/${post_id}/edit`)}
+                    onClick={() => navigate(`/post/edit/${post.post_id}`)}
                   >
                     <Edit3 size={14} />
                     수정
