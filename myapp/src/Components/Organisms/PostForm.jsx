@@ -4,6 +4,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Send, X, ArrowLeft } from "lucide-react";
+import { toast } from "react-toastify";
 import TitleInput from "../Molecules/susu/TitleInput";
 import MediaUpload from "../Molecules/susu/MideaUpload";
 import CategorySelect from "../Molecules/susu/CategorySelect";
@@ -258,7 +259,6 @@ const PostForm = () => {
       setWorkSpaceId(null); // 수정 모드에서는 fk_workspace_id를 null로 초기화
       setIsWorkspaceShared(false); // 수정 모드에서는 공유 안 함으로 설정
       setSelectedPageId([]); // 수정 모드에서는 페이지 선택도 초기화
-
     } else if (!post_id) {
       // 새로운 게시글 작성 모드일 때 상태 초기화 (기존 로직 유지)
       setTitle("");
@@ -290,7 +290,7 @@ const PostForm = () => {
     },
     onError: (error) => {
       console.error("게시글 작성 실패:", error);
-      alert(
+      toast.error(
         "게시글 작성에 실패했습니다: " + (error.message || "알 수 없는 오류")
       );
     },
@@ -305,7 +305,7 @@ const PostForm = () => {
     },
     onError: (error) => {
       console.error("게시글 수정 실패:", error);
-      alert(
+      toast.error(
         "게시글 수정에 실패했습니다: " + (error.message || "알 수 없는 오류")
       );
     },
@@ -325,12 +325,12 @@ const PostForm = () => {
     e.preventDefault();
 
     if (!isFormValid) {
-      alert("필수 항목 (제목, 내용, 카테고리)을 모두 입력해주세요.");
+      toast.warning("필수 항목 (제목, 내용, 카테고리)을 모두 입력해주세요.");
       return;
     }
 
     if (!uid) {
-      alert(
+      toast.error(
         "로그인 정보가 없습니다. 게시글을 작성하거나 수정하려면 로그인해주세요."
       );
       navigate("/login");
@@ -344,22 +344,22 @@ const PostForm = () => {
     formData.append("uid", uid);
     formData.append("content", content);
     formData.append("category_id", categoryId);
-    
+
     // 수정 모드에서는 isWorkspaceShared, fk_workspace_id, workSpace_pages를 전송하지 않습니다.
     // 또는 서버에서 해당 필드를 무시하도록 처리해야 합니다.
     // 여기서는 isWorkspaceShared가 false로 고정되므로 자연스럽게 빈 값으로 전송됩니다.
-    if (!post_id && isWorkspaceShared && fk_workspace_id) { // 새 게시글 작성 모드일 때만 워크스페이스 정보 전송
-        formData.append("isWorkspaceShared", isWorkspaceShared);
-        formData.append("fk_workspace_id", fk_workspace_id);
-        formData.append("workSpace_pages", selectedPageId);
+    if (!post_id && isWorkspaceShared && fk_workspace_id) {
+      // 새 게시글 작성 모드일 때만 워크스페이스 정보 전송
+      formData.append("isWorkspaceShared", isWorkspaceShared);
+      formData.append("fk_workspace_id", fk_workspace_id);
+      formData.append("workSpace_pages", selectedPageId);
     } else {
-        // 새 게시글인데 공유 안 함 또는 워크스페이스 선택 안 함
-        // 수정 모드일 때도 이 경로를 타게 됩니다.
-        formData.append("isWorkspaceShared", false); // 항상 false로 보내도록 강제
-        formData.append("fk_workspace_id", "");
-        formData.append("workSpace_pages", "[]"); // 빈 배열 JSON 문자열
+      // 새 게시글인데 공유 안 함 또는 워크스페이스 선택 안 함
+      // 수정 모드일 때도 이 경로를 타게 됩니다.
+      formData.append("isWorkspaceShared", false); // 항상 false로 보내도록 강제
+      formData.append("fk_workspace_id", "");
+      formData.append("workSpace_pages", "[]"); // 빈 배열 JSON 문자열
     }
-
 
     newFiles.forEach((file) => {
       formData.append("media", file);
@@ -429,7 +429,8 @@ const PostForm = () => {
 
           {!isFormValid && (
             <ValidationMessage>
-              <X size={16} /> 필수 항목 (제목, 내용, 카테고리)을 모두 입력해주세요.
+              <X size={16} /> 필수 항목 (제목, 내용, 카테고리)을 모두
+              입력해주세요.
             </ValidationMessage>
           )}
 

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Edit3, ArrowLeft, Save, X, Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import axios from "axios";
 import Cookies from "js-cookie";
 import logo from "../../images/notionary-logo.png";
@@ -415,12 +416,12 @@ const PostEdit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["post", post_id]);
       queryClient.invalidateQueries(["posts"]);
-      alert("게시글이 성공적으로 수정되었습니다!");
+      toast.success("게시글이 성공적으로 수정되었습니다!");
       navigate(`/post/${post_id}`);
     },
     onError: (error) => {
       console.error("게시글 수정 실패:", error);
-      alert(
+      toast.error(
         `게시글 수정에 실패했습니다: ${
           error.response?.data?.message || error.message
         }`
@@ -455,7 +456,7 @@ const PostEdit = () => {
     e.preventDefault();
 
     if (!title.trim() || !content.trim()) {
-      alert("제목과 내용을 입력해주세요.");
+      toast.warning("제목과 내용을 입력해주세요.");
       return;
     }
 
@@ -501,11 +502,11 @@ const PostEdit = () => {
         withCredentials: true,
       });
 
-      alert("게시글이 삭제되었습니다.");
+      toast.success("게시글이 삭제되었습니다.");
       navigate("/mypage");
     } catch (error) {
       console.error("게시글 삭제 실패:", error);
-      alert("게시글 삭제에 실패했습니다.");
+      toast.error("게시글 삭제에 실패했습니다.");
     }
   };
 

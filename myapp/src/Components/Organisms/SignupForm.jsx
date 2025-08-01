@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 import FormField from "../Molecules/FormField";
 import DaumAddressField from "../Molecules/DaumAddressField";
 import Button from "../Atoms/ming/SignupButton";
@@ -166,11 +167,11 @@ const SignupForm = () => {
       const response = await registerUser(userData);
 
       // Handle successful registration
-      alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
+      toast.success("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
       window.location.href = "/"; // Redirect to login page
     } catch (error) {
       console.error("Registration error:", error);
-      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+      toast.error("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsSubmitting(false);
     }

@@ -12,6 +12,8 @@ import PostDetail from "./Components/Pages/PostDetail";
 import Sidebar from "./Components/Templates/Sidebar";
 import Header from "./Components/Templates/Header";
 import PostEdit from "./Components/Pages/PostEdit";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const select = useSelector((state) => state);
@@ -33,13 +35,24 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/main" element={<Main />} />
           <Route path="/post" element={<PostPage />} />
-          <Route path="/post/edit/:post_id" element={<PostPage />} /> 
+          <Route path="/post/edit/:post_id" element={<PostPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/detail/:post_id" element={<PostDetail />} />
           <Route path="/post/:post_id/edit" element={<PostEdit />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

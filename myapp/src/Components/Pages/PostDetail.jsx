@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Heart,
@@ -663,7 +664,7 @@ const PostDetail = () => {
       const token =
         Cookies.get("authToken") || Cookies.get("login_access_token");
       if (!token) {
-        alert("로그인이 필요합니다.");
+        toast.error("로그인이 필요합니다.");
         return;
       }
 
@@ -683,7 +684,7 @@ const PostDetail = () => {
       }));
     } catch (error) {
       console.error("좋아요 처리 실패:", error);
-      alert("좋아요 처리에 실패했습니다.");
+      toast.error("좋아요 처리에 실패했습니다.");
     }
   };
 
@@ -697,7 +698,7 @@ const PostDetail = () => {
         Cookies.get("authToken") || Cookies.get("login_access_token");
 
       if (!token) {
-        alert("로그인이 필요합니다.");
+        toast.error("로그인이 필요합니다.");
         return;
       }
 
@@ -717,7 +718,7 @@ const PostDetail = () => {
       setNewComment("");
     } catch (error) {
       console.error("댓글 작성 실패:", error);
-      alert("댓글 작성에 실패했습니다.");
+      toast.error("댓글 작성에 실패했습니다.");
     } finally {
       setSubmittingComment(false);
     }
@@ -765,7 +766,7 @@ const PostDetail = () => {
       setEditingCommentContent("");
     } catch (error) {
       console.error("댓글 수정 실패:", error);
-      alert("댓글 수정에 실패했습니다.");
+      toast.error("댓글 수정에 실패했습니다.");
     }
   };
 
@@ -788,7 +789,7 @@ const PostDetail = () => {
       }));
     } catch (error) {
       console.error("댓글 삭제 실패:", error);
-      alert("댓글 삭제에 실패했습니다.");
+      toast.error("댓글 삭제에 실패했습니다.");
     }
   };
 
@@ -805,11 +806,11 @@ const PostDetail = () => {
         withCredentials: true,
       });
 
-      alert("게시글이 삭제되었습니다.");
+      toast.success("게시글이 삭제되었습니다.");
       navigate("/mypage");
     } catch (error) {
       console.error("게시글 삭제 실패:", error);
-      alert("게시글 삭제에 실패했습니다.");
+      toast.error("게시글 삭제에 실패했습니다.");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { toast } from "react-toastify";
 import {
   Heart,
   MessageCircle,
@@ -830,7 +831,7 @@ const MyPage = () => {
       const accessToken = token || loginAccessToken;
 
       if (!accessToken) {
-        alert("로그인이 필요합니다.");
+        toast.error("로그인이 필요합니다.");
         return;
       }
 
@@ -861,10 +862,10 @@ const MyPage = () => {
       setShowEditModal(false);
       setPreviewImage(null);
       setSelectedFile(null);
-      alert("프로필이 성공적으로 업데이트되었습니다!");
+      toast.success("프로필이 성공적으로 업데이트되었습니다!");
     } catch (error) {
       console.error("수정 실패:", error);
-      alert("프로필 업데이트에 실패했습니다. 다시 시도해주세요.");
+      toast.error("프로필 업데이트에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -874,13 +875,13 @@ const MyPage = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("파일 크기는 5MB 이하로 선택해주세요.");
+        toast.warning("파일 크기는 5MB 이하로 선택해주세요.");
         return;
       }
 
       const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
       if (!allowedTypes.includes(file.type)) {
-        alert("JPG, JPEG, PNG 파일만 업로드 가능합니다.");
+        toast.warning("JPG, JPEG, PNG 파일만 업로드 가능합니다.");
         return;
       }
 
