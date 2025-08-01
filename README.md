@@ -134,7 +134,7 @@ https://react01.shop/
 
 ### 1. 로그인/회원가입 시스템
 
-![streaming start](./public/images/readmegif/1.gif)
+![streaming start](./myapp/public/images/readmegif/1.gif)
 
 - **JWT 기반 인증**: 토큰 발급 및 검증을 통한 보안성 높은 사용자 인증 구현
 
@@ -146,7 +146,7 @@ https://react01.shop/
 
 ### 2. 마이페이지 활동 내역 관리
 
-![streaming start](./public/images/readmegif/2.gif)
+![streaming start](./myapp/public/images/readmegif/2.gif)
 
 - **내 게시글 조회**: 사용자가 작성한 게시글을 시간순으로 정렬하여 표시
 
@@ -160,7 +160,7 @@ https://react01.shop/
 
 ### 3. 게시글 상세페이지 인터랙션
 
-![streaming start](./public/images/readmegif/3.gif)
+![streaming start](./myapp/public/images/readmegif/3.gif)
 
 - **실시간 좋아요**: 새로고침 없이 좋아요 상태 토글 및 즉시 반영
 
